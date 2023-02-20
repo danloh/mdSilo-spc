@@ -37,6 +37,32 @@ fn load_js() -> String {
   }
 }
 
+/// Default favicon, can customize.
+pub(crate) static FAVICON: Lazy<String> = Lazy::new(load_favicon);
+
+/// load customized or default [FAVICON] file
+fn load_favicon() -> String {
+  let ico_file = "favicon.svg".to_string();
+  if let Ok(ico_content) = read_to_string(ico_file) {
+    ico_content
+  } else {
+    include_str!("../static/favicon.svg").to_string()
+  }
+}
+
+/// Default manifest.json, can customize.
+pub(crate) static MANIFEST: Lazy<String> = Lazy::new(load_manifest);
+
+/// load customized or default [MANIFEST] file
+fn load_manifest() -> String {
+  let manifest_file = "manifest.json".to_string();
+  if let Ok(manifest) = read_to_string(manifest_file) {
+    manifest
+  } else {
+    include_str!("../static/manifest.json").to_string()
+  }
+}
+
 /// App Config
 pub(crate) static CONFIG: Lazy<Config> = Lazy::new(Config::load);
 

@@ -60,7 +60,7 @@ function User({
           <Text fontWeight="medium" color={nameColor}>
             {info.name}
           </Text>
-          {isMe && <Text>(You)</Text>}
+          {isMe && <Text>(me)</Text>}
         </HStack>
       </PopoverTrigger>
       <PopoverContent

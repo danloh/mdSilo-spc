@@ -209,7 +209,7 @@ function App() {
         fontSize="sm"
         py={0.5}
       >
-        Collaborative Text Editor
+        mdpad | Collaborative Text Editor
       </Box>
       <Flex 
         flex="1 0" 

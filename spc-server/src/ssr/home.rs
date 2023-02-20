@@ -13,7 +13,7 @@ use axum::{
 use tower_http::services::ServeDir;
 
 use crate::{
-  config::{get_site_config, CSS, JS},
+  config::{get_site_config, CSS, JS, FAVICON, MANIFEST},
   db::user::{ClaimCan, READ_PERMIT},
   error::SsrError,
   util::md::md2html,
@@ -85,6 +85,7 @@ pub(crate) async fn serve_dir(dir: &str) -> MethodRouter {
   })
 }
 
+/// serve style css file
 pub(crate) async fn static_style() -> (HeaderMap, &'static str) {
   let mut headers = HeaderMap::new();
 
@@ -100,6 +101,7 @@ pub(crate) async fn static_style() -> (HeaderMap, &'static str) {
   (headers, &CSS)
 }
 
+/// serve js file
 pub(crate) async fn static_js() -> (HeaderMap, &'static str) {
   let mut headers = HeaderMap::new();
 
@@ -113,4 +115,36 @@ pub(crate) async fn static_js() -> (HeaderMap, &'static str) {
   );
 
   (headers, &JS)
+}
+
+/// serve favicon
+pub(crate) async fn favicon() -> (HeaderMap, &'static str) {
+  let mut headers = HeaderMap::new();
+
+  headers.insert(
+    HeaderName::from_static("content-type"),
+    HeaderValue::from_static("image/svg+xml"),
+  );
+  headers.insert(
+    HeaderName::from_static("cache-control"),
+    HeaderValue::from_static("public, max-age=1209600, s-maxage=86400"),
+  );
+
+  (headers, &FAVICON)
+}
+
+/// serve manifest file 
+pub(crate) async fn manifest() -> (HeaderMap, &'static str) {
+  let mut headers = HeaderMap::new();
+
+  headers.insert(
+    HeaderName::from_static("content-type"),
+    HeaderValue::from_static("application/json"),
+  );
+  headers.insert(
+    HeaderName::from_static("cache-control"),
+    HeaderValue::from_static("public, max-age=1209600, s-maxage=86400"),
+  );
+
+  (headers, &MANIFEST)
 }

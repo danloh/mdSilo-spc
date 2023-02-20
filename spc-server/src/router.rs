@@ -21,7 +21,8 @@ use crate::{
     },
     handler_404,
     home::{
-      about_page, health_check, home_page, serve_dir, static_js, static_style,
+      about_page, health_check, home_page, serve_dir, 
+      static_js, static_style, favicon, manifest,
     },
     upload::{upload_file, upload_page},
     user::{profile_page, user_setting_form, user_setting_view},
@@ -120,6 +121,8 @@ pub async fn router(ctx: AppState) -> Router {
     .route("/health_check", get(health_check))
     .route("/static/style.css", get(static_style))
     .route("/static/script.js", get(static_js))
+    .route("/static/favicon.svg", get(favicon))
+    .route("/static/manifest.json", get(manifest))
     .nest_service("/static/avatars", serve_dir(&CONFIG.avatars_path).await)
     .nest_service("/static/upload", serve_dir(&CONFIG.upload_path).await);
 
