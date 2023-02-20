@@ -1,0 +1,43 @@
+{% extends "_base.html" %}
+
+{%- block mainview -%}
+<div class="main-page" id="article-form-page">
+  <div class="main-box form-box">
+    <form id="edit-article" action="/article/{{article.id}}/edit" method="post">
+      <input 
+        name="title"
+        type="text" 
+        class="write-form form-input-title" 
+        id="title" 
+        title="Title"
+        maxlength="256" 
+        value="{{article.title}}" 
+        placeholder="Title"
+        required
+      />
+      <input 
+        name="cover"
+        type="text" 
+        class="write-form" 
+        id="cover" 
+        title="Cover"
+        maxlength="512" 
+        value="{{article.cover}}" 
+        placeholder="Image URL for cover" 
+        spellcheck="false" 
+        required
+      />
+      <textarea 
+        name="content" 
+        class="write-form form-input-content" 
+        rows="25" 
+        required 
+        maxlength="65535" 
+        placeholder="Start Writing..."
+      >{{article.content}}</textarea>
+      <br>
+      <button type="submit" form="edit-article" class="toolbtn submit-btn">Publish</button>
+    </form>
+  </div>
+</div>
+{%- endblock mainview -%}

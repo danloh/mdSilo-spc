@@ -1,0 +1,53 @@
+<section class="item-card">
+  <div class="item-sum">
+    {%- if entry.ty == "article" -%}
+    <div class="meta-bar">
+      <span class="meta-tag">
+        {{entry.content|calc_read_min}} min read &nbsp;|&nbsp;
+        <a href="/user/{{entry.uname}}">{{ entry.uname }}</a>&nbsp;·&nbsp;
+        {{ entry.created_at|ts_date("") }}
+      </span>
+    </div>
+    {%- else if entry.ty == "piece" -%}
+    <div class="meta-bar">
+      <span class="meta-tag">
+        <a href="/user/{{entry.uname}}">{{ entry.uname }}</a> &nbsp;·&nbsp;
+        {{ entry.created_at|ts_date("") }}
+      </span>
+    </div>
+    {%- else if entry.ty == "feed" -%}
+    <div class="meta-bar">
+      <span class="meta-tag">
+        {{ entry.uname|host }} &nbsp;·&nbsp; {{ entry.created_at|ts_date("") }}
+      </span>
+    </div>
+    {%- endif -%}
+    {%- if entry.ty == "piece" -%}
+    <div class="item-info">
+      {{ entry.content|safe }}
+    </div>
+    {%- else if entry.ty == "hashtag" -%}
+    <div class="item-info">
+      <a href="{{entry.link}}">#{{ entry.title }}</a>
+    </div>
+    {%- else -%} 
+    <div class="item-info">
+      <a class="link-title" href="{{entry.link}}">{{ entry.title }}</a>
+      <div class="item-intro">{{ entry.content|truncate(256) }}</div>
+    </div>
+    {%- endif -%}
+  </div>
+  {%- if entry.cover.trim().len() > 0 -%}
+  <div class="item-thumbnail">
+    <a class="img-link" href="/{{entry.link}}/view">
+      <img 
+        class="cover-thumbnail" 
+        src="{{entry.cover|must_https}}" 
+        loading="lazy" 
+        alt="cover" 
+        referrerPolicy="no-referrer"
+      >
+    </a>
+  </div>
+  {%- endif -%}
+</section>

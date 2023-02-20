@@ -1,0 +1,33 @@
+{% extends "_base.html" %} 
+
+{%- block mainview -%}
+<div class="main-page form-page" id="auth-form-page">
+  <div class="main-box form-box auth-form-box">
+    <h1>Sign In</h1><br>
+    <form id="signin" action="/signin" method="post">
+      <input 
+        name="username"
+        type="text" 
+        class="form-input" 
+        id="username" 
+        title="Username"
+        placeholder="👤 Username" 
+        required
+      />
+      <input 
+        name="password"
+        type="password" 
+        class="form-input" 
+        id="auth-password" 
+        title="password"
+        placeholder="🔑 Password"
+        minlength="7"
+        required
+      />
+      <br>
+      <button type="submit" form="signin" class="toolbtn submit-btn">Sign In</button>
+      <p>No account or Forget password? <a href="/signup">Sign Up</a></p>
+    </form>
+  </div>
+</div>
+{%- endblock mainview -%}

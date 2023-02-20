@@ -1,0 +1,29 @@
+{% extends "_base.html" %} 
+
+{% block mainview %}
+<div class="main-page">
+  <div class="main-box">
+    <h1 class="title">
+      {%- if is_self -%}
+      <a href="/user/{{user.username}}/setting">@{{ user.username }}</a>
+      {%- else -%}
+      @{{ user.username }}
+      {%- endif -%}
+    </h1>
+    <p class="content-sum">
+      {{ user.nickname }}&nbsp;({{ post_count|pluralize("Posts", "Post") }} | &nbsp;
+      {{ upload_count|pluralize("Uploads", "Upload") }}) | &nbsp; 
+      {{ feed_count|pluralize("Subscriptions", "Subscription") }})
+      <br/>
+      {{ user.about }}
+    </p>
+    {%- if is_self && can_create -%}
+    {%- include "piece_form.html" -%}
+    {%- endif -%}
+    {%- include "entry_list.html" -%}
+    {% if entries.len() >= 42 %}
+    <a class="toolbtn" href="/user/{{user.username}}?pape={{page+1}}">More</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock mainview %}

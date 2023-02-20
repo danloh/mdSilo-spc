@@ -1,0 +1,31 @@
+{% extends "_base.html" %} 
+
+{%- block mainview -%}
+<div class="main-page form-page" id="auth-form-page">
+  <div class="main-box form-box auth-form-box">
+    <h1>Change Password</h1><br>
+    <form id="change-psw" action="/change_password" method="post">
+      <input 
+        name="old_psw"
+        type="password" 
+        class="form-input" 
+        title="Old Password"
+        placeholder="🔑 Old Password"
+        minlength="7"
+        required
+      />
+      <input 
+        name="new_psw"
+        type="password" 
+        class="form-input" 
+        title="New Password"
+        placeholder="🔑 New Password"
+        minlength="7"
+        required
+      />
+      <br>
+      <button type="submit" form="change-psw" class="toolbtn submit-btn">Sign In</button>
+    </form>
+  </div>
+</div>
+{%- endblock mainview -%}

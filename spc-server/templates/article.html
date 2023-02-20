@@ -1,0 +1,30 @@
+{% extends "_base.html" %} 
+
+{% block mainview %}
+<div class="main-page">
+  <div class="main-box content-view">
+    <h1 class="title">{{article.title}}</h1>
+    <div class="meta-bar">
+      {{article.content|calc_read_min}} min read &nbsp;·&nbsp;
+      <a href="/user/{{article.uname}}">{{article.uname}}</a> &nbsp;·&nbsp;
+      {{article.created_at|ts_date("")}} &nbsp;·&nbsp; 
+      👁️ {{pageview|num_unit}} &nbsp;&nbsp;
+      {%- if is_author -%}
+      <a href="/article/{{article.id}}/edit">Edit</a>&nbsp;&nbsp;
+      <a href="/article/{{article.id}}/collaboration">Collaboration</a>&nbsp;&nbsp;
+      {#<a href="/article/{{article.id}}/delete">Delete</a>#}
+      {%- endif -%}
+    </div>
+    <div class="content-box">
+      {{article.content}}
+    </div>
+  </div>
+</div>
+{% endblock mainview %}
+
+{%- block ftscript -%}
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@9/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true });
+</script>
+{%- endblock ftscript -%}

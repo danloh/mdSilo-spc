@@ -1,0 +1,32 @@
+{% extends "_base.html" %} 
+
+{% block mainview %}
+<div class="main-page">
+  <div class="main-box">
+    <h1 class="title">Mod Users by: {{ admin.username }}({{ admin.permission }})</h1>
+    {%- for usr in users -%}
+    <section class="item-block">
+      <div class="user-meta">
+        <a class="meta-link" href="/user/{{usr.username}}">@{{ usr.username }}</a>
+        <span class="meta-tag">({{ usr.permission }})</span>
+        <span class="meta-tag">{{ usr.nickname }}</span>
+        <span class="meta-tag">Joined: {{ usr.join_at|ts_date("") }}</span>
+      </div>
+      <p class="content-sum">{{ usr.about }}</p>
+      <div class="toolbar">
+        <span class="meta-tag">To Be: </span>
+        <a class="meta-tag" href="/admin/{{usr.username}}/mod/7">Creator(7)</a>
+        <a class="meta-tag" href="/admin/{{usr.username}}/mod/15">Editor(15)</a>
+        {%- if admin.permission == 255 -%}
+        <a class="meta-tag" href="/admin/{{usr.username}}/mod/31">Moderator(31)</a>
+        {%- endif -%}
+        <a class="meta-tag" href="/admin/{{usr.username}}/mod/0">Banned(0)</a>
+      </div>
+    </section>
+    {%- endfor -%}
+    {% if users.len() >= 42 %}
+    <a class="toolbtn" href="/admin/user_list?pape={{page+1}}">More</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock mainview %}

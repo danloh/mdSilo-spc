@@ -1,0 +1,36 @@
+CREATE TABLE threads (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  title VARCHAR UNIQUE NOT NULL,
+  content TEXT NOT NULL DEFAULT '',
+  uname VARCHAR NOT NULL,
+  create_at INTEGER NOT NULL,
+  is_hidden BOOLEAN DEFAULT FALSE
+);
+
+CREATE TABLE thread_act (
+  thread_id INTEGER NOT NULL,
+  act_ty VARCHAR NOT NULL, -- label|merge...
+  act_as VARCHAR NOT NULL,
+  act_at INTEGER NOT NULL,
+  act_by VARCHAR NOT NULL
+);
+
+CREATE TABLE comments (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  uname VARCHAR NOT NULL, 
+  title VARCHAR NOT NULL DEFAULT '',
+  content VARCHAR NOT NULL, 
+  on_ty VARCHAR NOT NULL,
+  on_id INTEGER NOT NULL,
+  post_at INTEGER NOT NULL,
+  is_hidden BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+CREATE TABLE reacts (
+  uname VARCHAR NOT NULL,
+  on_ty VARCHAR NOT NULL, -- what react on 
+  on_id INTEGER NOT NULL,
+  react_as INTEGER NOT NULL DEFAULT 1,
+  react_at INTEGER NOT NULL,
+  PRIMARY KEY (uname, on_ty, on_id)
+);

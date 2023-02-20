@@ -1,0 +1,65 @@
+{% extends "_base.html" %} 
+
+{%- block mainview -%}
+<div class="main-page form-page" id="feed-form-page">
+  <div class="main-box form-box">
+    <h1>Add Feed Channel</h1><br>
+    <form id="preload-feed" action="/channel_add" method="POST">
+      <label class="label" for="link">Channel Link</label> 
+      <input 
+        name="link"
+        type="text" 
+        class="form-input" 
+        title="Feed URL" 
+        value="{{ channel.link }}" 
+        placeholder="Please Input URL"
+        required
+      />
+      <label class="label" for="title">Channel Title</label> 
+      <input 
+        name="title"
+        type="text" 
+        class="form-input" 
+        title="Feed Title"
+        value="{{ channel.title }}"
+        placeholder="Feed Title"
+        required
+      />
+      <label class="label" for="intro">Channel Description</label> 
+      <input 
+        name="intro"
+        type="text" 
+        class="form-input" 
+        title="Feed Description" 
+        value="{{ channel.intro }}"
+        placeholder="Feed Description"
+        required 
+      />
+      <label class="label" for="ty">Channel Type</label> 
+      <input 
+        name="ty"
+        type="text" 
+        class="form-input" 
+        title="Feed Type" 
+        value="{{ channel.ty }}"
+        placeholder="Feed Type: rss or podcast"
+        required
+      />
+      <label class="label" for="is_public">Public or not: 0-false, 1-true</label> 
+      <input 
+        class="form-input" 
+        type="number" 
+        min="0" 
+        max="1"
+        step="1"  
+        name="is_public" 
+        required 
+        value="1" 
+        autocomplete="off" 
+      />
+      <br>
+      <button type="submit" form="preload-feed" class="toolbtn submit-btn">Add</button>
+    </form>
+  </div>
+</div>
+{%- endblock mainview -%}

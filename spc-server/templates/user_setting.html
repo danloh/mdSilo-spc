@@ -1,0 +1,34 @@
+{% extends "_base.html" %} 
+
+{% block mainview %}
+<div class="main-page form-page" id="auth-form-page">
+  <div class="main-box">
+    <h1>@{{ user.username }}</h1>
+    <form class="main-box" id="user-setting" action="/user/{{user.username}}/setting" method="POST">
+      <div class="form-field is-horizontal"> 
+        <label class="form-label" for="nickname">Name</label>  
+        <input 
+          class="form-input" 
+          type="text" 
+          name="nickname" 
+          required 
+          maxlength="128" 
+          value="{{ user.nickname }}" 
+          placeholder="Your Nickname" 
+          autocomplete="off" 
+        />
+      </div>
+      <div class="form-field is-horizontal">
+        <label class="form-label" for="about">About Me</label>
+        <textarea 
+          name="about" 
+          class="form-input form-input-content" 
+          rows="15" 
+          placeholder="{{ user.about }}"
+        >{{user.about}}</textarea>
+      </div>
+      <button type="submit" form="user-setting" class="toolbtn submit-btn">Save</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

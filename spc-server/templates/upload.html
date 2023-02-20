@@ -1,0 +1,35 @@
+{% extends "_base.html" %}
+
+{% block mainview %}
+<div class="main-box">
+  <form id="upload" action="/upload" method="POST" enctype="multipart/form-data">
+    <input 
+      class="input" 
+      type="file" 
+      name="files" 
+      required 
+      accept="image/*, .json, .pdf" 
+      multiple
+    />
+    <p class="help-tips">Max 10 files; Accepts: image, PDF, JSON files.</p>
+    <button type="submit" form="upload" class="toolbtn submit-btn">Upload</button>
+  </form>
+  <div class="content">
+    {% for fname in fnames %}
+    {% if show_thumbnail %}
+    <figure>
+      <img src="/static/upload/{{fname}}">
+      <figcaption>
+        <code>![](/static/upload/{{fname}})</code>
+      </figcaption>
+    </figure>
+    {% else %}
+    <div class="item-block">
+      <a class="meta-tag" href="/static/upload/{{fname}}" target="_blank">{{ fname }}</a>
+      <pre><code>![](/static/upload/{{fname}})</code></pre>
+    </div>
+    {% endif %}
+    {% endfor %}
+  </div>
+</div>
+{% endblock mainview %}

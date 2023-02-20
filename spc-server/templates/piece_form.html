@@ -1,0 +1,17 @@
+<div class="form-box">
+  <form id="new-piece" action="/new_piece" method="POST">
+    <textarea 
+      name="content" 
+      class="form-input form-input-content" 
+      rows="2" 
+      required 
+      maxlength="10000" 
+      placeholder="Jot down here..."
+    ></textarea>
+    <div class="toolbar">
+      <a href="/article/0/edit" target="_blank" class="link-btn">Write</a>
+      <a href="/upload" target="_blank" class="link-btn">Upload</a>
+      <button type="submit" form="new-piece" class="toolbtn active-tab">Send</button>
+    </div>
+  </form>
+</div>

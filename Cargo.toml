@@ -1,0 +1,7 @@
+[workspace]
+
+members = [
+  "spc-server",
+  "spc-wasm",
+  "spc-util",
+]

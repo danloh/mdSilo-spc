@@ -1,0 +1,221 @@
+{% extends "_base.html" %} 
+
+{% block mainview %}
+<div class="main-page form-page" id="auth-form-page">
+  <form  class="main-box" id="site-config" action="/siteconfig" method="POST">
+    <div class="form-field is-horizontal"> 
+      <label class="form-label" for="site_name">Site Name</label>  
+      <input 
+        class="form-input" 
+        type="text" 
+        name="site_name" 
+        required 
+        maxlength="128" 
+        value="{{ site_config.site_name|trim }}" 
+        placeholder="Sitename" 
+        autocomplete="off" 
+      />
+    </div>
+    <div class="form-field is-horizontal"> 
+      <label class="form-label" for="domain">Domain</label>  
+      <input 
+        class="form-input" 
+        type="text" 
+        name="domain" 
+        required  
+        value="{{ site_config.domain }}" 
+        placeholder="domain" 
+        autocomplete="off"
+      />
+    </div>
+    <div class="form-field is-horizontal"> 
+      <label class="form-label" for="slogan">Slogan</label>  
+      <input 
+        class="form-input" 
+        type="text" 
+        name="slogan" 
+        required 
+        maxlength="512" 
+        value="{{ site_config.slogan }}" 
+        placeholder="slogan" 
+        autocomplete="off"
+      />
+    </div>
+    <div class="form-field is-horizontal"> 
+      <label class="form-label" for="verification">Site Verification (optional)</label>  
+      <input 
+        class="form-input" 
+        type="text" 
+        name="verification" 
+        maxlength="128" 
+        value="{{ site_config.verification }}" 
+        placeholder="Verification, like google-site-verification" 
+        autocomplete="off"
+      />
+    </div>
+    <div class="form-field is-horizontal">   
+      <label class="label" for="read_only">Read only: 0-false, 1-true</label> 
+      <input 
+        class="form-input" 
+        type="number" 
+        min="0" 
+        max="1"
+        step="1"  
+        name="read_only" 
+        required 
+        value="{{ site_config.read_only }}" 
+        autocomplete="off" 
+      />   
+    </div>
+    <div class="form-field is-horizontal">
+      <label class="form-label" for="title_max_length">Max Length of Title</label>  
+      <input 
+        class="form-input" 
+        type="number" 
+        min="8" 
+        max="256" 
+        name="title_max_length" 
+        required 
+        value="{{ site_config.title_max_length }}" 
+        autocomplete="off" 
+      />       
+    </div>
+    <div class="form-field is-horizontal">
+      <label class="form-label" for="piece_max_length">Max Length of Piece</label>  
+      <input 
+        class="form-input" 
+        type="number" 
+        min="8" 
+        max="512" 
+        name="piece_max_length" 
+        required 
+        value="{{ site_config.piece_max_length }}" 
+        autocomplete="off" 
+      />
+    </div>
+    <div class="form-field is-horizontal">
+      <label class="form-label" for="article_max_length">Max Length of Article</label>  
+      <input 
+        class="form-input" 
+        type="number" 
+        min="256" 
+        max="65535" 
+        name="article_max_length" 
+        required 
+        value="{{ site_config.article_max_length }}" 
+        autocomplete="off" 
+      />       
+    </div>
+    <div class="form-field is-horizontal">
+      <label class="form-label" for="comment_max_length">Max Length of Comment</label>  
+      <input 
+        class="form-input" 
+        type="number" 
+        min="32" 
+        max="65535" 
+        name="comment_max_length" 
+        required 
+        value="{{ site_config.comment_max_length }}" 
+        autocomplete="off" 
+      />       
+    </div>
+    <div class="form-field is-horizontal">
+      <label class="form-label" for="post_interval">Post interval (seconds)</label>  
+      <input 
+        class="form-input" 
+        type="number" 
+        min="0" 
+        max="3600" 
+        name="post_interval" 
+        required 
+        value="{{ site_config.post_interval }}" 
+        autocomplete="off" 
+      />       
+    </div>
+    <div class="form-field is-horizontal">
+      <label class="form-label" for="upload_interval">Upload interval (seconds)</label>  
+      <input 
+        class="form-input" 
+        type="number" 
+        min="0" 
+        max="3600" 
+        name="upload_interval" 
+        required 
+        value="{{ site_config.upload_interval }}" 
+        autocomplete="off" 
+      />       
+    </div>
+    <div class="form-field is-horizontal">
+      <label class="form-label" for="comment_interval">Comment interval (seconds)</label>  
+      <input 
+        class="form-input" 
+        type="number" 
+        min="0" 
+        max="3600" 
+        name="comment_interval" 
+        required 
+        value="{{ site_config.comment_interval }}" 
+        autocomplete="off" 
+      />       
+    </div>
+    <div class="form-field is-horizontal">
+      <label class="form-label" for="per_page">Per_page</label>  
+      <input 
+        class="form-input" 
+        type="number" 
+        min="1" 
+        max="100" 
+        name="per_page" 
+        required 
+        value="{{ site_config.per_page }}" 
+        autocomplete="off" 
+      />       
+    </div>
+    <div class="field is-horizontal">
+      <label class="label" for="captcha_difficulty">Captcha difficulty</label>
+      <input 
+        class="form-input" 
+        type="text" 
+        name="captcha_difficulty" 
+        required 
+        maxlength="8" 
+        value="{{ site_config.captcha_difficulty }}" 
+        placeholder="Easy | Medium | Hard" 
+        autocomplete="off"
+      />
+    </div>
+    <div class="field is-horizontal">
+      <label class="label" for="captcha_name">Captcha type</label>  
+      <input 
+        class="form-input" 
+        type="text" 
+        name="captcha_name" 
+        required 
+        maxlength="8" 
+        value="{{ site_config.captcha_name }}" 
+        placeholder="Amelia | Lucy | Mila" 
+        autocomplete="off"
+      />
+    </div>
+    <div class="form-field is-horizontal">
+      <label class="form-label" for="landing_page">Content on landing page (Markdown)</label>
+      <textarea 
+        name="landing_page" 
+        class="form-input form-input-content" 
+        rows="15" 
+        placeholder="{{site_config.landing_page}}"
+      >{{site_config.landing_page}}</textarea>
+    </div>
+    <div class="form-field is-horizontal">
+      <label class="form-label" for="about_page">About Site (Markdown)</label>
+      <textarea 
+        name="about_page" 
+        class="form-input form-input-content" 
+        rows="20" 
+        placeholder="{{site_config.about_page}}"
+      >{{site_config.about_page}}</textarea>
+    </div>
+    <button type="submit" form="site-config" class="toolbtn submit-btn">Save</button>
+  </form>
+</div>
+{% endblock %}

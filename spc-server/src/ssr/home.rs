@@ -1,0 +1,116 @@
+//! ## Home
+//! landing page, about page...
+
+use askama::Template;
+use axum::{
+  body::{self, BoxBody, Empty},
+  extract::State,
+  headers::HeaderName,
+  http::{HeaderMap, HeaderValue, StatusCode},
+  response::{IntoResponse, Redirect, Response},
+  routing::{get_service, MethodRouter},
+};
+use tower_http::services::ServeDir;
+
+use crate::{
+  config::{get_site_config, CSS, JS},
+  db::user::{ClaimCan, READ_PERMIT},
+  error::SsrError,
+  util::md::md2html,
+  AppState as Ctx,
+};
+
+use super::{into_response, PageData};
+
+/// Page data: `article_new.html`
+#[derive(Template)]
+#[template(path = "home.html")]
+struct HomeTmpl<'a> {
+  page_data: PageData<'a>,
+  page_content: String,
+  as_page: &'a str, // home or about, for style
+}
+
+/// `GET /` index page
+pub(crate) async fn home_page(
+  State(ctx): State<Ctx>,
+  check: ClaimCan<READ_PERMIT>,
+) -> Result<impl IntoResponse, SsrError> {
+  let cfg = get_site_config(&ctx.sled).unwrap_or_default();
+  let page_data = PageData::new("Home", &cfg, check.claim, false);
+  let landing_page = md2html(&cfg.landing_page);
+  let home_page = HomeTmpl {
+    page_data,
+    page_content: landing_page,
+    as_page: "home",
+  };
+  Ok(into_response(&home_page, "html"))
+}
+
+/// `GET /about` index page
+pub(crate) async fn about_page(
+  State(ctx): State<Ctx>,
+  check: ClaimCan<READ_PERMIT>,
+) -> Result<impl IntoResponse, SsrError> {
+  let cfg = get_site_config(&ctx.sled).unwrap_or_default();
+  let page_data = PageData::new("About", &cfg, check.claim, false);
+  let about = md2html(&cfg.about_page);
+  let about_page = HomeTmpl {
+    page_data,
+    page_content: about,
+    as_page: "about",
+  };
+  Ok(into_response(&about_page, "html"))
+}
+
+/// `GET /health_check`
+pub(crate) async fn health_check() -> Response<BoxBody> {
+  Response::builder()
+    .status(StatusCode::OK)
+    .body(body::boxed(Empty::new()))
+    .unwrap_or_default()
+}
+
+/// serve static directory
+pub(crate) async fn serve_dir(dir: &str) -> MethodRouter {
+  let fallback = tower::service_fn(|_| async {
+    Ok::<_, std::io::Error>(Redirect::to("/signin").into_response())
+  });
+  let srv = get_service(ServeDir::new(dir).precompressed_gzip().fallback(fallback));
+  srv.handle_error(|error: std::io::Error| async move {
+    (
+      StatusCode::INTERNAL_SERVER_ERROR,
+      format!("Unhandled internal error: {error}"),
+    )
+  })
+}
+
+pub(crate) async fn static_style() -> (HeaderMap, &'static str) {
+  let mut headers = HeaderMap::new();
+
+  headers.insert(
+    HeaderName::from_static("content-type"),
+    HeaderValue::from_static("text/css"),
+  );
+  headers.insert(
+    HeaderName::from_static("cache-control"),
+    HeaderValue::from_static("public, max-age=1209600, s-maxage=86400"),
+  );
+
+  (headers, &CSS)
+}
+
+pub(crate) async fn static_js() -> (HeaderMap, &'static str) {
+  let mut headers = HeaderMap::new();
+
+  headers.insert(
+    HeaderName::from_static("content-type"),
+    HeaderValue::from_static("text/javascript"),
+  );
+  headers.insert(
+    HeaderName::from_static("cache-control"),
+    HeaderValue::from_static("public, max-age=1209600, s-maxage=86400"),
+  );
+
+  (headers, &JS)
+}

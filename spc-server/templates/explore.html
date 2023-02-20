@@ -1,0 +1,27 @@
+{% extends "_base.html" %} 
+
+{% block mainview %}
+<div class="main-page">
+  <div class="main-box">
+    {%- if can_create -%}
+    {%- include "piece_form.html" -%}
+    {%- endif -%}
+    <div class="tab-bar">
+      {%- let tabs = [String::from("posts"), String::from("hashtags"), String::from("feeds")] -%}
+      {% for t in tabs %}
+      {%- if t == tab -%}
+      <a href="/explore?tab={{t}}" class="link-title">
+        <span class="active-nav">{{ t|capitalize }}</span>
+      </a>
+      {%- else -%} 
+      <a href="/explore?tab={{t}}" class="link-title">{{ t|capitalize }}</a>
+      {%- endif -%}
+      {% endfor %}
+    </div>
+    {%- include "entry_list.html" -%}
+    {% if entries.len() >= 42 %}
+    <a class="toolbtn" href="/explore?tab={{tab}}&pape={{page+1}}">Try More</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock mainview %}

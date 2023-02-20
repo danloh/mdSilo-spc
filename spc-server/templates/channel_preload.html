@@ -1,0 +1,21 @@
+{% extends "_base.html" %} 
+
+{%- block mainview -%}
+<div class="main-page form-page" id="feed-form-page">
+  <div class="main-box form-box">
+    <h1>Add Feed Channel</h1><br>
+    <form id="preload-feed" action="/channel_preload" method="POST">
+      <input 
+        name="link"
+        type="text" 
+        class="form-input" 
+        title="Feed URL"
+        placeholder="Please Input URL"
+        required
+      />
+      <br>
+      <button type="submit" form="preload-feed" class="toolbtn submit-btn">Load</button>
+    </form>
+  </div>
+</div>
+{%- endblock mainview -%}
