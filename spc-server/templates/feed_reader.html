@@ -14,7 +14,7 @@
         </div>
         <div class="item-info">
           <a class="link-title" href="{{f.feed_url}}" target="_blank">{{ f.title }}</a>
-          <div class="item-intro">{{ f.content|truncate(256) }}</div>
+          <div class="item-intro">{{ f.content|truncate(512)|inner_text }}</div>
         </div>
       </div>
     </section>

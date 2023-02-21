@@ -417,7 +417,7 @@ table th {
 }
 /* form-input in form page */
 .form-input { 
-  padding: 5px 10px;
+  padding: 10px;
   box-sizing: border-box;
   width: 100%;
   line-height: 1.42;
@@ -449,15 +449,22 @@ table th {
 }
 .submit-btn {
   width: 100%;
-  padding: 10px 15px;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: inherit;
+}
+.send-btn {
   font-size: 16px;
   background-color: #aeeedd;
+  padding: 5px 20px;
+  margin-top: -10px !important;
 }
 .toolbtn {
   color: #3498db;
-  background-color: inherit;
   border: none;
   cursor: pointer;
+  border-radius: 5px;
+  margin-top: 10px;
 }
 .toolbtn:hover, .toolbtn:focus {
   background-color: #2980b9;
