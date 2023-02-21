@@ -1,4 +1,4 @@
-<div class="form-box">
+<div class="form-box" id="new-piece-box">
   <form id="new-piece" action="/new_piece" method="POST">
     <textarea 
       name="content" 
@@ -9,9 +9,15 @@
       placeholder="Jot down here..."
     ></textarea>
     <div class="toolbar">
-      <a href="/article/0/edit" target="_blank" class="link-btn">Write</a>
-      <a href="/upload" target="_blank" class="link-btn">Upload</a>
-      <button type="submit" form="new-piece" class="toolbtn active-tab">Send</button>
+      <div class="group">
+        <a href="/new" target="_blank" class="meta-link meta-tag" title="New writing">
+          {% include "icons/write.svg" %}
+        </a>
+        <a href="/upload" target="_blank" class="meta-link meta-tag" title="Upload">
+          {% include "icons/upload.svg" %}
+        </a>
+      </div>
+      <button type="submit" form="new-piece" class="toolbtn active-tab link-title">Send</button>
     </div>
   </form>
 </div>

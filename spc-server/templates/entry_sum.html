@@ -2,18 +2,14 @@
   <div class="item-sum">
     {%- if entry.ty == "article" -%}
     <div class="meta-bar">
-      <span class="meta-tag">
-        {{entry.content|calc_read_min}} min read &nbsp;|&nbsp;
-        <a href="/user/{{entry.uname}}">{{ entry.uname }}</a>&nbsp;·&nbsp;
-        {{ entry.created_at|ts_date("") }}
-      </span>
+      <span class="meta-tag">{{entry.content|calc_read_min}} min read</span> &nbsp;|&nbsp;
+      <a href="/user/{{entry.uname}}" class="meta-link">{{ entry.uname }}</a>&nbsp;·&nbsp;
+      <span class="meta-tag">{{ entry.created_at|ts_date("") }}</span>  
     </div>
     {%- else if entry.ty == "piece" -%}
     <div class="meta-bar">
-      <span class="meta-tag">
-        <a href="/user/{{entry.uname}}">{{ entry.uname }}</a> &nbsp;·&nbsp;
-        {{ entry.created_at|ts_date("") }}
-      </span>
+      <a href="/user/{{entry.uname}}" class="meta-link">{{ entry.uname }}</a> &nbsp;·&nbsp;
+      <span class="meta-tag">{{ entry.created_at|ts_date("") }}</span>
     </div>
     {%- else if entry.ty == "feed" -%}
     <div class="meta-bar">

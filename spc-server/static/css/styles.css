@@ -197,7 +197,7 @@ table th {
   background-color: var(--table-head-color);
 }
 
-/* ==== base =============== */
+/* ==== base layout=============== */
 .header {
   z-index: 9;
   background-color: var(--head-bg-color);
@@ -243,8 +243,12 @@ table th {
   font-size: 0.75em;
   text-align: center;
 }
+.nav-menu, .main-view, .footer .bottom {
+  max-width: 750px;
+  /* min-width: 320px; */
+}
 
-/* layout */
+/* ==== main layout=============== */
 .main-view {
   min-height: 100vh;
   width: 100%;
@@ -252,12 +256,6 @@ table th {
   position: relative;
   background-color: var(--main-bg-color);
   color: var(--main-txt-color);
-}
-.nav-menu, 
-.main-view,
-.footer .bottom {
-  max-width: 750px;
-  /* min-width: 320px; */
 }
 .main-page {
   display: flex;
@@ -268,32 +266,17 @@ table th {
   margin: 10px 0 0 5px;
 }
 .aside-box {
-  flex: 3;
-  margin: 10px 0 0px 5px;
+  flex: 0;
+  margin: 0;
 }
-
-.home-page {
-  align-items: center;
-  justify-items: center;
-  text-align: center;
-  padding: 10px 20px;
-  margin: 2em 10px;
-}
-.home-page h1 {
-  font-size: 42px !important;
-}
-.home-page p {
-  font-size: 20px !important;
-  line-height: 1.8em !important;
-}
-
-/* for ads */
-.ad-placeholder {
+.tab-bar {
   padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  border-bottom: var(--border-color) solid 2px;
 }
-.side-ad {
-  position: sticky;
-  top: 42px;
+.tab-tag {
+  padding: auto;
 }
 
 /* ===== content view ==== */
@@ -339,12 +322,6 @@ table th {
   font-size: 14px;
   display: flex;
   justify-content: space-between;
-}
-.tab-bar {
-  padding: 5px 10px;
-  display: flex;
-  justify-content: space-between;
-  border-bottom: var(--border-color) solid 2px;
 }
 
 /* === list view ====*/
@@ -403,6 +380,12 @@ table th {
 }
 .form-box {
   padding: 5px;
+}
+.auth-form-box {
+  flex: 1;
+  max-width: 450px;
+  border: none;
+  padding: 20px;
 }
 .upload-box {
   background-color: inherit;
@@ -481,101 +464,11 @@ table th {
   color: white;
 }
 
-#new-piece {
+#new-piece-box {
   background-color: azure;
 }
 
-
-/* ================== */
-
-.badge, .badge-circle {
-  flex: 0 0 auto;
-  margin-right: 1px;
-  display: inline-block;
-  background-color: #5a4129;  /*default*/
-}
-.badge {
-  width: 8px;
-  height: 10px;
-}
-.badge-circle {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-}
-.badge-tl {
-  font-size: 16px;
-  display: inline-block;
-  width: 0.4em;
-  box-sizing: content-box;
-  height: 0.4em;
-  border: 0.1em solid #ff8c00;
-  position: relative;
-  border-radius: 0.35em;
-}
-.badge-tl:before, .badge-tl:after {
-  content: "";
-  display: inline-block;
-  position: absolute;
-  bottom: 0.15em;
-  border-width: 0;
-  background: #ff8c00;
-  width: 0.35em;
-  height: 0.08em;
-  transform: rotate(0deg);
-}
-.badge-tl:before {
-  right: -0.35em;
-}
-.badge-tl:after {
-  right: 0.4em;
-}
-.badge-cloud {
-  width: 16px;
-  height: 4px;
-  border-radius: 4px;
-  background: #d4d5d6;
-  position: relative;
-}
-.badge-cloud:before, .badge-cloud:after {
-  position: absolute;
-  content: "";
-  border-radius: 50%;
-  background: #d4d5d6;
-  bottom: 2px;
-}
-.badge-cloud:before {
-  width: 6px;
-  height: 4px;
-  left: 2px;
-}
-.badge-cloud:after {
-  width: 8px;
-  height: 6px;
-  left: 6px;
-}
-.badge-chat {
-  width: 10px;
-  height: 8px;
-  border: 1px solid #828282;
-  position: relative;
-  -moz-border-radius: 45%;
-  -webkit-border-radius: 45%;
-  border-radius: 45%;
-}
-.badge-chat:after {
-  content: "";
-  position: absolute;
-  left: 100%;
-  top: 1px;
-  width: 0;
-  height: 0;
-  border-top: 1px solid #828282;
-  border-left: 3px solid #828282;
-  border-bottom: 3px solid transparent;
-}
-
-/* misc */
+/* =======misc=========== */
 .help-tips {
   color: green;
   font-size: 12px;
@@ -589,16 +482,27 @@ table th {
   color: var(--active-color);
 }
 
+/* for landing page */
+.home-page {
+  align-items: center;
+  justify-items: center;
+  text-align: center;
+  padding: 10px 20px;
+  margin: 2em 10px;
+}
+.home-page h1 {
+  font-size: 42px !important;
+}
+.home-page p {
+  font-size: 20px !important;
+  line-height: 1.8em !important;
+}
 
 @media (max-width: 480px) {
   .main-page {
     padding: 5px;
     flex-direction: column;
   }
-  /* .item-card {
-    padding: 5px;
-    display: block;
-  } */
   img {
     max-width: 100%;
     max-height: 25%;

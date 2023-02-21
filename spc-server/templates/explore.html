@@ -10,11 +10,11 @@
       {%- let tabs = [String::from("posts"), String::from("hashtags"), String::from("feeds")] -%}
       {% for t in tabs %}
       {%- if t == tab -%}
-      <a href="/explore?tab={{t}}" class="link-title">
+      <a href="/explore?tab={{t}}" class="tab-tag">
         <span class="active-nav">{{ t|capitalize }}</span>
       </a>
       {%- else -%} 
-      <a href="/explore?tab={{t}}" class="link-title">{{ t|capitalize }}</a>
+      <a href="/explore?tab={{t}}" class="tab-tag">{{ t|capitalize }}</a>
       {%- endif -%}
       {% endfor %}
     </div>
@@ -23,5 +23,6 @@
     <a class="toolbtn" href="/explore?tab={{tab}}&pape={{page+1}}">Try More</a>
     {% endif %}
   </div>
+  <div class="aside-box" id="explore-side"></div>
 </div>
 {% endblock mainview %}

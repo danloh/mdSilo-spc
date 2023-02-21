@@ -5,20 +5,21 @@
   <div class="main-box content-view">
     <h1 class="title">{{article.title}}</h1>
     <div class="meta-bar">
-      {{article.content|calc_read_min}} min read &nbsp;·&nbsp;
-      <a href="/user/{{article.uname}}">{{article.uname}}</a> &nbsp;·&nbsp;
-      {{article.created_at|ts_date("")}} &nbsp;·&nbsp; 
-      👁️ {{pageview|num_unit}} &nbsp;&nbsp;
+      <span class="meta-tag">{{article.content|calc_read_min}} min read</span> &nbsp;·&nbsp;
+      <a href="/user/{{article.uname}}" class="meta-link">{{article.uname}}</a> &nbsp;·&nbsp;
+      <span class="meta-tag">{{article.created_at|ts_date("")}}</span> &nbsp;·&nbsp; 
+      <span class="meta-tag">{{pageview|num_unit}} 👁️</span> &nbsp;&nbsp;
       {%- if is_author -%}
-      <a href="/article/{{article.id}}/edit">Edit</a>&nbsp;&nbsp;
-      <a href="/article/{{article.id}}/collaboration">Collaboration</a>&nbsp;&nbsp;
-      {#<a href="/article/{{article.id}}/delete">Delete</a>#}
+      <a href="/article/{{article.id}}/edit" class="meta-link">Edit</a>&nbsp;&nbsp;
+      <a href="/article/{{article.id}}/collaboration" class="meta-link">Collaboration</a>&nbsp;&nbsp;
+      {#<a href="/article/{{article.id}}/delete" class="meta-link">Delete</a>#}
       {%- endif -%}
     </div>
     <div class="content-box">
       {{article.content}}
     </div>
   </div>
+  <div class="aside-box" id="view-side"></div>
 </div>
 {% endblock mainview %}
 

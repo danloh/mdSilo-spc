@@ -18,11 +18,11 @@ Licensed under AGPLv3.
  
 ## Road map 
 
-- Subscription 
+### Subscription 
   - [X] Feed aggregator, support RSS and Atom
-  - [X] Feed reader, support RSS and Atom
+  - [ ] Feed reader, support RSS and Atom
 
-- Publishing
+### Publishing
   - Writing with Markdown 
     - [X] Common Markdown 
     - [X] Highlight code block  
@@ -38,7 +38,7 @@ Licensed under AGPLv3.
   - Spread writing
     - [ ] RSS output
 
-- Collabroation
+### Collabroation
   - [X] Live collaboration 
   - [X] Preview markdown and ABC Music notes 
   - [ ] Auth on collaboration

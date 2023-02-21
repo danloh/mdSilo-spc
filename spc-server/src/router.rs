@@ -36,7 +36,7 @@ use axum::{
   http::StatusCode,
   routing::{get, post},
   BoxError,
-  Router,
+  Router, response::Redirect,
 };
 use std::time::Duration;
 use tower::{timeout::TimeoutLayer, ServiceBuilder};
@@ -91,6 +91,7 @@ pub async fn router(ctx: AppState) -> Router {
       "/article/:id/edit",
       get(edit_article_page).post(edit_article_form),
     )
+    .route("/new", get(|| async { Redirect::permanent("/article/0/edit") }))
     .route("/article/:id/delete", get(article_delete))
     .route("/new_piece", post(new_piece_form))
     .route("/piece/:id/delete", get(piece_delete))
