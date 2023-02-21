@@ -130,7 +130,7 @@ pub(crate) struct QueryParams {
 /// custom filters for askama Templete
 //
 pub(super) mod filters {
-  use crate::util::helper::get_host;
+  use crate::util::helper::{get_host, rm_html_tag};
   use askama::Result as TmplResult;
   use chrono::{NaiveDateTime, Utc};
 
@@ -171,6 +171,11 @@ pub(super) mod filters {
   pub fn host(s: &str) -> TmplResult<String> {
     let s_host = get_host(s);
     Ok(s_host)
+  }
+
+  pub fn inner_text(s: &str) -> TmplResult<String> {
+    let text = rm_html_tag(s);
+    Ok(text)
   }
 
   pub fn ts_date(timestamp: &i64, fmt: &str) -> TmplResult<String> {
@@ -231,6 +236,14 @@ pub(super) mod filters {
       assert_eq!(
         host("https://www.mdsilo.com/jh/#jhdkj").unwrap(),
         String::from("mdsilo.com")
+      );
+    }
+
+    #[test]
+    fn test_inner_text() {
+      assert_eq!(
+        inner_text(r#"<a href="https://mdsilo.com/spc">mdsilo</a>"#).unwrap(),
+        String::from("mdsilo")
       );
     }
   }

@@ -2,7 +2,7 @@
   --head-bg-color: #eceeed;
   --main-bg-color: #f3f3f3;
   --block-bg-color: #f0f0f0;
-  --form-bg-color: #f0f0f0;
+  --form-bg-color: #e8efef;
   --ctn-bg-color: #e2e6e8;
   --ctn-hover-color: #fcfdfc;
   --tag-bg-color: #ceeece;
@@ -28,7 +28,7 @@
   --head-bg-color: #2d333b;
   --main-bg-color: #22272e;
   --block-bg-color: #5f5959;
-  --form-bg-color: #4d4646;
+  --form-bg-color: #292b2b;
   --ctn-bg-color: #262b31;
   --ctn-hover-color: #36383b;
   --tag-bg-color: #2f312f;
@@ -465,7 +465,8 @@ table th {
 }
 
 #new-piece-box {
-  background-color: azure;
+  background-color: var(--form-bg-color);
+  border-radius: 5px;
 }
 
 /* =======misc=========== */

@@ -23,13 +23,13 @@
       {{ entry.content|safe }}
     </div>
     {%- else if entry.ty == "hashtag" -%}
-    <div class="item-info">
-      <a href="{{entry.link}}">#{{ entry.title }}</a>
-    </div>
+    <a href="{{entry.link}}">
+     <div class="item-info">#{{ entry.title }}</div>
+    </a>
     {%- else -%} 
     <div class="item-info">
       <a class="link-title" href="{{entry.link}}">{{ entry.title }}</a>
-      <div class="item-intro">{{ entry.content|truncate(256) }}</div>
+      <div class="item-intro">{{ entry.content|truncate(256)|inner_text }}</div>
     </div>
     {%- endif -%}
   </div>

@@ -38,7 +38,7 @@ Licensed under AGPLv3.
   - Spread writing
     - [ ] RSS output
 
-### Collabroation
+### Collaboration
   - [X] Live collaboration 
   - [X] Preview markdown and ABC Music notes 
   - [ ] Auth on collaboration

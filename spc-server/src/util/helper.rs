@@ -5,15 +5,22 @@ use regex::Regex;
 
 pub use spc_util::{extract_element, capture_element};
 
-static RE_S: Lazy<Regex> = Lazy::new(|| Regex::new(r"https?://").unwrap()); // let fail in test
-static RE_P: Lazy<Regex> = Lazy::new(|| Regex::new(r"/.*").unwrap()); // let fail in test
+// let fail in test
+static RE_HTTP: Lazy<Regex> = Lazy::new(|| Regex::new(r"https?://").unwrap()); 
+static RE_PATH: Lazy<Regex> = Lazy::new(|| Regex::new(r"/.*").unwrap());
+static RE_TAG: Lazy<Regex> = Lazy::new(|| Regex::new(r"<[^<>]+>").unwrap());
 
 /// extract host of url
 pub fn get_host(s: &str) -> String {
-  let url_s = RE_S.replace_all(s, "");
-  let url_p = RE_P.replace_all(&url_s, "");
+  let url_s = RE_HTTP.replace_all(s, "");
+  let url_p = RE_PATH.replace_all(&url_s, "");
   let host = url_p.replace("www.", "");
   host
+}
+
+/// replace html tag
+pub fn rm_html_tag(s: &str) -> String {
+  RE_TAG.replace_all(s, "").to_string()
 }
 
 #[cfg(test)]
@@ -28,9 +35,17 @@ mod tests {
     );
     assert_eq!(
       get_host(
-        "https://propublica.org/arti#cl$e/irs-files-taxes-wash-sales-goldman-sachs"
+        "https://mdsilo.com/arti#cl$e/irs"
       ),
-      String::from("propublica.org")
+      String::from("mdsilo.com")
+    );
+  }
+
+  #[test]
+  fn test_rm_html_tag() {
+    assert_eq!(
+      rm_html_tag(r#"<p class="byline"> By <span class="name">Dan</span>, <a href="http://mdsilo.com/">Mind Silo</a>"#),
+      String::from(" By Dan, Mind Silo")
     );
   }
 }
