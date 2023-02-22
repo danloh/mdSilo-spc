@@ -1,9 +1,5 @@
 //! Eventually consistent server-side logic.
 
-//! forked from: [rustpad](https://github.com/ekzhang/rustpad/blob/main/rustpad-server/src/rustpad.rs)
-// LICENSE: MIT Copyright (c) 2021 Eric Zhang 
-// https://github.com/ekzhang/rustpad/blob/main/LICENSE 
-
 use std::collections::HashMap;
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 

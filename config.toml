@@ -1,14 +1,27 @@
+# Your app/website name
 name = 'spc'
-db = 'spc.db'
+# slqite db URI
+db = 'spc.db' 
+# sled db URI
 sled = 'spc.sled'
+# listen address
 addr = '127.0.0.1:3001'
-icons_path = './data/icons'
+# upload icons here
+icons_path = './data/icons' 
+# store avatar imgs here
 avatars_path = './data/avatars'
-upload_path = './data/upload'
+# upload folder
+upload_path = './data/upload' 
+# serve static folder, like SPA assets
 serve_dir = [["mdpad", "./dist"], ["assets", "./dist/assets"]]
+# for JWT
 secret_key = "pL3AsG1v3AharDk3y"
+# to enable https
 cert = ''
 key = ''
+# default admin name, !IMPORTANT!
 admin_name = 'goodman'
-if_compress_img = true
+# if process images on uploading
+if_compress_img = true 
+# set the inactivive interval to clean up on collaborative writing
 expiry_hours = 12 
