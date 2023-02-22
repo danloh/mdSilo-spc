@@ -4,7 +4,7 @@ import { VscRemote } from "react-icons/vsc";
 const version =
   typeof import.meta.env.VITE_SHA === "string"
     ? import.meta.env.VITE_SHA.slice(0, 7)
-    : "development";
+    : "main";
 
 function Footer() {
   return (
