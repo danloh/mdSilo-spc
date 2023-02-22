@@ -5,8 +5,8 @@
 /certs
 .rustc_info.json
 .rustdoc_fingerprint.json
-config.toml
 /snapshots
 /data
 /spc.sled
 devlog.md
+spc

@@ -20,13 +20,13 @@
     <figure>
       <img src="/static/upload/{{fname}}">
       <figcaption>
-        <code>![](/static/upload/{{fname}})</code>
+        <pre>![](/static/upload/{{fname}})</pre>
       </figcaption>
     </figure>
     {% else %}
     <div class="item-block">
       <a class="meta-tag" href="/static/upload/{{fname}}" target="_blank">{{ fname }}</a>
-      <pre><code>![](/static/upload/{{fname}})</code></pre>
+      <pre>![](/static/upload/{{fname}})</pre>
     </div>
     {% endif %}
     {% endfor %}

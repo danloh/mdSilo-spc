@@ -15,6 +15,17 @@ Licensed under AGPLv3.
 - Minimal Feed reader, support RSS and Atom;
 - Efficient live collaboration;
 - Configurable: customized css/js to style or add features... 
+
+## Deploy 
+
+### via released zip
+
+**Alert! Test on Ubuntu 22.04 only**
+
+- Download the zip from [release](https://github.com/danloh/mdSilo-spc/releases)
+- Unzip, you get a `spc` executable file and a `dist` folder for collaborative editor frontend
+- create a [config.toml](https://github.com/danloh/mdSilo-spc/blob/main/config.toml) file and/or run `./spc` 
+- config your web server like nginx
  
 ## Road map 
 
