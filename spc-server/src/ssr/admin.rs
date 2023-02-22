@@ -8,7 +8,8 @@ use crate::{
   error::{AppError, SsrError},
   AppState as Ctx,
 };
-
+use std::fs::File;
+use std::io::Write;
 use askama::Template;
 use axum::{
   extract::{Path, Query, State},
@@ -51,7 +52,26 @@ pub(crate) async fn save_site_config(
   if !check.can() {
     return Err(AppError::NoPermission.into());
   }
-
+  // save js/css/manifest to file
+  let my_css = input.my_css.clone();
+  if my_css.trim().len() > 0 {
+    if let Ok(mut css_file) = File::create("my.css") {
+      css_file.write_all(my_css.as_bytes()).unwrap_or(());
+    }
+  }
+  let my_js = input.my_js.clone();
+  if my_js.trim().len() > 0 {
+    if let Ok(mut js_file) = File::create("my.js") {
+      js_file.write_all(my_js.as_bytes()).unwrap_or(());
+    }
+  }
+  let my_manifest = input.my_manifest.clone();
+  if my_manifest.trim().len() > 0 {
+    if let Ok(mut manifest_file) = File::create("manifest.json") {
+      manifest_file.write_all(my_manifest.as_bytes()).unwrap_or(());
+    }
+  }
+  // save siteconfig to sled
   let site_config =
     bincode::encode_to_vec(&input, standard()).map_err(|_e| AppError::SledError)?;
   ctx

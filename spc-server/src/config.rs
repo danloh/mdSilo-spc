@@ -11,62 +11,10 @@ use validator::Validate;
 
 use crate::error::AppError;
 
-/// Static CSS styles file, can customize.
-pub(crate) static CSS: Lazy<String> = Lazy::new(load_css);
-
-/// load customized or default [CSS] file
-fn load_css() -> String {
-  let css_file = "my.css".to_string();
-  if let Ok(css_content) = read_to_string(css_file) {
-    css_content
-  } else {
-    include_str!("../static/css/styles.css").to_string()
-  }
-}
-
-/// plugin js script
-pub(crate) static JS: Lazy<String> = Lazy::new(load_js);
-
-/// load customized or default [JS] file
-fn load_js() -> String {
-  let js_file = "my.js".to_string();
-  if let Ok(js_script) = read_to_string(js_file) {
-    js_script
-  } else {
-    String::new()
-  }
-}
-
-/// Default favicon, can customize.
-pub(crate) static FAVICON: Lazy<String> = Lazy::new(load_favicon);
-
-/// load customized or default [FAVICON] file
-fn load_favicon() -> String {
-  let ico_file = "favicon.svg".to_string();
-  if let Ok(ico_content) = read_to_string(ico_file) {
-    ico_content
-  } else {
-    include_str!("../static/favicon.svg").to_string()
-  }
-}
-
-/// Default manifest.json, can customize.
-pub(crate) static MANIFEST: Lazy<String> = Lazy::new(load_manifest);
-
-/// load customized or default [MANIFEST] file
-fn load_manifest() -> String {
-  let manifest_file = "manifest.json".to_string();
-  if let Ok(manifest) = read_to_string(manifest_file) {
-    manifest
-  } else {
-    include_str!("../static/manifest.json").to_string()
-  }
-}
-
 /// App Config
 pub(crate) static CONFIG: Lazy<Config> = Lazy::new(Config::load);
 
-/// Config: set on starting.
+/// Config: set on startup.
 #[derive(Serialize, Deserialize, Debug)]
 pub(crate) struct Config {
   /// app name
@@ -170,6 +118,12 @@ pub struct SiteConfig {
   pub landing_page: String,
   /// to customize about page(terms, privacy)
   pub about_page: String,
+  /// to customize style: css
+  pub my_css: String,
+  /// to add js plugin: js
+  pub my_js: String,
+  /// to add manifest.json
+  pub my_manifest: String,
   // site status and setting
   pub read_only: u8,
   #[validate(range(max = 256))]
@@ -200,6 +154,9 @@ impl Default for SiteConfig {
       verification: "".into(),
       landing_page: "# Subscription, Publishing and collaboration \n A self-hosted online writing platform which comes as a single executable with feed subscription, publishing writing and live collaboration and many other features. \n Focus on the Markdown content, be it a blog, a knowledge base, a forum or a combination of them. Good fit for individual or small club. \n ## [Explore Here](/explore) \n\n \n ## [Collaborative Writing](/mdpad/) \n ![](https://images.unsplash.com/photo-1675124516926-a0864dea0abd)".into(),
       about_page: "# About".into(),
+      my_css: String::new(),
+      my_js: String::new(),
+      my_manifest: String::new(),
       read_only: 0,
       title_max_length: 100,
       piece_max_length: 512,
@@ -221,4 +178,56 @@ pub fn get_site_config(db: &Db) -> Result<SiteConfig, AppError> {
   let (site_config, _): (SiteConfig, usize) =
     bincode::decode_from_slice(site_config, standard()).unwrap_or_default();
   Ok(site_config)
+}
+
+/// Static CSS styles file, can customize.
+pub(crate) static CSS: Lazy<String> = Lazy::new(load_css);
+
+/// load customized or default [CSS] file
+fn load_css() -> String {
+  let css_file = "my.css".to_string();
+  if let Ok(css_content) = read_to_string(css_file) {
+    css_content
+  } else {
+    include_str!("../static/css/styles.css").to_string()
+  }
+}
+
+/// plugin js script
+pub(crate) static JS: Lazy<String> = Lazy::new(load_js);
+
+/// load customized or default [JS] file
+fn load_js() -> String {
+  let js_file = "my.js".to_string();
+  if let Ok(js_script) = read_to_string(js_file) {
+    js_script
+  } else {
+    String::new()
+  }
+}
+
+/// Default favicon, can customize.
+pub(crate) static FAVICON: Lazy<String> = Lazy::new(load_favicon);
+
+/// load customized or default [FAVICON] file
+fn load_favicon() -> String {
+  let ico_file = "favicon.svg".to_string();
+  if let Ok(ico_content) = read_to_string(ico_file) {
+    ico_content
+  } else {
+    include_str!("../static/favicon.svg").to_string()
+  }
+}
+
+/// Default manifest.json, can customize.
+pub(crate) static MANIFEST: Lazy<String> = Lazy::new(load_manifest);
+
+/// load customized or default [MANIFEST] file
+fn load_manifest() -> String {
+  let manifest_file = "manifest.json".to_string();
+  if let Ok(manifest) = read_to_string(manifest_file) {
+    manifest
+  } else {
+    include_str!("../static/manifest.json").to_string()
+  }
 }

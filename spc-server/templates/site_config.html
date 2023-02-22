@@ -203,7 +203,7 @@
         name="landing_page" 
         class="form-input form-input-content" 
         rows="15" 
-        placeholder="{{site_config.landing_page}}"
+        placeholder="Configure the landing page"
       >{{site_config.landing_page}}</textarea>
     </div>
     <div class="form-field is-horizontal">
@@ -212,8 +212,38 @@
         name="about_page" 
         class="form-input form-input-content" 
         rows="20" 
-        placeholder="{{site_config.about_page}}"
+        placeholder="About, Terms, etc."
       >{{site_config.about_page}}</textarea>
+    </div>
+    <div class="form-field is-horizontal">
+      <label class="form-label" for="my_css">Customize Theme (.css file)</label>
+      <textarea 
+        name="my_css" 
+        class="form-input form-input-content" 
+        rows="20" 
+        spellcheck="false" 
+        placeholder="paste the content of your .css file here"
+      >{{site_config.my_css}}</textarea>
+    </div>
+    <div class="form-field is-horizontal">
+      <label class="form-label" for="my_js">Plugin via Javascript (.js file)</label>
+      <textarea 
+        name="my_js" 
+        class="form-input form-input-content" 
+        rows="20" 
+        spellcheck="false" 
+        placeholder="paste the content of your .js file here"
+      >{{site_config.my_js}}</textarea>
+    </div>
+    <div class="form-field is-horizontal">
+      <label class="form-label" for="my_manifest">manifest.json (JSON file)</label>
+      <textarea 
+        name="my_manifest" 
+        class="form-input form-input-content" 
+        rows="20" 
+        spellcheck="false"
+        placeholder="paste the content of manifest.json file here"
+      >{{site_config.my_manifest}}</textarea>
     </div>
     <button type="submit" form="site-config" class="toolbtn submit-btn">Save</button>
   </form>
