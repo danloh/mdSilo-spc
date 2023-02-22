@@ -61,8 +61,8 @@ pub async fn router(ctx: AppState) -> Router {
     );
 
   let ws_config = WsConfig {
-    expiry_days: 1,
-    pool: Some(ctx.pool.clone()),
+    expiry_hours: CONFIG.expiry_hours,
+    pool: ctx.pool.clone(),
   };
 
   let ws_route = ws_server(ws_config).await;

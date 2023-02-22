@@ -81,6 +81,8 @@ pub(crate) struct Config {
   pub(crate) avatars_path: String,
   /// the folder to store uploaded files
   pub(crate) upload_path: String,
+  /// check if compress on uploading images
+  pub(crate) if_compress_img: bool,
   /// customized serving static dirs: vec[(path, dir)]
   pub(crate) serve_dir: Vec<(String, String)>,
   /// secret key for encoding JWT
@@ -91,8 +93,8 @@ pub(crate) struct Config {
   pub(crate) key: String,
   /// default admin username,
   pub(crate) admin_name: String,
-  /// check if compress on uploading images
-  pub(crate) if_compress_img: bool,
+  /// 
+  pub(crate) expiry_hours: u32,
 }
 
 impl Default for Config {
@@ -104,6 +106,7 @@ impl Default for Config {
       addr: "127.0.0.1:3001".into(),
       avatars_path: "./data/imgs/avatars".into(),
       upload_path: "./data/upload".into(),
+      if_compress_img: true,
       serve_dir: vec![
         ("mdpad".into(), "./dist".into()), // collaborative editor: index.html
         ("assets".into(), "./dist/assets".into()), // collaborative editor: js/css/wasm
@@ -112,7 +115,7 @@ impl Default for Config {
       cert: "".into(),
       key: "".into(),
       admin_name: "".into(),
-      if_compress_img: true,
+      expiry_hours: 12,
     }
   }
 }

@@ -63,7 +63,7 @@ struct ServerState {
   /// Concurrent map storing in-memory documents.
   documents: Arc<DashMap<String, Document>>,
   /// Connection to the database pool, if persistence is enabled.
-  database: Option<SqlitePool>,
+  pool: SqlitePool,
   /// System time when the server started, in seconds since Unix epoch.
   start_time: u64,
 }
@@ -82,19 +82,10 @@ struct Stats {
 /// Server configuration.
 #[derive(Clone, Debug)]
 pub struct WsConfig {
-  /// Number of days to clean up documents after inactivity.
-  pub expiry_days: u32,
+  /// Number of hours to clean up documents after inactivity.
+  pub expiry_hours: u32,
   /// Database object, for persistence if desired.
-  pub pool: Option<SqlitePool>,
-}
-
-impl Default for WsConfig {
-  fn default() -> Self {
-    Self {
-      expiry_days: 1,
-      pool: None,
-    }
-  }
+  pub pool: SqlitePool,
 }
 
 /// router
@@ -105,10 +96,10 @@ pub async fn ws_server(config: WsConfig) -> Router {
     .as_secs();
   let state = ServerState {
     documents: Default::default(),
-    database: config.pool,
+    pool: config.pool,
     start_time,
   };
-  tokio::spawn(cleaner(state.clone(), config.expiry_days));
+  tokio::spawn(cleaner(state.clone(), config.expiry_hours));
 
   let router_ws = Router::new()
     .route("/api/socket/:id", get(socket_handler)) // WEBSOCKET
@@ -131,16 +122,14 @@ async fn socket_handler(
   let mut entry = match state.documents.entry(id.clone()) {
     Entry::Occupied(e) => e.into_ref(),
     Entry::Vacant(e) => {
-      let pad = Arc::new(match &state.database {
-        Some(db) => StoreDoc::load(db, &id)
-          .await
-          .map(Pad::from)
-          .unwrap_or_default(),
-        None => Pad::default(),
-      });
-      if let Some(db) = &state.database {
-        tokio::spawn(persister(id, Arc::clone(&pad), db.clone()));
-      }
+      let pool = state.pool;
+      let pad = Arc::new(StoreDoc::load(&pool, &id)
+        .await
+        .map(Pad::from)
+        .unwrap_or_default()
+      );
+      tokio::spawn(persister(id, Arc::clone(&pad), pool.clone()));
+      
       e.insert(Document::new(pad))
     }
   };
@@ -159,14 +148,13 @@ async fn text_handler(
   Ok(match state.documents.get(&id) {
     Some(value) => value.pad.text(),
     None => {
-      if let Some(db) = &state.database {
-        StoreDoc::load(db, &id)
-          .await
-          .map(|document| document.text)
-          .unwrap_or_default()
-      } else {
-        String::new()
-      }
+      StoreDoc::load(
+        &state.pool, 
+        &id,
+      )
+      .await
+      .map(|document| document.text)
+      .unwrap_or_default()
     }
   })
 }
@@ -176,12 +164,9 @@ async fn stats_handler(
   State(state): State<ServerState>,
 ) -> Result<impl IntoResponse, StatusCode> {
   let num_documents = state.documents.len();
-  let database_size = match state.database {
-    None => 0,
-    Some(db) => match StoreDoc::count(&db).await {
-      Ok(size) => size,
-      Err(_e) => return Err(StatusCode::INTERNAL_SERVER_ERROR),
-    },
+  let database_size = match StoreDoc::count(&state.pool).await {
+    Ok(size) => size,
+    Err(_e) => return Err(StatusCode::INTERNAL_SERVER_ERROR),
   };
   Ok(Json(Stats {
     start_time: state.start_time,
@@ -201,28 +186,22 @@ async fn save_handler(
   }
   let claim = check.claim.unwrap_or_default();
   let uname = claim.clone().uname;
-
-  match &state.database {
-    Some(db) => {
-      let article = Article::save_doc_to_article(db, &id, &uname)
-        .await
-        .map_err(|_e| StatusCode::BAD_REQUEST)?;
-      
-      return Ok(Json(article));
-    },
-    None => return Err(StatusCode::BAD_REQUEST),
-  }
+  let article = Article::save_doc_to_article(&state.pool, &id, &uname)
+    .await
+    .map_err(|_e| StatusCode::BAD_REQUEST)?;
+  
+  return Ok(Json(article));
 }
 
 const HOUR: Duration = Duration::from_secs(3600);
 
 /// Reclaims memory for documents.
-async fn cleaner(state: ServerState, expiry_days: u32) {
+async fn cleaner(state: ServerState, expiry_hours: u32) {
   loop {
     time::sleep(HOUR).await;
     let mut keys = Vec::new();
     for entry in &*state.documents {
-      if entry.last_accessed.elapsed() > HOUR * 24 * expiry_days {
+      if entry.last_accessed.elapsed() > HOUR * expiry_hours {
         keys.push(entry.key().clone());
       }
     }
