@@ -39,7 +39,7 @@ dashmap = "5.4.0"
 operational-transform = { version = "0.6.0", features = ["serde"] }
 parking_lot = "0.12.1"
 pretty_env_logger = "0.4.0"
-tokio-stream = "0.1.6"
+tokio-stream = "0.1.12"
 # others
 toml = "0.7.2"
 log = "0.4.14"
