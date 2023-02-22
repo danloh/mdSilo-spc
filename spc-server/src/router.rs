@@ -124,6 +124,7 @@ pub async fn router(ctx: AppState) -> Router {
     .route("/static/script.js", get(static_js))
     .route("/static/favicon.svg", get(favicon))
     .route("/static/manifest.json", get(manifest))
+    .nest_service("/static/icon", serve_dir(&CONFIG.icons_path).await)
     .nest_service("/static/avatars", serve_dir(&CONFIG.avatars_path).await)
     .nest_service("/static/upload", serve_dir(&CONFIG.upload_path).await);
 

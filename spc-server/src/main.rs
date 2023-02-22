@@ -61,6 +61,7 @@ async fn main() -> Result<(), AppError> {
   let db_url = &CONFIG.db;
   let ctx = AppState::new(db_url).await.expect("error on new app state");
 
+  prepare_path(&CONFIG.icons_path);
   prepare_path(&CONFIG.avatars_path);
   prepare_path(&CONFIG.upload_path);
 

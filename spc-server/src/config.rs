@@ -77,6 +77,8 @@ pub(crate) struct Config {
   pub(crate) sled: String,
   /// listen address
   pub(crate) addr: String,
+  /// the folder to store static icons
+  pub(crate) icons_path: String,
   /// the folder to store users' avatar images
   pub(crate) avatars_path: String,
   /// the folder to store uploaded files
@@ -93,7 +95,7 @@ pub(crate) struct Config {
   pub(crate) key: String,
   /// default admin username,
   pub(crate) admin_name: String,
-  /// 
+  /// hours to clean up documents after collaboration inactivity.
   pub(crate) expiry_hours: u32,
 }
 
@@ -104,7 +106,8 @@ impl Default for Config {
       db: "./spc.db".into(),
       sled: "spc.sled".into(),
       addr: "127.0.0.1:3001".into(),
-      avatars_path: "./data/imgs/avatars".into(),
+      icons_path: "./data/icons".into(),
+      avatars_path: "./data/avatars".into(),
       upload_path: "./data/upload".into(),
       if_compress_img: true,
       serve_dir: vec![
