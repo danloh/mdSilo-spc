@@ -51,9 +51,9 @@ impl Default for Config {
   fn default() -> Self {
     Config {
       name: "spc".into(),
-      db: "./spc.db".into(),
+      db: "spc.db".into(),
       sled: "spc.sled".into(),
-      addr: "127.0.0.1:3001".into(),
+      addr: "127.0.0.1:8080".into(),
       icons_path: "./data/icons".into(),
       avatars_path: "./data/avatars".into(),
       upload_path: "./data/upload".into(),
@@ -149,7 +149,7 @@ impl Default for SiteConfig {
   fn default() -> Self {
     SiteConfig {
       site_name: CONFIG.name.clone(),
-      domain: "http://127.0.0.1:3001".into(),
+      domain: "http://127.0.0.1:8080".into(),
       slogan: "Subscription, Publishing and Collaboration".into(),
       verification: "".into(),
       landing_page: "# Subscription, Publishing and collaboration \n A self-hosted online writing platform which comes as a single executable with feed subscription, publishing writing and live collaboration and many other features. \n Focus on the Markdown content, be it a blog, a knowledge base, a forum or a combination of them. Good fit for individual or small club. \n ## [Explore Here](/explore) \n\n \n ## [Collaborative Writing](/mdpad/) \n ![](https://images.unsplash.com/photo-1675124516926-a0864dea0abd)".into(),

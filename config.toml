@@ -5,7 +5,7 @@ db = 'spc.db'
 # sled db URI
 sled = 'spc.sled'
 # listen address
-addr = '127.0.0.1:3001'
+addr = '127.0.0.1:8080'
 # upload icons here
 icons_path = './data/icons' 
 # store avatar imgs here

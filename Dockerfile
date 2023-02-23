@@ -27,3 +27,4 @@ COPY --from=frontend /usr/src/app/dist dist
 COPY --from=backend /home/rust/src/target/release/spc .
 USER 1000:1000
 CMD [ "./spc" ]
+EXPOSE 8080

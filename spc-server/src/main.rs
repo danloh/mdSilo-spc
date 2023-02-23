@@ -41,6 +41,7 @@ impl AppState {
 
     // init sled db
     let sled_url = &CONFIG.sled;
+    info!("sled DB URI: {}", sled_url);
     let sled_config = sled::Config::default().path(sled_url).use_compression(true);
     let sled_db = sled_config.open().expect("sled db error");
 
@@ -59,6 +60,7 @@ async fn main() -> Result<(), AppError> {
     .init();
 
   let db_url = &CONFIG.db;
+  info!("sqlite DB uri: {}", db_url);
   let ctx = AppState::new(db_url).await.expect("error on new app state");
 
   prepare_path(&CONFIG.icons_path);
