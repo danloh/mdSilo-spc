@@ -360,16 +360,16 @@ impl From<Feed> for Entry {
 }
 
 impl From<Tag> for Entry {
-  fn from(p: Tag) -> Self {
+  fn from(t: Tag) -> Self {
     Entry {
-      ty: String::from("hashtag"),
-      id: p.id,
-      title: p.tname.clone(),
+      ty: String::from("tag"),
+      id: t.id,
+      title: t.tname.clone(),
       cover: String::from(""),
-      content: p.content,
+      content: t.content,
       uname: String::from(""),
       created_at: 0,
-      link: format!("/tag/{}", p.tname),
+      link: format!("/tag/{}", t.tname),
     }
   }
 }

@@ -22,7 +22,7 @@
     <div class="item-info">
       {{ entry.content|safe }}
     </div>
-    {%- else if entry.ty == "hashtag" -%}
+    {%- else if entry.ty == "tag" -%}
     <a href="{{entry.link}}">
      <div class="item-info">#{{ entry.title }}</div>
     </a>

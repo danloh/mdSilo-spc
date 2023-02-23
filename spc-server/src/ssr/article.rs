@@ -408,7 +408,7 @@ pub(crate) async fn explore_page(
       posts.sort_by(|a, b| b.created_at.cmp(&a.created_at));
       posts
     }
-    "hashtags" => {
+    "tags" => {
       let tag_list = Tag::get_list(&ctx, &ord, perpage, page).await?;
       tag_list.into_iter().map(|t| t.into()).collect()
     }

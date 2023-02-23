@@ -7,7 +7,7 @@
     {%- include "piece_form.html" -%}
     {%- endif -%}
     <div class="tab-bar">
-      {%- let tabs = [String::from("posts"), String::from("hashtags"), String::from("feeds")] -%}
+      {%- let tabs = [String::from("posts"), String::from("tags"), String::from("feeds")] -%}
       {% for t in tabs %}
       {%- if t == tab -%}
       <a href="/explore?tab={{t}}" class="tab-tag">
