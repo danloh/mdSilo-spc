@@ -1,5 +1,5 @@
-//! ## Utility helpers. 
-//! can be used in spc-server and spc-wasm. 
+//! ## Process Markdown
+//! render Markdown(with latex) to HTML, pre-process math block or inline math
 
 use std::collections::BTreeSet;
 use regex::Regex;
@@ -339,3 +339,4 @@ mod tests {
     );
   }
 }
+

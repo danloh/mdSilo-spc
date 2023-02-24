@@ -10,7 +10,6 @@ use crate::db::sled::{
 };
 use crate::db::user::{EIDT_PERMIT, MOD_PERMIT};
 use crate::error::SsrError;
-use crate::util::md::md2html;
 use crate::{
   db::{
     article::{Article, Entry, Piece, QueryArticles, QueryPieces},
@@ -18,7 +17,7 @@ use crate::{
     user::{ClaimCan, CREATE_PERMIT, READ_PERMIT},
   },
   error::AppError,
-  util::helper::{capture_element, extract_element},
+  util::md::{capture_element, extract_element, md2html},
   AppState as Ctx,
 };
 use askama::Template;

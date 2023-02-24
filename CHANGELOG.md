@@ -6,7 +6,7 @@
 
 - [X] Subscrible feed, support RSS and Atom 
 - [X] Publish article, support Augmented Markdown 
-- [X] Live Collaborative writing and preview 
+- [X] Live Collaborative writing: server end 
 
 ### Features
 
@@ -26,5 +26,4 @@
 
 
 #### Collaboration
-  - [X] Live collaboration 
-  - [X] Preview markdown and ABC Music notes 
+  - [X] Live collaboration server end(WebSocket)

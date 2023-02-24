@@ -3,8 +3,6 @@
 use once_cell::sync::Lazy;
 use regex::Regex;
 
-pub use spc_util::{extract_element, capture_element};
-
 // let fail in test
 static RE_HTTP: Lazy<Regex> = Lazy::new(|| Regex::new(r"https?://").unwrap()); 
 static RE_PATH: Lazy<Regex> = Lazy::new(|| Regex::new(r"/.*").unwrap());
