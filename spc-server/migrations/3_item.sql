@@ -18,6 +18,13 @@ CREATE TABLE item_attr (
   PRIMARY KEY (item_id, attr_key)
 );
 
+CREATE TABLE item_in (
+  item_id INTEGER NOT NULL,
+  in_ty VARCHAR NOT NULL, -- item, article...
+  in_id INTEGER NOT NULL,
+  UNIQUE(item_id, in_ty, in_id)
+);
+
 CREATE TABLE daysums (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   intro VARCHAR NOT NULL,
