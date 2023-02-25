@@ -28,8 +28,8 @@ export default function Preview({ text, darkMode }: PreviewProps) {
   }, [text, preMode]);
 
   return (
-    <Stack p={3}>
-      <Flex justifyContent="flex-start" m={1} w="full">
+    <Stack p={1}>
+      <Flex justifyContent="flex-start" w="full">
         <Heading size="xs" mx={2}>Preview</Heading>
         <Switch isChecked={!preMode} onChange={handleMode} />
         <Heading size="xs" mx={2}>MindMap</Heading>
