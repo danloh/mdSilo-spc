@@ -172,7 +172,7 @@ impl Article {
       return Err(AppError::NotFound);
     }
 
-    Ok(format!("/mdpad#{doc_id}"))
+    Ok(format!("/pad#{doc_id}"))
   }
 
   /// save the collaborative editing result to article. 

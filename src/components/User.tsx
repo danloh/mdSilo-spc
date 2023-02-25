@@ -18,7 +18,7 @@ import {
 import { useRef } from "react";
 import { FaPalette } from "react-icons/fa";
 import { VscAccount } from "react-icons/vsc";
-import { UserInfo } from "./lib/mdpad";
+import { UserInfo } from "../lib/mdpad";
 
 type UserProps = {
   info: UserInfo;

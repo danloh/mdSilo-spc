@@ -77,7 +77,7 @@ type ScoreProps = {
   darkMode: boolean;
 };
 
-function Score({ notes, darkMode }: ScoreProps) {
+export default function Score({ notes, darkMode }: ScoreProps) {
   const ref = useRef<any>(null);
   if (ref.current === null) {
     const id = nanoid();
@@ -126,7 +126,7 @@ function Score({ notes, darkMode }: ScoreProps) {
           console.warn("Audio problem:", error);
         });
     } catch (error) {
-      console.warn("Error when running Abcjs:", error);
+      console.warn("Error on Abcjs:", error);
     }
   }, [notes]);
 
@@ -143,5 +143,3 @@ function Score({ notes, darkMode }: ScoreProps) {
     </Stack>
   );
 }
-
-export default Score;

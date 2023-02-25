@@ -21,6 +21,7 @@ import {
   VscChevronRight,
   VscFolderOpened,
   VscGist,
+  VscMenu,
   VscRepoPull,
   VscSave,
 } from "react-icons/vsc";
@@ -32,15 +33,16 @@ import Split from "react-split";
 import padRaw from "../spc-server/src/pad/mdpad.rs?raw";
 import sample from "../README.md?raw";
 import languages from "./lib/languages.json";
-import animals from "./lib/animals.json";
+import names from "./lib/bands.json";
 import Pad, { UserInfo } from "./lib/mdpad";
 import useHash from "./useHash";
-import ConnectionStatus from "./ConnectionStatus";
-import Footer from "./Footer";
-import User from "./User";
-import Preview from "./Preview";
-import Score from "./Score";
-import "./split.css";
+import ConnectionStatus from "./components/ConnectionStatus";
+import Footer from "./components/Footer";
+import User from "./components/User";
+import Preview from "./components/Preview";
+import Score from "./components/Score";
+import Mermaid from "./components/Mermaid";
+import Echarts from "./components/Echarts";
 
 function getWsUri(id: string) {
   return (
@@ -51,14 +53,14 @@ function getWsUri(id: string) {
 }
 
 function generateName() {
-  return "Anonymous " + animals[Math.floor(Math.random() * animals.length)];
+  return names[Math.floor(Math.random() * names.length)];
 }
 
 function generateHue() {
   return Math.floor(Math.random() * 360);
 }
 
-function App() {
+export default function App() {
   const toast = useToast();
   const [language, setLanguage] = useState("markdown");
   const [connection, setConnection] = useState<
@@ -165,6 +167,11 @@ function App() {
     }
   }
 
+  const [hideSide, setHideSide] = useState(false);
+  function handleHideSide() {
+    setHideSide(!hideSide);
+  }
+
   function handleDarkMode() {
     setDarkMode(!darkMode);
   }
@@ -201,16 +208,33 @@ function App() {
       bgColor={darkMode ? "#1e1e1e" : "white"}
       color={darkMode ? "#cbcaca" : "inherit"}
     >
-      <Box
-        flexShrink={0}
-        bgColor={darkMode ? "#333333" : "#e8e8e8"}
-        color={darkMode ? "#cccccc" : "#383838"}
-        textAlign="center"
-        fontSize="sm"
-        py={0.5}
+      <Flex
+        direction="row"
+        w="100%"
+        overflow="hidden"
+        placeContent="center space-between"
+        bgColor={darkMode ? "#575759" : "gray.200"}
       >
-        mdpad | Collaborative Text Editor
-      </Box>
+        <Button
+          size="xs"
+          mx={1}
+          bgColor={darkMode ? "#575759" : "gray.200"}
+          _hover={{ bg: darkMode ? "#575759" : "gray.200" }}
+          onClick={handleHideSide}
+        >
+          <VscMenu />
+        </Button>
+        <Box
+          flexShrink={0}
+          color={darkMode ? "#cccccc" : "#383838"}
+          textAlign="center"
+          fontSize="sm"
+          px={2}
+        >
+          A Drop-in Collaborative Text Editor
+        </Box>
+        <ConnectionStatus darkMode={darkMode} connection={connection} />
+      </Flex>
       <Flex 
         flex="1 0" 
         h="100%"
@@ -219,6 +243,7 @@ function App() {
         wrap="wrap-reverse" 
         overflow="auto"
       >
+        {!hideSide ? (
         <Container
           w="xs"
           h="100%"
@@ -232,22 +257,22 @@ function App() {
             <Heading size="sm">Dark Mode</Heading>
             <Switch isChecked={darkMode} onChange={handleDarkMode} />
           </Flex>
-          <Heading mt={4} mb={1.5} size="sm">
-            Language
-          </Heading>
-          <Select
-            size="sm"
-            bgColor={darkMode ? "#3c3c3c" : "white"}
-            borderColor={darkMode ? "#3c3c3c" : "white"}
-            value={language}
-            onChange={(event) => handleChangeLanguage(event.target.value)}
-          >
-            {languages.map((lang) => (
-              <option key={lang} value={lang} style={{ color: "black" }}>
-                {lang}
-              </option>
-            ))}
-          </Select>
+          <Flex placeContent="center space-between" mt={4} mb={1.5} w="full">
+            <Heading my={2} mr={2} size="sm">Language</Heading>
+            <Select
+              size="sm"
+              bgColor={darkMode ? "#3c3c3c" : "white"}
+              borderColor={darkMode ? "#3c3c3c" : "white"}
+              value={language}
+              onChange={(event) => handleChangeLanguage(event.target.value)}
+            >
+              {languages.map((lang) => (
+                <option key={lang} value={lang} style={{ color: "black" }}>
+                  {lang}
+                </option>
+              ))}
+            </Select>
+          </Flex>
           <Button
             size="sm"
             colorScheme={darkMode ? "whiteAlpha" : "blackAlpha"}
@@ -285,9 +310,6 @@ function App() {
               </Button>
             </InputRightElement>
           </InputGroup>
-          <Text fontSize="sm" my={1.5}>
-            Share the link for live collaboration.
-          </Text>
           <Heading mt={4} mb={1.5} size="sm">
             Active Users
           </Heading>
@@ -315,7 +337,7 @@ function App() {
           >
             Load an example
           </Button>
-        </Container>
+        </Container>) : null}
         <Flex flex={1} h="100%" minH="100%" direction="column" overflow="auto">
           <HStack
             h={6}
@@ -332,7 +354,7 @@ function App() {
             <Icon as={VscGist} fontSize="md" color="purple.500" />
             <Text>{id}</Text>
           </HStack>
-          {language === "markdown" || language === "abcjs" ? (
+          {["markdown", "abcjs", "mermaid", "echarts"].includes(language) ? (
             <Box flex={1} minH={0} h="100%" >
               <Split className="split" minSize={50}>
                 <Box>
@@ -355,8 +377,12 @@ function App() {
                 <Box overflow="auto">
                   {language === "markdown" ? (
                     <Preview text={mdString} darkMode={darkMode} />
-                  ) : (
+                  ) : language === "abcjs" ? (
                     <Score notes={mdString} darkMode={darkMode} />
+                  ) : language === "echarts" ? (
+                    <Echarts key={mdString.length} text={mdString} darkMode={darkMode} />
+                  ) : (
+                    <Mermaid key={mdString.length} text={mdString} darkMode={darkMode} />
                   )}
                 </Box>
               </Split>
@@ -381,5 +407,3 @@ function App() {
     </Flex>
   );
 }
-
-export default App;

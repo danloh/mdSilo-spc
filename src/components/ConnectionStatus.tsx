@@ -1,14 +1,14 @@
 import { HStack, Icon, Text } from "@chakra-ui/react";
 import { VscCircleFilled } from "react-icons/vsc";
 
-type ConnectionStatusProps = {
+type StatusProps = {
   connection: "connected" | "disconnected" | "desynchronized";
   darkMode: boolean;
 };
 
-function ConnectionStatus({ connection, darkMode }: ConnectionStatusProps) {
+export default function ConnectionStatus({ connection, darkMode }: StatusProps) {
   return (
-    <HStack spacing={1}>
+    <HStack spacing={1} mr={6}>
       <Icon
         as={VscCircleFilled}
         color={
@@ -26,7 +26,7 @@ function ConnectionStatus({ connection, darkMode }: ConnectionStatusProps) {
       >
         {
           {
-            connected: "You are connected!",
+            connected: "Connected!",
             disconnected: "Connecting to the server...",
             desynchronized: "Disconnected, please refresh.",
           }[connection]
@@ -35,5 +35,3 @@ function ConnectionStatus({ connection, darkMode }: ConnectionStatusProps) {
     </HStack>
   );
 }
-
-export default ConnectionStatus;

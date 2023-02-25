@@ -9,6 +9,19 @@ use syntect::{
   highlighting::ThemeSet, html::highlighted_html_for_string, parsing::SyntaxSet,
 };
 
+/// generate a new id with expiration time that is hex encoded.
+/// format: "hex-timestamp_id"
+pub fn gen_expirable_id(seconds: i64, key: &str) -> String {
+  // let id = nanoid!();
+  let exp = chrono::Utc::now().timestamp() + seconds;
+  format!("{exp:x}_{key}")
+}
+
+/// get current timestamp(UTC)
+pub fn get_utc_now() -> i64 {
+  chrono::Utc::now().timestamp()
+}
+
 /// extract element from string.
 /// re: regex
 /// pat: char to split the extracted;
