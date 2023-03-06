@@ -53,7 +53,7 @@ thiserror = "1"
 # base
 tokio = { version = "1", features = ["full", "test-util"] }
 tower = { version = "0.4", features = ["timeout"] }
-tower-http = { version = "0.3", features = ["fs", "compression-gzip", "trace"] } # serve dir
+tower-http = { version = "0.4", features = ["fs", "compression-gzip", "trace"] } # serve dir
 tracing = { version = "0.1", features = ["release_max_level_info", "max_level_info"] }
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 
