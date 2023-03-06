@@ -7,10 +7,10 @@ use axum::{
   extract::State,
   headers::HeaderName,
   http::{HeaderMap, HeaderValue, StatusCode},
-  response::{IntoResponse, Redirect, Response},
+  response::{IntoResponse, Response},
   routing::{get_service, MethodRouter},
 };
-use tower_http::services::ServeDir;
+use tower_http::services::{ServeDir, ServeFile};
 
 use crate::{
   config::{get_site_config, CSS, JS, FAVICON, MANIFEST},
@@ -73,9 +73,10 @@ pub(crate) async fn health_check() -> Response<BoxBody> {
 
 /// serve static directory
 pub(crate) async fn serve_dir(dir: &str) -> MethodRouter {
-  let fallback = tower::service_fn(|_| async {
-    Ok::<_, std::io::Error>(Redirect::to("/signin").into_response())
-  });
+  // let fallback = tower::service_fn(|_| async {
+  //   Ok::<_, std::io::Error>(Redirect::to("/signin").into_response())
+  // });
+  let fallback = get_service(ServeFile::new(format!("{dir}/index.html")));
   let srv = get_service(ServeDir::new(dir).precompressed_gzip().fallback(fallback));
   srv.handle_error(|error: std::io::Error| async move {
     (

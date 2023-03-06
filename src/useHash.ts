@@ -18,6 +18,14 @@ function getExpire() {
   return 3600 * 24;
 }
 
+export function genHashId() {
+  let id = "";
+  for (let i = 0; i < idLen; i++) {
+    id += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return gen_id(BigInt(getExpire()), id);
+}
+
 function getHash() {
   if (!window.location.hash) {
     let id = "";
