@@ -31,16 +31,16 @@ import Editor from "@monaco-editor/react";
 import { editor } from "monaco-editor/esm/vs/editor/editor.api";
 import Split from "react-split";
 import sample from "../../README.md?raw";
-import languages from "../collaboration/lib/languages.json";
-import names from "../collaboration/lib/bands.json";
-import Pad, { UserInfo } from "../collaboration/lib/mdpad";
-import ConnectionStatus from "../collaboration/ConnectionStatus";
-import Footer from "../collaboration/Footer";
-import User from "../collaboration/User";
-import Preview from "../collaboration/Preview";
-import Score from "../collaboration/Score";
-import Mermaid from "../collaboration/Mermaid";
-import Echarts from "../collaboration/Echarts";
+import languages from "./lib/languages.json";
+import names from "./lib/bands.json";
+import Pad, { UserInfo } from "./lib/mdpad";
+import ConnectionStatus from "./ConnectionStatus";
+import Footer from "./Footer";
+import User from "./User";
+import Preview from "./Preview";
+import Score from "./Score";
+import Mermaid from "./Mermaid";
+import Echarts from "./Echarts";
 import { useParams } from "react-router-dom";
 
 function getWsUri(id: string) {
