@@ -8,7 +8,7 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/pad" element={<LandingPage />} />
-        <Route path="/pad/app" element={<SiloPage />} />
+        {/* <Route path="/pad/app" element={<SiloPage />} /> */}
         <Route path="/pad/:id" element={<CollaborationPage />} />
       </Routes>
     </BrowserRouter>
