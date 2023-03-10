@@ -59,7 +59,7 @@ impl Default for Config {
       upload_path: "./data/upload".into(),
       if_compress_img: true,
       serve_dir: vec![
-        ("pad".into(), "./dist".into()), // collaborative editor: index.html
+        ("app".into(), "./dist".into()), // collaborative editor: index.html
         ("assets".into(), "./dist/assets".into()), // collaborative editor: js/css/wasm
       ],
       secret_key: "pL3AsG1v3AharDk3y".into(),

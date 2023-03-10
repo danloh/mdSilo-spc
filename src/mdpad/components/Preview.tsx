@@ -4,7 +4,7 @@ import { preview_md } from "spc-wasm";
 
 import { Transformer } from 'markmap-lib';
 import { Markmap } from 'markmap-view/dist/index.esm';
-import * as markdown from "../../spc-server/static/css/styles.css";
+import * as markdown from "../../../spc-server/static/css/styles.css";
 
 type PreviewProps = {
   text: string;

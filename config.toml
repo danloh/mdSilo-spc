@@ -13,7 +13,7 @@ avatars_path = './data/avatars'
 # upload folder
 upload_path = './data/upload' 
 # serve static folder, like SPA assets
-serve_dir = [["pad", "./dist"], ["assets", "./dist/assets"]]
+serve_dir = [["app", "./dist"], ["assets", "./dist/assets"]]
 # for JWT
 secret_key = "pL3AsG1v3AharDk3y"
 # to enable https
