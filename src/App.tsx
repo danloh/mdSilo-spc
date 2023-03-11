@@ -1,14 +1,20 @@
+import { Suspense, lazy } from 'react';
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import EditorPage from "./mdpad/PadPage";
-import LandingPage from "./pages/LandingPage";
+
+const PadPage = lazy(() => import('./mdpad/PadPage'));
+const EditorPage = lazy(() => import('./mdpad/EditorPage'));
+const LandingPage = lazy(() => import('./pages/LandingPage'));
 
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/app" element={<LandingPage />} />
-        <Route path="/app/pad" element={<EditorPage />} />
-      </Routes>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Routes>
+          <Route path="/app" element={<LandingPage />} />
+          <Route path="/app/editor" element={<EditorPage />} />
+          <Route path="/app/pad" element={<PadPage />} />
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }

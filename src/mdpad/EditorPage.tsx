@@ -21,22 +21,20 @@ import {
   VscFolderOpened,
   VscGist,
   VscMenu,
-  VscRepoPull,
   VscSave,
 } from "react-icons/vsc";
 import useStorage from "use-local-storage-state";
 import { useDebounce } from "use-debounce";
+import Editor from "@monaco-editor/react";
 import { editor } from "monaco-editor/esm/vs/editor/editor.api";
-import padRaw from "../../spc-server/src/pad/mdpad.rs?raw";
-import sample from "../../README.md?raw";
-import languages from "./lib/languages.json";
+import Split from "react-split";
 import names from "./lib/bands.json";
 import Pad, { UserInfo } from "./lib/mdpad";
 import useHash from "../useHash";
 import ConnectionStatus from "./components/ConnectionStatus";
 import Footer from "./components/Footer";
 import User from "./components/User";
-import SplitEditor from "./SplitEditor";
+import Preview from "./components/Preview";
 
 function getWsUri(id: string) {
   return (
@@ -56,7 +54,7 @@ function generateHue() {
 
 export default function App() {
   const toast = useToast();
-  const [language, setLanguage] = useState("markdown");
+  const language = "markdown";
   const [connection, setConnection] = useState<
     "connected" | "disconnected" | "desynchronized"
   >("disconnected");
@@ -87,11 +85,7 @@ export default function App() {
             duration: null,
           });
         },
-        onChangeLanguage: (language) => {
-          if (languages.includes(language)) {
-            setLanguage(language);
-          }
-        },
+        
         onChangeUsers: setUsers,
       });
       return () => {
@@ -107,27 +101,6 @@ export default function App() {
     }
   }, [connection, name, hue]);
 
-  function handleChangeLanguage(language: string) {
-    setLanguage(language);
-    if (pad.current?.setLanguage(language)) {
-      toast({
-        title: "Language updated",
-        description: (
-          <>
-            All users are now editing in{" "}
-            <Text as="span" fontWeight="semibold">
-              {language}
-            </Text>
-            .
-          </>
-        ),
-        status: "info",
-        duration: 2000,
-        isClosable: true,
-      });
-    }
-  }
-
   async function handleCopy() {
     await navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}#${id}`);
     toast({
@@ -137,28 +110,6 @@ export default function App() {
       duration: 2000,
       isClosable: true,
     });
-  }
-
-  function handleLoadSample() {
-    const samples = [sample, padRaw];
-    const idx = Math.floor(Math.random() * samples.length);
-
-    if (editor?.getModel()) {
-      const model = editor.getModel()!;
-      model.pushEditOperations(
-        editor.getSelections(),
-        [
-          {
-            range: model.getFullModelRange(),
-            text: samples[idx],
-          },
-        ],
-        () => null
-      );
-      editor.setPosition({ column: 0, lineNumber: 0 });
-      const lang = idx === 0 ? "markdown" : "rust";
-      handleChangeLanguage(lang);
-    }
   }
 
   const [hideSide, setHideSide] = useState(false);
@@ -251,22 +202,6 @@ export default function App() {
             <Heading size="sm">Dark Mode</Heading>
             <Switch isChecked={darkMode} onChange={handleDarkMode} />
           </Flex>
-          <Flex placeContent="center space-between" mt={4} mb={1.5} w="full">
-            <Heading my={2} mr={2} size="sm">Language</Heading>
-            <Select
-              size="sm"
-              bgColor={darkMode ? "#3c3c3c" : "white"}
-              borderColor={darkMode ? "#3c3c3c" : "white"}
-              value={language}
-              onChange={(event) => handleChangeLanguage(event.target.value)}
-            >
-              {languages.map((lang) => (
-                <option key={lang} value={lang} style={{ color: "black" }}>
-                  {lang}
-                </option>
-              ))}
-            </Select>
-          </Flex>
           <Button
             size="sm"
             colorScheme={darkMode ? "whiteAlpha" : "blackAlpha"}
@@ -319,18 +254,6 @@ export default function App() {
               <User key={id} info={info} darkMode={darkMode} />
             ))}
           </Stack>
-          <Button
-            size="sm"
-            colorScheme={darkMode ? "whiteAlpha" : "blackAlpha"}
-            borderColor={darkMode ? "purple.400" : "purple.600"}
-            color={darkMode ? "purple.400" : "purple.600"}
-            variant="outline"
-            leftIcon={<VscRepoPull />}
-            mt={1}
-            onClick={handleLoadSample}
-          >
-            Load an example
-          </Button>
         </Container>) : null}
         <Flex flex={1} h="100%" minH="100%" direction="column" overflow="auto">
           <HStack
@@ -348,13 +271,30 @@ export default function App() {
             <Icon as={VscGist} fontSize="md" color="purple.500" />
             <Text>{id}</Text>
           </HStack>
-          <SplitEditor 
-            language={language}
-            mdString={mdString}
-            darkMode={darkMode}
-            setText={setText}
-            setEditor={setEditor}
-          />
+            <Box flex={1} minH={0} h="100%" >
+              <Split className="split" minSize={50}>
+                <Box>
+                  <Editor
+                    theme={darkMode ? "vs-dark" : "vs"}
+                    language={language}
+                    options={{
+                      automaticLayout: true,
+                      fontSize: 14,
+                      wordWrap: "on",
+                    }}
+                    onMount={(editor) => setEditor(editor)}
+                    onChange={(text) => {
+                      if (text !== undefined) {
+                        setText(text);
+                      }
+                    }}
+                  />
+                </Box>
+                <Box overflow="auto">
+                  <Preview text={mdString} darkMode={darkMode} />
+                </Box>
+              </Split>
+            </Box>
         </Flex>
       </Flex>
       <Footer />

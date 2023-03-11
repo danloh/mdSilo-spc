@@ -203,7 +203,7 @@ pub(crate) async fn article_view(
   }
 
   let content = md2html(&content);
-  let page_title = format!("Article: {}", article.title);
+  let page_title = format!("{}", article.title);
 
   let article_view = Article { content, ..article };
 
