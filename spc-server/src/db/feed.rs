@@ -1,11 +1,12 @@
 //! models for feed
 
 use chrono::Utc;
+use serde::{Serialize, Deserialize};
 use sqlx::FromRow;
 
 use crate::{error::AppError, util::feed::process_feed, AppState};
 
-#[derive(FromRow, Debug, Clone, Default)]
+#[derive(FromRow, Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Channel {
   pub title: String,
   pub link: String,
@@ -144,7 +145,7 @@ impl Channel {
   }
 }
 
-#[derive(FromRow, Debug, Default)]
+#[derive(FromRow, Debug, Default, Serialize, Deserialize)]
 pub struct Feed {
   pub id: u32,
   pub title: String,

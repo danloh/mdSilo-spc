@@ -3,6 +3,7 @@
 use crate::{
   config::CONFIG,
   pad::{ws_server, WsConfig},
+  api::{feed::fetch_feed},
   ssr::{
     admin::{mod_user, save_site_config, site_config_view, user_list_page},
     article::{
@@ -67,7 +68,11 @@ pub async fn router(ctx: AppState) -> Router {
 
   let ws_route = ws_server(ws_config).await;
 
-  let router_db = Router::new()
+  let router_api = Router::new()
+    .route("/api/fetch_feed/:url", get(fetch_feed))
+    .with_state(ctx.clone());
+
+  let router_ssr = Router::new()
     .route("/", get(home_page))
     .route("/explore", get(explore_page))
     .route("/about", get(about_page))
@@ -134,6 +139,6 @@ pub async fn router(ctx: AppState) -> Router {
     router_static = router_static.nest_service(&path, serve_dir(dir).await);
   }
 
-  let app = router_static.merge(router_db).merge(ws_route);
+  let app = router_static.merge(router_ssr).merge(ws_route).merge(router_api);
   app.layer(middleware_stack).fallback(handler_404)
 }
