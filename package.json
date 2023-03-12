@@ -30,7 +30,7 @@
     "react-router-dom": "^6.9.0",
     "react-split": "^2.0.14",
     "spc-wasm": "file:./spc-wasm/pkg",
-    "use-debounce": "^7.0.1",
+    "use-debounce": "^9.0.3",
     "use-local-storage-state": "^13.0.0",
     "zustand": "^3.7.2"
   },
