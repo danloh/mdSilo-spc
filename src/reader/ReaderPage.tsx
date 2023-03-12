@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Box, Flex } from '@chakra-ui/react';
 import { store, useStore } from '../lib/store';
 import { ArticleType, ChannelType } from './types';
 import ErrorBoundary from '../misc/ErrorBoundary';
@@ -143,8 +144,8 @@ export default function Feed() {
 
   return (
     <ErrorBoundary>
-      <div className="flex flex-row overflow-y-auto h-full">
-        <div className={`w-48 p-1 border-r-2 border-gray-200 dark:border-gray-800 overflow-y-auto ${hideCol ? 'hidden' : ''}`}>
+      <Flex direction="row" h="100vh" overflow="auto" m={2}>
+        <Box w={64} h="full" p={1} borderRight={"solid"} overflow="auto">
           <ChannelList 
             channelList={channelList} 
             refreshList={refreshList} 
@@ -154,18 +155,18 @@ export default function Feed() {
             refreshing={refreshing}
             doneNum={doneNum}
           />
-        </div>
+        </Box>
         {showManager ? (
-          <div className="flex-1 m-1 p-2 overflow-y-auto">
+          <Box flex={1} className="flex-1 m-1 p-2 overflow-y-auto">
             <FeedManager 
               channelList={channelList} 
               handleAddFeed={handleAddFeed}
               handleDelete={handleDeleteFeed}
             />
-          </div>
+          </Box>
         ) : (
           <>
-            <div className={`w-72 p-1 overflow-y-auto ${isHideChannel ? 'hidden' : ''}`}>
+            <Box className={`w-72 p-1 overflow-y-auto ${isHideChannel ? 'hidden' : ''}`}>
               <Channel 
                 channel={currentChannel} 
                 starChannel={starChannel} 
@@ -176,17 +177,17 @@ export default function Feed() {
                 loading={loading}
                 syncing={syncing}
               />
-            </div>
-            <div className="flex-1 overflow-y-auto border-l-2 border-gray-200 dark:border-gray-800">
+            </Box>
+            <Box className="flex-1 overflow-y-auto border-l-2 border-gray-200 dark:border-gray-800">
               <ArticleView 
                 article={currentArticle || storeArticle} 
                 starArticle={updateStarStatus} 
                 hideChannelCol={hideChannelCol}
               />
-            </div>
+            </Box>
           </>
         )}
-      </div>
+      </Flex>
     </ErrorBoundary>
   );
 }

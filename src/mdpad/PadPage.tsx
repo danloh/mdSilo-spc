@@ -251,7 +251,7 @@ export default function App() {
             <Heading size="sm">Dark Mode</Heading>
             <Switch isChecked={darkMode} onChange={handleDarkMode} />
           </Flex>
-          <Flex placeContent="center space-between" mt={4} mb={1.5} w="full">
+          <HStack mt={4} mb={1.5} w="full">
             <Heading my={2} mr={2} size="sm">Language</Heading>
             <Select
               size="sm"
@@ -266,7 +266,7 @@ export default function App() {
                 </option>
               ))}
             </Select>
-          </Flex>
+          </HStack>
           <Button
             size="sm"
             colorScheme={darkMode ? "whiteAlpha" : "blackAlpha"}

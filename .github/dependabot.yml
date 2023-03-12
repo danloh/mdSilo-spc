@@ -5,12 +5,20 @@
 
 version: 2
 updates:
-  - package-ecosystem: "cargo"
-    directory: "/"
+  - package-ecosystem: 'npm'
+    directory: '/'
     schedule:
-      interval: "weekly"
+      interval: 'monthly'
+    rebase-strategy: 'disabled'
+    open-pull-requests-limit: 20
 
-# https://docs.github.com/en/code-security/dependabot/working-with-dependabot/keeping-your-actions-up-to-date-with-dependabot#example-dependabotyml-file-for-github-actions=
+  - package-ecosystem: 'cargo'
+    directory: '/'
+    schedule:
+      interval: 'monthly'
+    rebase-strategy: 'disabled'
+    open-pull-requests-limit: 20 
+
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:

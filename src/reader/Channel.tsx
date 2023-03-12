@@ -1,10 +1,8 @@
-import React, { memo, useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
+import { Flex, Text, Spinner, Tooltip, Box } from "@chakra-ui/react";
 import { IconCircle, IconCircleCheck, IconRefresh } from "@tabler/icons-react";
-import Tooltip from "../misc/Tooltip";
-import Spinner from "../misc/Spinner";
 import { fmtDatetime, dateCompare } from '../utils';
 import { ArticleType, ChannelType } from "./types";
-
 
 type Props = {
   channel: ChannelType | null;
@@ -31,30 +29,30 @@ export function Channel(props: Props) {
   }
 
   return (
-    <div className="flex flex-col items-between justify-center">
-      <div className="flex flex-row items-center justify-between p-2 bg-slate-500 rounded">
-        <div className="font-bold">{channel?.title || (starChannel ? 'Starred' : '')}</div>
+    <Flex className="flex flex-col items-between justify-center">
+      <Flex className="flex flex-row items-center justify-between p-2 bg-slate-500 rounded">
+        <Text className="font-bold">{channel?.title || (starChannel ? 'Starred' : '')}</Text>
         {(channel) && (
-          <div className="flex flex-row items-center justify-end">
-            <Tooltip content="Mark All Read" placement="bottom">
+          <Flex className="flex flex-row items-center justify-end">
+            <Tooltip label="Mark All Read" placement="bottom">
               <button className="" onClick={async () => await updateAllReadStatus(channel.link, 1)}>
                 <IconCircleCheck size={18} className="m-1 dark:text-white" />
               </button>
             </Tooltip>
-            <Tooltip content="Refresh Channel" placement="bottom">
+            <Tooltip label="Refresh Channel" placement="bottom">
               <button className="" onClick={handleRefresh}>
                 <IconRefresh size={18} className="m-1 dark:text-white" />
               </button>
             </Tooltip>
-          </div>
+          </Flex>
         )}
-      </div>
-      {syncing && <div className="flex items-center justify-center"><Spinner className="w-4 h-4" /></div>}
+      </Flex>
+      {syncing && <Spinner className="w-4 h-4" />}
       <ArticleList
         articles={articles}
         onClickArticle={onClickArticle}
       />
-    </div>
+    </Flex>
   );
 }
 
@@ -84,7 +82,7 @@ function ArticleList(props: ListProps) {
   // console.log("sorted: ", sortedArticles)
 
   return (
-    <div className="">
+    <Box className="">
       {sortedArticles.map((article: ArticleType, idx: number) => {
         return (
           <ArticleItem
@@ -95,7 +93,7 @@ function ArticleList(props: ListProps) {
           />
         )}
       )}
-    </div>
+    </Box>
   );
 }
 
@@ -121,20 +119,20 @@ const ArticleItem = memo(function ArticleItm(props: ItemProps) {
   const itemClass = `cursor-pointer flex flex-col items-start justify-center my-1 hover:bg-gray-200 dark:hover:bg-gray-800 ${highlight ? 'bg-blue-200 dark:bg-blue-800' : ''}`;
 
   return (
-    <div
+    <Flex
       className={itemClass}
       onClick={handleClick}
       aria-hidden="true"
     >
-      <div className="flex flex-row items-center justify-start">
+      <Flex className="flex flex-row items-center justify-start">
         {(readStatus === 0) && <IconCircle className="w-2 h-2 m-1 text-blue-500 fill-blue-500" />}
         <div className="flex-1 font-bold m-1 dark:text-white">{article.title}</div>
-      </div>
-      <div className="flex flex-row items-center justify-center">
-        <span className="m-1 pl-2 text-sm dark:text-slate-400">
+      </Flex>
+      <Box className="flex flex-row items-center justify-center">
+        <Text className="m-1 pl-2 text-sm dark:text-slate-400">
           {fmtDatetime(article.published || '')}
-        </span>
-      </div>
-    </div>
+        </Text>
+      </Box>
+    </Flex>
   );
 });

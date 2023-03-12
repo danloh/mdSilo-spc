@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { Box, Tooltip } from "@chakra-ui/react";
 import { IconChevronLeft, IconHeadphones, IconLink, IconStar } from "@tabler/icons-react";
 import { useStore } from "../lib/store";
 import { getFavicon, fmtDatetime } from "../utils";
 import { ArticleType } from "./types";
-import Tooltip from "../misc/Tooltip";
 
 type ViewProps = {
   article: ArticleType | null;
@@ -42,14 +42,14 @@ export function ArticleView(props: ViewProps) {
   const ico = getFavicon(url);
 
   return (
-    <div className="h-full ">
+    <Box className="h-full ">
       <div className="px-2 mb-1">
         <div className="m-1 text-3xl font-bold dark:text-white">{title}</div>
         <div className="flex items-center justify-start">
           <span className="mr-2 my-1 cursor-pointer" onClick={hideChannelCol}>
             <IconChevronLeft size={20} className="dark:text-slate-400" />
           </span>
-          <Tooltip content={feed_link} placement="top">
+          <Tooltip label={feed_link} placement="top">
             <span className="h-4 w-4 m-1"><img src={ico} alt="#"/></span>
           </Tooltip>
           <span className="m-1 dark:text-slate-400">{fmtDatetime(published || '')}</span>
@@ -90,6 +90,6 @@ export function ArticleView(props: ViewProps) {
           dangerouslySetInnerHTML={{__html: pageContent}}
         />
       </div>
-    </div>
+    </Box>
   );
 }

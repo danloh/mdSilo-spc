@@ -74,13 +74,7 @@ pub(crate) async fn health_check() -> Response<BoxBody> {
 /// serve static directory
 pub(crate) async fn serve_dir(dir: &str) -> MethodRouter {
   let fallback = get_service(ServeFile::new(format!("{dir}/index.html")));
-  let srv = get_service(ServeDir::new(dir).precompressed_gzip().fallback(fallback));
-  srv.handle_error(|error: std::io::Error| async move {
-    (
-      StatusCode::INTERNAL_SERVER_ERROR,
-      format!("Unhandled internal error: {error}"),
-    )
-  })
+  get_service(ServeDir::new(dir).precompressed_gzip().fallback(fallback))
 }
 
 /// serve style css file
