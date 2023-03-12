@@ -17,7 +17,7 @@
     "abcjs": "^6.1.9",
     "d3": "^7.8.2",
     "echarts": "5.4.1",
-    "framer-motion": "^4.1.17",
+    "framer-motion": "^10.2.4",
     "immer": "^9.0.19",
     "lodash.debounce": "^4.0.8",
     "markmap-common": "^0.14.2",
