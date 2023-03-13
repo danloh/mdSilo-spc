@@ -103,8 +103,8 @@ impl Channel {
     // insert
     let new_channel: Channel = sqlx::query_as(
       r#"
-      INSERT INTO
-      channels (title, link, intro, published, ty)
+      INSERT OR IGNORE INTO channels 
+      (title, link, intro, published, ty)
       VALUES
       ($1, $2, $3, $4, $5)
       RETURNING *;
@@ -276,7 +276,7 @@ impl Feed {
     for feed in feeds {
       let res = sqlx::query(
         r#"
-        INSERT INTO feeds 
+        INSERT OR IGNORE INTO feeds 
         (title, channel_link, feed_url, audio_url, intro, published, content, author, img)
         VALUES
         ($1, $2, $3, $4, $5, $6, $7, $8, $9)
@@ -382,10 +382,10 @@ impl Subscription {
     // insert
     let new_sub: Subscription = sqlx::query_as(
       r#"
-      INSERT INTO
-      subscriptions (uname, channel_link, channel_title, is_public)
+      INSERT OR IGNORE INTO subscriptions 
+      (uname, channel_link, channel_title, is_public)
       VALUES
-      ($1, $2, $3, $4)
+      ($1, $2, $3, $4) 
       RETURNING *;
       "#,
     )
@@ -472,7 +472,7 @@ impl FeedStatus {
   ) -> Result<FeedStatus, AppError> {
     let new_status: FeedStatus = sqlx::query_as(
       r#"
-      INSERT INTO feed_status 
+      INSERT OR IGNORE INTO feed_status 
       (uname, feed_url, read_status, star_status)
       VALUES
       ($1, $2, $3, $4)

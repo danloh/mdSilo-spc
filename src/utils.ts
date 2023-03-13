@@ -3,8 +3,9 @@ export const getFavicon = (url: string) => {
   return "https://icons.duckduckgo.com/ip3/" + hostname + ".ico";
 };
 
-export function fmtDatetime(dateStr: string | number | Date) {
-  return new Date(dateStr).toLocaleString(undefined, {
+export function fmtDatetime(date: string | number | Date) {
+  const dt = typeof date === "number" ? date * 1000 : date;
+  return new Date(dt).toLocaleString(undefined, {
     weekday: 'short',
     year: 'numeric',
     month: 'short',

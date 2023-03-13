@@ -2,6 +2,7 @@ use axum::{extract::{State, Query}, response::IntoResponse, Json};
 use axum::http::StatusCode;
 use axum_macros::debug_handler;
 use serde::{Deserialize, Serialize};
+use log::warn;
 
 use crate::{
   AppState as Ctx, 
@@ -74,8 +75,14 @@ pub async fn add_channel(
       let articles = res.1;
 
       // upsert channel
-      channel.new(&ctx).await.map_err(|_e| StatusCode::BAD_REQUEST)?;
-      Feed::add_feeds(&ctx, articles).await.map_err(|_e| StatusCode::BAD_REQUEST)?;
+      channel.new(&ctx)
+        .await
+        .map_err(|e| warn!("add channel: {}", e))
+        .unwrap_or_default();
+      Feed::add_feeds(&ctx, articles)
+        .await
+        .map_err(|e| warn!("add feeds: {}", e))
+        .unwrap_or(0);
       // subscription
       // let is_pub = if input.is_public == 0 { false } else { true };
       let claim = check.claim;
@@ -84,7 +91,8 @@ pub async fn add_channel(
         &ctx, &uname, &channel.link, &channel.title, false
       )
       .await
-      .map_err(|_e| StatusCode::BAD_REQUEST)?;
+      .map_err(|e| warn!("add subscription: {}", e))
+      .unwrap_or_default();
 
       return Ok(Json(1))
     }

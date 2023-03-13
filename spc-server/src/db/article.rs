@@ -59,8 +59,8 @@ impl Article {
     let new_article: Article = if id == 0 {
       sqlx::query_as(
         r#"
-        INSERT INTO
-        articles (title, uname, cover, content, created_at, updated_at)
+        INSERT OR IGNORE INTO articles 
+        (title, uname, cover, content, created_at, updated_at)
         VALUES
         ($1, $2, $3, $4, $5, $6)
         RETURNING *;
@@ -247,8 +247,8 @@ impl Piece {
     let new_piece: Piece = if id == 0 {
       sqlx::query_as(
         r#"
-        INSERT INTO
-        pieces (uname, content, created_at)
+        INSERT INTO pieces 
+        (uname, content, created_at)
         VALUES
         ($1, $2, $3)
         RETURNING *;

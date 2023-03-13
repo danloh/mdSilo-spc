@@ -224,7 +224,7 @@ impl TagEntry {
     // insert
     let new_tag: TagEntry = sqlx::query_as(
       r#"
-        INSERT INTO
+        INSERT OR IGNORE INTO
         tag_entry (tag_id, on_ty, on_id)
         VALUES
         ($1, $2, $3)
