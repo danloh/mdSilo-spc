@@ -1,40 +1,54 @@
 import { ChannelType, ArticleType } from "./reader/types";
 
+export const postReq = async (url: string, data: any): Promise<any> => {
+  let options = {
+    method:  'POST', 
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(data)
+  };
+  let resp = await fetch(url, options);
+  return await resp.json();
+}
+
 type FeedResult = {
   channel: ChannelType;
   articles: ArticleType[];
 };
 
 export const fetchFeed = async (url: string): Promise<FeedResult> => {
-  let resp = await fetch(`/api/fetch_feed/${url}`);
+  let resp = await fetch(`/api/fetch_feed?url=${url}`);
   // if (!resp.ok) return;
   return await resp.json();
 }
 
 export const addChannel = async (
-  url: string, ty: string, title: string | null
+  url: string, ty: string | null, title: string | null
 ): Promise<number> => {
-  return 0 // await invoke('add_channel', { url, ty, title })
-}
-
-export const importChannels = async (list: string[]) => {
-  return //await invoke('import_channels', { list })
+  return await postReq(`/api/add_channel`, {url, title, ty});
 }
 
 export const getChannels = async (): Promise<ChannelType[]> => {
-  return [] //await invoke('get_channels')
+  let resp = await fetch(`/api/get_channels`);
+  return await resp.json();
 }
 
 export const deleteChannel = async (link: string) => {
   return //await invoke('delete_channel', { link })
 };
 
-export const getArticleList = async (
-  feedLink: string | null, 
-  readStatus: number | null,
-  starStatus: number | null,
-) : Promise<ArticleType[]> => {
-  return [] //await invoke('get_articles', { feedLink, readStatus, starStatus })
+export const getArticleList = async (url: string) : Promise<ArticleType[]> => {
+  let resp = await fetch(`/api/get_channel_feeds?url=${url}`);
+  return await resp.json();
+}
+
+export const getStarArticles = async () : Promise<ArticleType[]> => {
+  let resp = await fetch(`/api/get_star_feeds`);
+  return await resp.json();
+}
+
+export const getReadArticles = async () : Promise<ArticleType[]> => {
+  let resp = await fetch(`/api/get_read_feeds`);
+  return await resp.json();
 }
 
 export const getArticleByUrl = async (url: string): Promise<ArticleType | null> => {
@@ -46,22 +60,18 @@ export const getUnreadNum = async (): Promise<{ [key: string]: number }> => {
 }
 
 export const updateArticleStarStatus = async (
-  articleUrl: string, 
-  star_status: number, // 0 || 1
+  url: string, 
+  star_status: number, // 0 | 1,
 ): Promise<number> => {
-  return 0
+  let resp = star_status 
+    ? await fetch(`/api/star_feed?url=${url}`)
+    : await fetch(`/api/unstar_feed?url=${url}`);
+  return resp.ok ? 1 : 0;
 }
 
-export const updateArticleReadStatus = async (
-  articleUrl: string, 
-  read_status: number,
-): Promise<number> => {
-  return 0
-  
-  // await invoke('update_article_read_status', {
-  //   url: articleUrl,
-  //   status: read_status,
-  // })
+export const updateArticleReadStatus = async (url: string): Promise<number> => {
+  let resp = await fetch(`/api/read_feed?url=${url}`);
+  return resp.ok ? 1 : 0;
 }
 
 export const updateAllReadStatus = async (

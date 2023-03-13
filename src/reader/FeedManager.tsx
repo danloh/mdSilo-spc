@@ -101,6 +101,7 @@ export function FeedManager(props: Props) {
             <RadioGroup onChange={setFeedType} value={feedType}>
               <Stack direction='row'>
                 <Radio value='rss'>RSS</Radio>
+                <Radio value='atom'>Atom</Radio>
                 <Radio value='podcast'>Podcast</Radio>
               </Stack>
             </RadioGroup>
@@ -144,7 +145,7 @@ export function FeedManager(props: Props) {
       <Flex className="w-full flex flex-col items-between justify-center border-t-2 border-gray-500 my-4">
         {realList.map((channel: ChannelType, idx: number) => {
           return (
-            <Flex key={idx} className="flex items-center justify-between m-1">
+            <HStack key={idx} className="flex items-center justify-between m-1">
               <Flex className="flex items-center justify-between">
                 {channel.ty === 'rss' 
                   ? <IconRss size={12} className="mr-1 text-orange-500" /> 
@@ -156,7 +157,7 @@ export function FeedManager(props: Props) {
               <button className="cursor-pointer" onClick={async () => await handleDelete(channel)}>
                 <IconTrash size={18} className="m-1 dark:text-white" />
               </button>
-            </Flex>
+            </HStack>
           )
         })}
       </Flex>

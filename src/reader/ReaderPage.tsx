@@ -58,7 +58,7 @@ export default function Feed() {
   };
 
   const loadArticleList = async (link: string) => {
-    const articles = await dataAgent.getArticleList(link, null, null);
+    const articles = await dataAgent.getArticleList(link);
     // console.log("current articles", articles, currentArticles);
     setCurrentArticles(articles);
   };
@@ -81,7 +81,7 @@ export default function Feed() {
     setCurrentArticles(null);
     setStarChannel(true);
     setShowManager(false);
-    const starArticles = await dataAgent.getArticleList(null, null, 1);
+    const starArticles = await dataAgent.getStarArticles();
     setCurrentArticles(starArticles);
     setLoading(false);
   };
@@ -124,7 +124,7 @@ export default function Feed() {
     store.getState().setCurrentArticle(article);
     if (article.read_status !== 0) return;
     // update read_status to db
-    const res = await dataAgent.updateArticleReadStatus(article.url, 1);
+    const res = await dataAgent.updateArticleReadStatus(article.url);
     if (res === 0) return;
     getList();
   };

@@ -3,7 +3,9 @@
 use crate::{
   config::CONFIG,
   pad::{ws_server, WsConfig},
-  api::{feed::fetch_feed},
+  api::{
+    feed::{fetch_feed, add_channel, get_sub_channels, get_feeds, get_feeds_by_channel, star_feed, unstar_feed, read_feed, get_read_feeds, get_star_feeds}
+  },
   ssr::{
     admin::{mod_user, save_site_config, site_config_view, user_list_page},
     article::{
@@ -69,7 +71,16 @@ pub async fn router(ctx: AppState) -> Router {
   let ws_route = ws_server(ws_config).await;
 
   let router_api = Router::new()
-    .route("/api/fetch_feed/:url", get(fetch_feed))
+    .route("/api/fetch_feed", get(fetch_feed))
+    .route("/api/add_channel", post(add_channel))
+    .route("/api/get_channels", get(get_sub_channels))
+    .route("/api/get_feeds", get(get_feeds))
+    .route("/api/get_channel_feeds", get(get_feeds_by_channel))
+    .route("/api/star_feed", get(star_feed))
+    .route("/api/unstar_feed", get(unstar_feed))
+    .route("/api/read_feed", get(read_feed))
+    .route("/api/get_read_feeds", get(get_read_feeds))
+    .route("/api/get_star_feeds", get(get_star_feeds))
     .with_state(ctx.clone());
 
   let router_ssr = Router::new()

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, Flex, HStack, Spinner, Stack, Text, Tooltip } from "@chakra-ui/react";
+import { Box, Flex, HStack, Spinner, Stack, Image, Text, Tooltip } from "@chakra-ui/react";
 import { IconHeadphones, IconRefresh, IconRss, IconSettings, IconStar } from "@tabler/icons-react";
 import { getFavicon } from "../utils";
 import { ChannelType } from "./types";
@@ -28,29 +28,29 @@ export function ChannelList(props: Props) {
           const activeClass = `${highlighted?.link === link ? 'border-l-2 border-green-500' : ''}`;
           
           return (
-            <Flex 
+            <HStack 
               key={`${title}-${idx}`}
-              direction="row"
-              className={`cursor-pointer ${activeClass}`}
+              cursor="pointer"
+              className={`${activeClass}`}
               onClick={() => {
                 onClickFeed(link);
                 setHighlighted(channel);
               }}
             >
               <Tooltip label={channel.link} placement="top">
-                <Flex direction="row" className="flex flex-row items-center justify-start mr-1">
-                  <img src={ico} className="h-4 w-4 mx-1" alt=">" />
+                <HStack className="flex flex-row items-center justify-start mr-1">
+                  <Image src={ico} boxSize={4} mx={1} alt=">" />
                   <span className="text-sm text-black dark:text-white">{title}</span>
-                </Flex>
+                </HStack>
               </Tooltip>
-              <Flex direction="row" className="flex items-center justify-between">
+              <HStack className="flex items-center justify-between">
                 <Text className="text-sm dark:text-white">{unread}</Text>
-                {ty === 'rss' 
-                  ? <IconRss size={12} className="ml-1 text-orange-500" /> 
-                  : <IconHeadphones size={12} className="ml-1 text-purple-500" />
+                {ty === 'podcast' 
+                  ? <IconHeadphones size={12} color="purple.500" />
+                  : <IconRss size={12} color="orange.500" /> 
                 }
-              </Flex>
-            </Flex>
+              </HStack>
+            </HStack>
           );
         })}
       </>

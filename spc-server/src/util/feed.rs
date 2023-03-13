@@ -33,15 +33,19 @@ async fn get_content(url: &str) -> Option<Bytes> {
 }
 
 // 1.1- fetch: rss typed
-async fn process_rss(url: &str) -> Option<(Channel, Vec<Feed>)> {
+async fn process_rss(
+  url: &str, 
+  ty: Option<String>, 
+  title: Option<String>,
+) -> Option<(Channel, Vec<Feed>)> {
   if let Some(content) = get_content(url).await {
     match rss::Channel::read_from(&content[..]).map(|channel| channel) {
       Ok(channel) => {
         let rss_channel = Channel {
           link: String::from(url),
-          title: channel.title,
+          title: title.unwrap_or(channel.title),
           intro: channel.description,
-          ty: String::from("rss"),
+          ty: ty.unwrap_or(String::from("rss")),
         };
 
         let mut feeds: Vec<Feed> = vec![];
@@ -54,12 +58,20 @@ async fn process_rss(url: &str) -> Option<(Channel, Vec<Feed>)> {
             Utc::now().timestamp()
           };
           let intro = item.description.unwrap_or_default();
+          // get audio 
+          let enclosure = item.enclosure.clone().unwrap_or_default();
+          let audio_url = if enclosure.mime_type.starts_with("audio/") {
+            enclosure.url
+          } else {
+            String::new()
+          };
+
           let feed = Feed {
             id: 0,
             title: item.title.unwrap_or_default(),
             channel_link: url.to_string(),
             feed_url: item.link.unwrap_or_default(),
-            audio_url: String::from(""),
+            audio_url,
             intro: intro.clone(),
             published,
             content: item.content.unwrap_or(intro),
@@ -78,13 +90,16 @@ async fn process_rss(url: &str) -> Option<(Channel, Vec<Feed>)> {
 }
 
 // 1.2- fetch: atom typed
-async fn process_atom(url: &str) -> Option<(Channel, Vec<Feed>)> {
+async fn process_atom(
+  url: &str, 
+  title: Option<String>,
+) -> Option<(Channel, Vec<Feed>)> {
   if let Some(content) = get_content(url).await {
     match atom_syndication::Feed::read_from(&content[..]) {
       Ok(atom) => {
         let channel = Channel {
           link: String::from(url),
-          title: atom.title.to_string(),
+          title: title.unwrap_or(atom.title.to_string()),
           intro: atom.subtitle.unwrap_or_default().to_string(),
           ty: String::from("atom"),
         };
@@ -123,9 +138,13 @@ async fn process_atom(url: &str) -> Option<(Channel, Vec<Feed>)> {
 }
 
 // 1: get channel and feeds
-pub async fn process_feed(url: &str) -> Option<(Channel, Vec<Feed>)> {
-  match process_rss(url).await {
+pub async fn process_feed(
+  url: &str, 
+  ty: Option<String>,
+  title: Option<String>
+) -> Option<(Channel, Vec<Feed>)> {
+  match process_rss(url, ty, title.clone()).await {
     Some(ch) => Some(ch),
-    None => process_atom(url).await,
+    None => process_atom(url, title).await,
   }
 }

@@ -70,7 +70,7 @@ pub(crate) async fn channel_preload_form(
     Ok(channel) => channel,
     _ => {
       // via request
-      match process_feed(&channel_link).await {
+      match process_feed(&channel_link, None, None).await {
         Some(res) => res.0,
         None => return Err(AppError::FeedError.into()),
       }
@@ -277,7 +277,7 @@ pub(crate) async fn feed_reader_page(
 /// refresh_feeds
 async fn refresh_feeds(ctx: &Ctx, channels: Vec<String>) -> Result<(), AppError> {
   for url in channels {
-    if let Some(res) = process_feed(&url).await {
+    if let Some(res) = process_feed(&url, None, None).await {
       let feeds = res.1;
       Feed::add_feeds(ctx, feeds).await?;
     }

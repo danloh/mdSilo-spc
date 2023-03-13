@@ -300,53 +300,9 @@ impl Feed {
 
     Ok(rows)
   }
-
-  // pub async fn mod_status(
-  //   ctx: &AppState,
-  //   ty: &str,
-  //   status: u8,
-  //   url: &str,
-  // ) -> Result<Feed, AppError> {
-  //   let query_str = if ty == "read" {
-  //     r#"
-  //     UPDATE feed_status
-  //     SET read_status = $1
-  //     WHERE feed_url = $2
-  //     RETURNING *;
-  //     "#
-  //   } else {
-  //     r#"
-  //     UPDATE feed_status
-  //     SET star_status = $1
-  //     WHERE feed_url = $2
-  //     RETURNING *;
-  //     "#
-  //   };
-
-  //   let new_feed: Feed =  sqlx::query_as(query_str)
-  //     .bind(&status)
-  //     .bind(&url)
-  //     .fetch_one(&ctx.pool)
-  //     .await?;
-
-  //   Ok(new_feed)
-  // }
-
-  // pub async fn del(ctx: &AppState, url: &str) -> Result<Feed, AppError> {
-  //   let feed: Feed = sqlx::query_as(
-  //     r#"
-  //     DELETE FROM feeds WHERE feed_url = $1 RETURNING *;
-  //     "#,
-  //   )
-  //   .bind(url)
-  //   .fetch_one(&ctx.pool)
-  //   .await?;
-
-  //   Ok(feed)
-  // }
 }
 
-#[derive(FromRow, Debug, Default)]
+#[derive(FromRow, Debug, Default, Serialize)]
 pub struct Subscription {
   pub id: u32,
   pub uname: String,
@@ -388,6 +344,27 @@ impl Subscription {
     .bind(uname)
     .bind(perpage)
     .bind(perpage * page_offset)
+    .fetch_all(&ctx.pool)
+    .await
+    .unwrap_or_default();
+
+    Ok(subs)
+  }
+
+  pub async fn get_channel_list(
+    ctx: &AppState,
+    uname: &str,
+  ) -> Result<Vec<Channel>, AppError> {
+    let subs: Vec<Channel> = sqlx::query_as(
+      r#"
+      SELECT * FROM channels 
+      WHERE link IN (
+        SELECT channel_link FROM subscriptions  
+        WHERE uname = $1 
+      )
+      "#,
+    )
+    .bind(uname)
     .fetch_all(&ctx.pool)
     .await
     .unwrap_or_default();
@@ -457,11 +434,111 @@ impl Subscription {
   }
 }
 
+#[derive(FromRow, Debug, Default, Serialize, Deserialize)]
+pub struct FeedStatus {
+  pub id: u32,
+  pub uname: String,
+  pub feed_url: String,
+  pub read_status: u8,
+  pub star_status: u8,
+}
+
+impl FeedStatus {
+  pub async fn del(
+    ctx: &AppState,
+    uname: &str,
+    link: &str,
+  ) -> Result<FeedStatus, AppError> {
+    // insert
+    let del_status: FeedStatus = sqlx::query_as(
+      r#"
+      DELETE FROM feed_status WHERE uname = $1 AND feed_url = $2 RETURNING *;
+      "#,
+    )
+    .bind(uname)
+    .bind(link)
+    .fetch_one(&ctx.pool)
+    .await?;
+
+    Ok(del_status)
+  }
+
+  pub async fn new(
+    ctx: &AppState,
+    uname: &str,
+    link: &str,
+    read: u8,
+    star: u8,
+  ) -> Result<FeedStatus, AppError> {
+    let new_status: FeedStatus = sqlx::query_as(
+      r#"
+      INSERT INTO feed_status 
+      (uname, feed_url, read_status, star_status)
+      VALUES
+      ($1, $2, $3, $4)
+      RETURNING *;
+      "#,
+    )
+    .bind(uname)
+    .bind(link)
+    .bind(read)
+    .bind(star)
+    .fetch_one(&ctx.pool)
+    .await?;
+
+    Ok(new_status)
+  }
+
+  pub async fn get_star_list(
+    ctx: &AppState,
+    uname: &str,
+  ) -> Result<Vec<Feed>, AppError> {
+    let feeds: Vec<Feed> = sqlx::query_as(
+      r#"
+      SELECT * FROM feeds 
+      WHERE feed_url IN (
+        SELECT feed_url FROM feed_status
+        WHERE uname = $1 AND star_status = $2
+      );
+      "#,
+    )
+    .bind(uname)
+    .bind(1)
+    .fetch_all(&ctx.pool)
+    .await
+    .unwrap_or_default();
+
+    Ok(feeds)
+  }
+
+  pub async fn get_read_list(
+    ctx: &AppState,
+    uname: &str,
+  ) -> Result<Vec<Feed>, AppError> {
+    let feeds: Vec<Feed> = sqlx::query_as(
+      r#"
+      SELECT * FROM feeds 
+      WHERE feed_url IN (
+        SELECT feed_url FROM feed_status
+        WHERE uname = $1 AND read_status = $2
+      );
+      "#,
+    )
+    .bind(uname)
+    .bind(1)
+    .fetch_all(&ctx.pool)
+    .await
+    .unwrap_or_default();
+
+    Ok(feeds)
+  }
+}
+
 pub async fn refresh_feeds_job(ctx: &AppState) -> Result<(), AppError> {
   let channels = Channel::get_list(ctx, 42, None).await?;
   for channel in channels {
     let url = channel.link;
-    if let Some(res) = process_feed(&url).await {
+    if let Some(res) = process_feed(&url, None, None).await {
       let feeds = res.1;
       Feed::add_feeds(ctx, feeds).await?;
     }
