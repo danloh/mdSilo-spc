@@ -1,7 +1,7 @@
 import { memo, useEffect, useState } from "react";
-import { Flex, Text, Spinner, Tooltip, Box } from "@chakra-ui/react";
+import { Flex, Text, Spinner, Tooltip, Box, HStack } from "@chakra-ui/react";
 import { IconCircle, IconCircleCheck, IconRefresh } from "@tabler/icons-react";
-import { fmtDatetime, dateCompare } from '../utils';
+import { fmtDatetime } from '../utils';
 import { ArticleType, ChannelType } from "./types";
 
 type Props = {
@@ -29,11 +29,11 @@ export function Channel(props: Props) {
   }
 
   return (
-    <Flex className="flex flex-col items-between justify-center">
-      <Flex className="flex flex-row items-center justify-between p-2 bg-slate-500 rounded">
-        <Text className="font-bold">{channel?.title || (starChannel ? 'Starred' : '')}</Text>
+    <Flex direction="column" p={2} className="items-between justify-center">
+      <HStack p={2} className="bg-slate-500 rounded">
+        <Text as="b" fontSize="xl">{channel?.title || (starChannel ? 'Starred' : '')}</Text>
         {(channel) && (
-          <Flex className="flex flex-row items-center justify-end">
+          <>
             <Tooltip label="Mark All Read" placement="bottom">
               <button className="" onClick={async () => await updateAllReadStatus(channel.link, 1)}>
                 <IconCircleCheck size={18} className="m-1 dark:text-white" />
@@ -44,9 +44,9 @@ export function Channel(props: Props) {
                 <IconRefresh size={18} className="m-1 dark:text-white" />
               </button>
             </Tooltip>
-          </Flex>
+          </>
         )}
-      </Flex>
+      </HStack>
       {syncing && <Spinner className="w-4 h-4" />}
       <ArticleList
         articles={articles}
@@ -72,11 +72,8 @@ function ArticleList(props: ListProps) {
 
   const sortedArticles = articles.length >= 2 
     ? articles.sort((n1, n2) => {
-        return n2.published && n1.published 
-          ? dateCompare(n2.published, n1.published)
-          : 0;
+        return (n2.published || 0) - (n1.published || 0);
       })
-      .sort((n1, n2) => n1.read_status - n2.read_status)
     : articles;
 
   // console.log("sorted: ", sortedArticles)
@@ -86,7 +83,7 @@ function ArticleList(props: ListProps) {
       {sortedArticles.map((article: ArticleType, idx: number) => {
         return (
           <ArticleItem
-            key={`${article.id}=${idx}`}
+            key={`${article.id}-${idx}`}
             article={article}
             highlight={highlighted?.id === article.id}
             onArticleSelect={onArticleSelect}
@@ -105,34 +102,35 @@ type ItemProps = {
 
 const ArticleItem = memo(function ArticleItm(props: ItemProps) {
   const { article, onArticleSelect, highlight } = props;
-  const [readStatus, setReadStatus] = useState(article.read_status);
+  //const [readStatus, setReadStatus] = useState(article.read_status);
 
   const handleClick = async () => {
     if (onArticleSelect) {
       await onArticleSelect(article);
-      setReadStatus(1);
+      //setReadStatus(1);
     }
   };
 
-  useEffect(() => { setReadStatus(article.read_status); }, [article.read_status])
+  //useEffect(() => { setReadStatus(article.read_status); }, [article.read_status])
 
-  const itemClass = `cursor-pointer flex flex-col items-start justify-center my-1 hover:bg-gray-200 dark:hover:bg-gray-800 ${highlight ? 'bg-blue-200 dark:bg-blue-800' : ''}`;
+  const itemClass = `hover:bg-gray-200 dark:hover:bg-gray-800 ${highlight ? 'bg-blue-200 dark:bg-blue-800' : ''}`;
 
   return (
     <Flex
+      direction="column"
+      cursor="pointer"
+      my={1}
       className={itemClass}
       onClick={handleClick}
       aria-hidden="true"
     >
       <Flex className="flex flex-row items-center justify-start">
-        {(readStatus === 0) && <IconCircle className="w-2 h-2 m-1 text-blue-500 fill-blue-500" />}
-        <div className="flex-1 font-bold m-1 dark:text-white">{article.title}</div>
+        {/* {(readStatus === 0) && <IconCircle className="w-2 h-2 m-1 text-blue-500 fill-blue-500" />} */}
+        <Text as="b" m={1} className="font-bold dark:text-white">{article.title}</Text>
       </Flex>
-      <Box className="flex flex-row items-center justify-center">
-        <Text className="m-1 pl-2 text-sm dark:text-slate-400">
-          {fmtDatetime(article.published || '')}
-        </Text>
-      </Box>
+      <Text as="i" fontSize="sm" m={1} className="dark:text-slate-400">
+        {fmtDatetime(article.published || '')}
+      </Text>
     </Flex>
   );
 });

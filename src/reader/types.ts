@@ -11,19 +11,14 @@ export interface ChannelType {
 export interface ArticleType {
   id: number;
   title: string;
-  url: string;
-  feed_link: string;
+  channel_link: string;
+  feed_url: string;
   audio_url: string;
-  description: string;
-  published?: Date;
-  read_status: number;
-  star_status: number;
+  intro: string;
+  published?: number;
   content?: string;
   author?: string;
-  image?: string;
-  source?: string;
-  links?: string[];
-  ttr?: number;
+  img?: string;
 }
 
 export interface PodType {
@@ -31,5 +26,5 @@ export interface PodType {
   url: string;
   published?: Date;
   article_url: string;
-  feed_link: string;
+  channel_link: string;
 }

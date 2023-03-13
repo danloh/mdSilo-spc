@@ -142,19 +142,17 @@ export function FeedManager(props: Props) {
           />
         </Box>
       </Flex>
-      <Flex className="w-full flex flex-col items-between justify-center border-t-2 border-gray-500 my-4">
+      <Flex direction="column" className="w-full">
         {realList.map((channel: ChannelType, idx: number) => {
           return (
-            <HStack key={idx} className="flex items-center justify-between m-1">
-              <Flex className="flex items-center justify-between">
-                {channel.ty === 'rss' 
-                  ? <IconRss size={12} className="mr-1 text-orange-500" /> 
-                  : <IconHeadphones size={12} className="mr-1 text-purple-500" />
-                }
-                <span className="text-sm dark:text-white">{channel.title}</span>
-              </Flex>
+            <HStack key={idx} m={1}>
+              {channel.ty === 'podcast' 
+                ? <IconHeadphones size={12} className="mr-1 text-purple-500" /> 
+                : <IconRss size={12} className="mr-1 text-orange-500" />
+              }
+              <Text className="text-sm dark:text-white">{channel.title}</Text>
               <Text className="text-sm dark:text-white">{channel.link}</Text>
-              <button className="cursor-pointer" onClick={async () => await handleDelete(channel)}>
+              <button onClick={async () => await handleDelete(channel)}>
                 <IconTrash size={18} className="m-1 dark:text-white" />
               </button>
             </HStack>

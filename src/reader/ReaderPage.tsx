@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Box, Flex } from '@chakra-ui/react';
+import Split from "react-split";
 import { store, useStore } from '../lib/store';
 import { ArticleType, ChannelType } from './types';
 import ErrorBoundary from '../misc/ErrorBoundary';
@@ -122,9 +123,9 @@ export default function Feed() {
   const onClickArticle = async (article: ArticleType) => {
     setCurrentArticle(article);
     store.getState().setCurrentArticle(article);
-    if (article.read_status !== 0) return;
+    // if (article.read_status !== 0) return;
     // update read_status to db
-    const res = await dataAgent.updateArticleReadStatus(article.url);
+    const res = await dataAgent.updateArticleReadStatus(article.feed_url);
     if (res === 0) return;
     getList();
   };
@@ -137,56 +138,53 @@ export default function Feed() {
   const hideChannelCol = () => {
     setHideCol(!hideCol);
   };
-  const [isHideChannel, setIsHideChannel] = useState(false);
-  useEffect(() => {
-    setIsHideChannel(hideCol || !(currentArticles && currentArticles.length > 0));
-  }, [currentArticles, hideCol]);
 
   return (
     <ErrorBoundary>
       <Flex direction="row" h="100vh" overflow="auto" m={2}>
-        <Box w={64} h="full" p={1} borderRight={"solid"} overflow="auto">
-          <ChannelList 
-            channelList={channelList} 
-            refreshList={refreshList} 
-            onShowManager={onShowManager} 
-            onClickFeed={onClickFeed}
-            onClickStar={onClickStar} 
-            refreshing={refreshing}
-            doneNum={doneNum}
-          />
-        </Box>
-        {showManager ? (
-          <Box flex={1} className="flex-1 m-1 p-2 overflow-y-auto">
-            <FeedManager 
+        <Split className="split" sizes={[20, 80]} minSize={50}>
+          <Box minW={64} h="full" p={1} overflowY="auto">
+            <ChannelList 
               channelList={channelList} 
-              handleAddFeed={handleAddFeed}
-              handleDelete={handleDeleteFeed}
+              refreshList={refreshList} 
+              onShowManager={onShowManager} 
+              onClickFeed={onClickFeed}
+              onClickStar={onClickStar} 
+              refreshing={refreshing}
+              doneNum={doneNum}
             />
           </Box>
-        ) : (
-          <>
-            <Box className={`w-72 p-1 overflow-y-auto ${isHideChannel ? 'hidden' : ''}`}>
-              <Channel 
-                channel={currentChannel} 
-                starChannel={starChannel} 
-                articles={currentArticles}
-                handleRefresh={handleRefresh}
-                updateAllReadStatus={updateAllReadStatus}
-                onClickArticle={onClickArticle}
-                loading={loading}
-                syncing={syncing}
+          {showManager ? (
+            <Box w="full" overflowY="auto" m={1} p={2}>
+              <FeedManager 
+                channelList={channelList} 
+                handleAddFeed={handleAddFeed}
+                handleDelete={handleDeleteFeed}
               />
             </Box>
-            <Box className="flex-1 overflow-y-auto border-l-2 border-gray-200 dark:border-gray-800">
-              <ArticleView 
-                article={currentArticle || storeArticle} 
-                starArticle={updateStarStatus} 
-                hideChannelCol={hideChannelCol}
-              />
-            </Box>
-          </>
-        )}
+          ) : (
+            <Split className="split" sizes={[25, 75]} minSize={50}>
+              <Box overflowY="auto" minW={72}>
+                <Channel 
+                  channel={currentChannel} 
+                  starChannel={starChannel} 
+                  articles={currentArticles}
+                  handleRefresh={handleRefresh}
+                  updateAllReadStatus={updateAllReadStatus}
+                  onClickArticle={onClickArticle}
+                  loading={loading}
+                  syncing={syncing}
+                />
+              </Box>
+              <Box flex={1} overflowY="auto">
+                <ArticleView 
+                  article={currentArticle || storeArticle} 
+                  starArticle={updateStarStatus}
+                />
+              </Box>
+            </Split>
+          )}
+        </Split>
       </Flex>
     </ErrorBoundary>
   );

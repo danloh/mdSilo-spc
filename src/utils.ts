@@ -3,7 +3,7 @@ export const getFavicon = (url: string) => {
   return "https://icons.duckduckgo.com/ip3/" + hostname + ".ico";
 };
 
-export function fmtDatetime(dateStr: string | Date) {
+export function fmtDatetime(dateStr: string | number | Date) {
   return new Date(dateStr).toLocaleString(undefined, {
     weekday: 'short',
     year: 'numeric',
