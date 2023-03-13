@@ -273,6 +273,31 @@ pub async fn check_star(
   return Ok(Json(res))
 }
 
+/// Handler for the GET `/api/check_star?url=` endpoint.
+#[debug_handler]
+pub async fn check_read(
+  State(ctx): State<Ctx>,
+  Query(param): Query<ApiQuery>,
+  check: ClaimCan<BASIC_PERMIT>,
+) -> Result<impl IntoResponse, StatusCode> {
+  if !check.can() {
+    return Err(StatusCode::UNAUTHORIZED);
+  }
+  let url = param.url.unwrap_or_default();
+  if url.trim().len() == 0 {
+    return Err(StatusCode::BAD_REQUEST);
+  }
+
+  let claim = check.claim;
+  let uname = claim.unwrap_or_default().uname;
+  let res = FeedStatus::check_read(&ctx, &uname, &url)
+    .await
+    .map_err(|e| warn!("check read: {}", e))
+    .unwrap_or_default();
+
+  return Ok(Json(res))
+}
+
 /// Handler for the GET `/api/read_feed?url=` endpoint.
 #[debug_handler]
 pub async fn read_feed(

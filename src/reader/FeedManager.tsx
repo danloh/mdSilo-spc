@@ -40,7 +40,7 @@ export function FeedManager(props: Props) {
     }
     const { channel } = res;
     setFeedTitle(channel.title);
-    setDescription(channel.description || '');
+    setDescription(channel.intro || '');
     setLoading(false);
   };
 
@@ -147,8 +147,8 @@ export function FeedManager(props: Props) {
           return (
             <HStack key={idx} m={1}>
               {channel.ty === 'podcast' 
-                ? <IconHeadphones size={12} className="mr-1 text-purple-500" /> 
-                : <IconRss size={12} className="mr-1 text-orange-500" />
+                ? <IconHeadphones size={12}  color="purple" /> 
+                : <IconRss size={12} color="orange" />
               }
               <Text className="text-sm dark:text-white">{channel.title}</Text>
               <Text className="text-sm dark:text-white">{channel.link}</Text>

@@ -573,6 +573,27 @@ impl FeedStatus {
     println!("check res: {:?}", res);
     return Ok(true);
   }
+
+  pub async fn check_read(
+    ctx: &AppState,
+    uname: &str,
+    url: &str,
+  ) -> Result<bool, AppError> {
+    let res: FeedStatus = sqlx::query_as(
+      r#"
+      SELECT * FROM feed_status
+      WHERE uname = $1 AND feed_url = $2 AND read_status = $3;
+      "#,
+    )
+    .bind(uname)
+    .bind(url)
+    .bind(1)
+    .fetch_one(&ctx.pool)
+    .await?;
+    
+    println!("check res: {:?}", res);
+    return Ok(true);
+  }
 }
 
 pub async fn refresh_feeds_job(ctx: &AppState) -> Result<(), AppError> {

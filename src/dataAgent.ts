@@ -55,6 +55,7 @@ export const getArticleByUrl = async (url: string): Promise<ArticleType | null> 
   return null //await invoke('get_article_by_url', { url })
 }
 
+// TODO
 export const getUnreadNum = async (): Promise<{ [key: string]: number }> => {
   return {} //await invoke('get_unread_num')
 }
@@ -76,6 +77,15 @@ export const updateArticleReadStatus = async (url: string): Promise<number> => {
 
 export const checkArticleStarStatus = async (url: string): Promise<boolean> => {
   let resp = await fetch(`/api/check_star?url=${url}`);
+  if (resp.ok) {
+    return await resp.json();
+  } else {
+    return false;
+  }
+}
+
+export const checkArticleReadStatus = async (url: string): Promise<boolean> => {
+  let resp = await fetch(`/api/check_read?url=${url}`);
   if (resp.ok) {
     return await resp.json();
   } else {

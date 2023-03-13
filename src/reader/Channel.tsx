@@ -1,8 +1,9 @@
 import { memo, useEffect, useState } from "react";
 import { Flex, Text, Spinner, Tooltip, Box, HStack } from "@chakra-ui/react";
-import { IconCircleCheck, IconRefresh } from "@tabler/icons-react";
+import { IconRefresh } from "@tabler/icons-react";
 import { fmtDatetime } from '../utils';
 import { ArticleType, ChannelType } from "./types";
+import * as dataAgent from '../dataAgent';
 
 type Props = {
   channel: ChannelType | null;
@@ -31,18 +32,11 @@ export function Channel(props: Props) {
       <HStack p={2} className="bg-slate-500 rounded">
         <Text as="b" fontSize="xl">{channel?.title || (starChannel ? 'Starred' : '')}</Text>
         {(channel) && (
-          <>
-            <Tooltip label="Mark All Read" placement="bottom">
-              <button className="" onClick={async () => await updateAllReadStatus(channel.link, 1)}>
-                <IconCircleCheck size={18} className="m-1 dark:text-white" />
-              </button>
-            </Tooltip>
-            <Tooltip label="Refresh Channel" placement="bottom">
-              <button className="" onClick={handleRefresh}>
-                <IconRefresh size={18} className="m-1 dark:text-white" />
-              </button>
-            </Tooltip>
-          </>
+          <Tooltip label="Refresh Channel" placement="bottom">
+            <button className="" onClick={handleRefresh}>
+              <IconRefresh size={18} className="m-1 dark:text-white" />
+            </button>
+          </Tooltip>
         )}
       </HStack>
       {syncing && <Spinner boxSize={6} />}
@@ -74,8 +68,6 @@ function ArticleList(props: ListProps) {
       })
     : articles;
 
-  // console.log("sorted: ", sortedArticles)
-
   return (
     <Box className="">
       {sortedArticles.map((article: ArticleType, idx: number) => {
@@ -100,26 +92,29 @@ type ItemProps = {
 
 const ArticleItem = memo(function ArticleItm(props: ItemProps) {
   const { article, onArticleSelect, highlight } = props;
-  //const [readStatus, setReadStatus] = useState(article.read_status);
+  const [readStatus, setReadStatus] = useState(false);
 
   const handleClick = async () => {
     if (onArticleSelect) {
       await onArticleSelect(article);
-      //setReadStatus(1);
+      setReadStatus(true);
     }
   };
 
-  //useEffect(() => { setReadStatus(article.read_status); }, [article.read_status])
+  useEffect(() => { 
+    dataAgent.checkArticleReadStatus(article.feed_url).then(res => {
+      setReadStatus(res);
+    })
+  }, [])
 
   return (
     <Flex
       direction="column"
       cursor="pointer"
       my={1}
-      bgColor={highlight ? 'blue.200' : ''}
+      bgColor={highlight ? 'blue.200' : `${readStatus ? '' : 'blue.100'}`}
       _hover={{bgColor: "gray.200"}}
       onClick={handleClick}
-      aria-hidden="true"
     >
       <Text as="b" m={1} className="font-bold dark:text-white">{article.title}</Text>
       <Text as="i" fontSize="sm" m={1} className="dark:text-slate-400">

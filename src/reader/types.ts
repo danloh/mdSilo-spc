@@ -2,9 +2,8 @@ export interface ChannelType {
   id: number;
   title: string;
   link: string;
-  description?: string;
-  published?: string; // iso date string
-  ty: string; // podcast | rss
+  intro?: string;
+  ty: string; // podcast | rss \ atom
   unread: number;
 }
 

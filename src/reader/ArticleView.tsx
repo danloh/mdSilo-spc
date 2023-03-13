@@ -63,7 +63,7 @@ export function ArticleView(props: ViewProps) {
               setIsStar(!isStar);
             }}
           >
-            <IconStar size={20} fill={`${isStar ? 'red' : ''}`} />
+            <IconStar size={20} color={`${isStar ? 'red' : 'green'}`} />
           </Button>
           {article.audio_url.trim() && (
             <Button 

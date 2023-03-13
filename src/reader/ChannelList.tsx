@@ -40,15 +40,15 @@ export function ChannelList(props: Props) {
               <Tooltip label={channel.link} placement="top">
                 <HStack className="flex flex-row items-center justify-start mr-1">
                   <Image src={ico} boxSize={4} mx={1} alt=">" />
-                  <span className="text-sm text-black dark:text-white">{title}</span>
+                  <Text className="text-sm text-black dark:text-white">{title}</Text>
+                  {ty === 'podcast' 
+                    ? <IconHeadphones size={12} color="purple" />
+                    : <IconRss size={12} color="orange" /> 
+                  }
                 </HStack>
               </Tooltip>
-              <HStack className="flex items-center justify-between">
-                <Text className="text-sm dark:text-white">{unread}</Text>
-                {ty === 'podcast' 
-                  ? <IconHeadphones size={12} color="purple.500" />
-                  : <IconRss size={12} color="orange.500" /> 
-                }
+              <HStack>
+                {/* <Text className="text-sm dark:text-white">{unread}</Text> */}
               </HStack>
             </HStack>
           );

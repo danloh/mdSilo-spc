@@ -4,7 +4,11 @@ use crate::{
   config::CONFIG,
   pad::{ws_server, WsConfig},
   api::{
-    feed::{fetch_feed, add_channel, get_sub_channels, get_feeds, get_feeds_by_channel, star_feed, unstar_feed, read_feed, get_read_feeds, get_star_feeds, check_star}
+    feed::{
+      fetch_feed, add_channel, get_sub_channels, get_feeds, 
+      get_feeds_by_channel, star_feed, unstar_feed, read_feed, 
+      get_read_feeds, get_star_feeds, check_star, check_read
+    }
   },
   ssr::{
     admin::{mod_user, save_site_config, site_config_view, user_list_page},
@@ -79,6 +83,7 @@ pub async fn router(ctx: AppState) -> Router {
     .route("/api/check_star", get(check_star))
     .route("/api/star_feed", get(star_feed))
     .route("/api/unstar_feed", get(unstar_feed))
+    .route("/api/check_read", get(check_read))
     .route("/api/read_feed", get(read_feed))
     .route("/api/get_read_feeds", get(get_read_feeds))
     .route("/api/get_star_feeds", get(get_star_feeds))
