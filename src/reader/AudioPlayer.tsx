@@ -1,3 +1,4 @@
+import { Box, Text } from '@chakra-ui/react';
 import { PodType } from './types';
 
 type Props = {
@@ -10,12 +11,13 @@ export default function AudioPlayer(props: Props) {
   // console.log("current pod: ", currentPod)
 
   if (!currentPod) {
-    return (<div className='mx-1 text-sm'>no player</div>);
+    return (<></>);
   }
 
   return (
-    <div className={`flex flex-row items-center justify-center ${className}`}>
-      <audio className="ml-1 h-6" autoPlay controls src={currentPod.url} />
-    </div>
+    <Box mb={2} w="100%" className={`${className}`}>
+      <Text fontSize="xs">{currentPod.title}</Text>
+      <audio style={{height: "22px", width: "15rem"}} autoPlay controls src={currentPod.url} />
+    </Box>
   )
 }

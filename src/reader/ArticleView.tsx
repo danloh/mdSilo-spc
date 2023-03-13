@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { Box, Heading, HStack } from "@chakra-ui/react";
+import { Box, Button, Heading, HStack, Text } from "@chakra-ui/react";
 import { IconHeadphones, IconLink, IconStar } from "@tabler/icons-react";
 import { useStore } from "../lib/store";
 import { fmtDatetime } from "../utils";
 import { ArticleType } from "./types";
+import * as dataAgent from '../dataAgent';
 
 type ViewProps = {
   article: ArticleType | null;
@@ -12,7 +13,7 @@ type ViewProps = {
 
 export function ArticleView(props: ViewProps) {
   const { article, starArticle } = props;
-  //const [isStar, setIsStar] = useState(article?.star_status === 1);
+  const [isStar, setIsStar] = useState(false);
   const [pageContent, setPageContent] = useState("");
 
   const setCurrentPod = useStore(state => state.setCurrentPod);
@@ -25,9 +26,10 @@ export function ArticleView(props: ViewProps) {
           return (!/\starget\s*=/gi.test(a)) ? a.replace(/^<a\s/, '<a target="_blank"') : a;
         }
       );
-
       setPageContent(content);
-      // setIsStar(article.star_status === 1);
+      dataAgent.checkArticleStarStatus(article.feed_url).then(res => {
+        setIsStar(res);
+      })
     }
   }, [article]);
 
@@ -37,15 +39,15 @@ export function ArticleView(props: ViewProps) {
     );
   }
 
-  const { title, feed_url, channel_link, author, published } = article;
+  const { title, feed_url, author, published } = article;
 
   return (
     <Box h="full">
       <div className="px-2 mb-1">
         <Heading className="m-1 text-3xl font-bold dark:text-white">{title}</Heading>
         <HStack className="flex items-center justify-start">
-          <span className="m-1 dark:text-slate-400">{fmtDatetime(published || '')}</span>
-          <span className="m-1 dark:text-slate-400">{author}</span>
+          <Text className="m-1 dark:text-slate-400">{fmtDatetime(published || '')}</Text>
+          <Text className="m-1 dark:text-slate-400">{author}</Text>
           <a
             className="m-1 dark:text-slate-400"
             target="_blank"
@@ -54,24 +56,24 @@ export function ArticleView(props: ViewProps) {
           >
             <IconLink size={20} />
           </a>
-          {/* <span 
-            className="m-1 cursor-pointer" 
+          <Button 
+            size="xs" 
             onClick={async () => {
-              // await starArticle(article.url, Math.abs(article.star_status - 1));
-              // setIsStar(!isStar);
+              await starArticle(article.feed_url, Math.abs(Number(isStar) - 1));
+              setIsStar(!isStar);
             }}
           >
-            <IconStar size={20} className={`text-red-500 ${isStar ? 'fill-red-500' : ''}`} />
-          </span> */}
+            <IconStar size={20} fill={`${isStar ? 'red' : ''}`} />
+          </Button>
           {article.audio_url.trim() && (
-            <span 
-              className="m-1 cursor-pointer" 
+            <Button 
+              size="xs" 
               onClick={() => setCurrentPod(
                 {title, url: article.audio_url, published: new Date(article.published!), article_url: article.feed_url, channel_link: article.channel_link}
               )}
             >
               <IconHeadphones size={20} color="purple" />
-            </span>
+            </Button>
           )}
         </HStack>
       </div>

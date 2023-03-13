@@ -9,6 +9,7 @@ import { Channel } from './Channel';
 import { ArticleView } from './ArticleView';
 import { FeedManager } from './FeedManager';
 import * as dataAgent from '../dataAgent';
+import AudioPlayer from './AudioPlayer';
 
 export default function Feed() {
   // channel list
@@ -20,6 +21,7 @@ export default function Feed() {
   const [showManager, setShowManager] = useState(false);
 
   const storeArticle = useStore(state => state.currentArticle);
+  const currentPod = useStore((state) => state.currentPod);
 
   const getList = () => {
     Promise.all(
@@ -144,6 +146,7 @@ export default function Feed() {
       <Flex direction="row" h="100vh" overflow="auto" m={2}>
         <Split className="split" sizes={[20, 80]} minSize={50}>
           <Box minW={64} h="full" p={1} overflowY="auto">
+            <AudioPlayer currentPod={currentPod} />
             <ChannelList 
               channelList={channelList} 
               refreshList={refreshList} 

@@ -74,6 +74,15 @@ export const updateArticleReadStatus = async (url: string): Promise<number> => {
   return resp.ok ? 1 : 0;
 }
 
+export const checkArticleStarStatus = async (url: string): Promise<boolean> => {
+  let resp = await fetch(`/api/check_star?url=${url}`);
+  if (resp.ok) {
+    return await resp.json();
+  } else {
+    return false;
+  }
+}
+
 export const updateAllReadStatus = async (
   feedLink: string, 
   readStatus: number,

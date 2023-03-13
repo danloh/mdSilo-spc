@@ -444,47 +444,67 @@ pub struct FeedStatus {
 }
 
 impl FeedStatus {
-  pub async fn del(
-    ctx: &AppState,
-    uname: &str,
-    link: &str,
-  ) -> Result<FeedStatus, AppError> {
-    // insert
-    let del_status: FeedStatus = sqlx::query_as(
-      r#"
-      DELETE FROM feed_status WHERE uname = $1 AND feed_url = $2 RETURNING *;
-      "#,
-    )
-    .bind(uname)
-    .bind(link)
-    .fetch_one(&ctx.pool)
-    .await?;
+  // pub async fn del(
+  //   ctx: &AppState,
+  //   uname: &str,
+  //   link: &str,
+  // ) -> Result<FeedStatus, AppError> {
+  //   // insert
+  //   let del_status: FeedStatus = sqlx::query_as(
+  //     r#"
+  //     DELETE FROM feed_status WHERE uname = $1 AND feed_url = $2 RETURNING *;
+  //     "#,
+  //   )
+  //   .bind(uname)
+  //   .bind(link)
+  //   .fetch_one(&ctx.pool)
+  //   .await?;
 
-    Ok(del_status)
-  }
+  //   Ok(del_status)
+  // }
 
   pub async fn new(
     ctx: &AppState,
     uname: &str,
     link: &str,
-    read: u8,
-    star: u8,
+    action: &str,
+    status: u8,
   ) -> Result<FeedStatus, AppError> {
-    let new_status: FeedStatus = sqlx::query_as(
-      r#"
-      INSERT OR IGNORE INTO feed_status 
-      (uname, feed_url, read_status, star_status)
-      VALUES
-      ($1, $2, $3, $4)
-      RETURNING *;
-      "#,
-    )
-    .bind(uname)
-    .bind(link)
-    .bind(read)
-    .bind(star)
-    .fetch_one(&ctx.pool)
-    .await?;
+    let new_status: FeedStatus = if action == "read" {
+      sqlx::query_as(
+        r#"
+        INSERT INTO feed_status 
+        (uname, feed_url, read_status)
+        VALUES
+        ($1, $2, $3)
+        ON CONFLICT(uname, feed_url) DO UPDATE SET
+          read_status = excluded.read_status
+        RETURNING *;
+        "#,
+      )
+      .bind(uname)
+      .bind(link)
+      .bind(status)
+      .fetch_one(&ctx.pool)
+      .await?
+    } else {
+      sqlx::query_as(
+        r#"
+        INSERT INTO feed_status 
+        (uname, feed_url, star_status)
+        VALUES
+        ($1, $2, $3)
+        ON CONFLICT(uname, feed_url) DO UPDATE SET
+          star_status = excluded.star_status
+        RETURNING *;
+        "#,
+      )
+      .bind(uname)
+      .bind(link)
+      .bind(status)
+      .fetch_one(&ctx.pool)
+      .await?
+    };
 
     Ok(new_status)
   }
@@ -531,6 +551,27 @@ impl FeedStatus {
     .unwrap_or_default();
 
     Ok(feeds)
+  }
+
+  pub async fn check_star(
+    ctx: &AppState,
+    uname: &str,
+    url: &str,
+  ) -> Result<bool, AppError> {
+    let res: FeedStatus = sqlx::query_as(
+      r#"
+      SELECT * FROM feed_status
+      WHERE uname = $1 AND feed_url = $2 AND star_status = $3;
+      "#,
+    )
+    .bind(uname)
+    .bind(url)
+    .bind(1)
+    .fetch_one(&ctx.pool)
+    .await?;
+    
+    println!("check res: {:?}", res);
+    return Ok(true);
   }
 }
 

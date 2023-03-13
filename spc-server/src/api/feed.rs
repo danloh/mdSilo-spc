@@ -155,7 +155,7 @@ pub async fn get_feeds_by_channel(
   }
   let res = Feed::get_list_by_channel(&ctx, &url, 64, 1)
     .await
-    .map_err(|_e| StatusCode::BAD_REQUEST)?;
+    .map_err(|_e| StatusCode::NOT_FOUND)?;
 
   return Ok(Json(res))
 }
@@ -215,9 +215,10 @@ pub async fn star_feed(
 
   let claim = check.claim;
   let uname = claim.unwrap_or_default().uname;
-  let res = FeedStatus::new(&ctx, &uname, &url, 1, 1)
+  let res = FeedStatus::new(&ctx, &uname, &url, "star", 1)
     .await
-    .map_err(|_e| StatusCode::BAD_REQUEST)?;
+    .map_err(|e| warn!("star feed: {}", e))
+    .unwrap_or_default();
 
   return Ok(Json(res))
 }
@@ -239,9 +240,35 @@ pub async fn unstar_feed(
 
   let claim = check.claim;
   let uname = claim.unwrap_or_default().uname;
-  let res = FeedStatus::del(&ctx, &uname, &url)
+  let res = FeedStatus::new(&ctx, &uname, &url, "star", 0)
     .await
-    .map_err(|_e| StatusCode::BAD_REQUEST)?;
+    .map_err(|e| warn!("unstar feed: {}", e))
+    .unwrap_or_default();
+
+  return Ok(Json(res))
+}
+
+/// Handler for the GET `/api/check_star?url=` endpoint.
+#[debug_handler]
+pub async fn check_star(
+  State(ctx): State<Ctx>,
+  Query(param): Query<ApiQuery>,
+  check: ClaimCan<BASIC_PERMIT>,
+) -> Result<impl IntoResponse, StatusCode> {
+  if !check.can() {
+    return Err(StatusCode::UNAUTHORIZED);
+  }
+  let url = param.url.unwrap_or_default();
+  if url.trim().len() == 0 {
+    return Err(StatusCode::BAD_REQUEST);
+  }
+
+  let claim = check.claim;
+  let uname = claim.unwrap_or_default().uname;
+  let res = FeedStatus::check_star(&ctx, &uname, &url)
+    .await
+    .map_err(|e| warn!("check star: {}", e))
+    .unwrap_or_default();
 
   return Ok(Json(res))
 }
@@ -263,9 +290,10 @@ pub async fn read_feed(
 
   let claim = check.claim;
   let uname = claim.unwrap_or_default().uname;
-  let res = FeedStatus::new(&ctx, &uname, &url, 1, 1)
+  let res = FeedStatus::new(&ctx, &uname, &url, "read", 1)
     .await
-    .map_err(|_e| StatusCode::BAD_REQUEST)?;
+    .map_err(|e| warn!("read status: {}", e))
+    .unwrap_or_default();
 
   return Ok(Json(res))
 }

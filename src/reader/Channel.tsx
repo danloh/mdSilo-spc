@@ -1,6 +1,6 @@
 import { memo, useEffect, useState } from "react";
 import { Flex, Text, Spinner, Tooltip, Box, HStack } from "@chakra-ui/react";
-import { IconCircle, IconCircleCheck, IconRefresh } from "@tabler/icons-react";
+import { IconCircleCheck, IconRefresh } from "@tabler/icons-react";
 import { fmtDatetime } from '../utils';
 import { ArticleType, ChannelType } from "./types";
 
@@ -21,9 +21,7 @@ export function Channel(props: Props) {
   } = props;
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center"><Spinner className="w-8 h-8" /></div>
-    );
+    return (<Spinner />);
   } else if (!articles) {
     return (<></>);
   }
@@ -47,7 +45,7 @@ export function Channel(props: Props) {
           </>
         )}
       </HStack>
-      {syncing && <Spinner className="w-4 h-4" />}
+      {syncing && <Spinner boxSize={6} />}
       <ArticleList
         articles={articles}
         onClickArticle={onClickArticle}
@@ -113,21 +111,17 @@ const ArticleItem = memo(function ArticleItm(props: ItemProps) {
 
   //useEffect(() => { setReadStatus(article.read_status); }, [article.read_status])
 
-  const itemClass = `hover:bg-gray-200 dark:hover:bg-gray-800 ${highlight ? 'bg-blue-200 dark:bg-blue-800' : ''}`;
-
   return (
     <Flex
       direction="column"
       cursor="pointer"
       my={1}
-      className={itemClass}
+      bgColor={highlight ? 'blue.200' : ''}
+      _hover={{bgColor: "gray.200"}}
       onClick={handleClick}
       aria-hidden="true"
     >
-      <Flex className="flex flex-row items-center justify-start">
-        {/* {(readStatus === 0) && <IconCircle className="w-2 h-2 m-1 text-blue-500 fill-blue-500" />} */}
-        <Text as="b" m={1} className="font-bold dark:text-white">{article.title}</Text>
-      </Flex>
+      <Text as="b" m={1} className="font-bold dark:text-white">{article.title}</Text>
       <Text as="i" fontSize="sm" m={1} className="dark:text-slate-400">
         {fmtDatetime(article.published || '')}
       </Text>
