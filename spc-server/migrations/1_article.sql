@@ -1,7 +1,7 @@
 CREATE TABLE articles (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   uname VARCHAR NOT NULL,
-  title VARCHAR UNIQUE NOT NULL,
+  title VARCHAR UNIQUE NOT NULL, -- must be unique for wikilink
   cover TEXT NOT NULL DEFAULT '',
   content TEXT NOT NULL,
   created_at INTEGER NOT NULL,
@@ -16,6 +16,16 @@ CREATE TABLE pieces (
   content TEXT NOT NULL,
   created_at INTEGER NOT NULL,
   is_hidden BOOLEAN DEFAULT FALSE
+);
+
+CREATE TABLE notes (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  uname VARCHAR NOT NULL,
+  title VARCHAR UNIQUE NOT NULL,
+  content TEXT NOT NULL,
+  folder VARCHAR NOT NULL DEFAULT 'silo',
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL
 );
 
 CREATE TABLE tags (

@@ -9,7 +9,8 @@ use crate::{
       get_feeds_by_channel, star_feed, unstar_feed, read_feed, 
       get_read_feeds, get_star_feeds, check_star, check_read, 
       get_audio_feeds
-    }
+    },
+    note::{new_note, get_note, get_notes, get_notes_by_folder, move_note, del_note}
   },
   ssr::{
     admin::{mod_user, save_site_config, site_config_view, user_list_page},
@@ -76,6 +77,7 @@ pub async fn router(ctx: AppState) -> Router {
   let ws_route = ws_server(ws_config).await;
 
   let router_api = Router::new()
+    // feed reader
     .route("/api/fetch_feed", get(fetch_feed))
     .route("/api/add_channel", post(add_channel))
     .route("/api/get_channels", get(get_sub_channels))
@@ -89,6 +91,13 @@ pub async fn router(ctx: AppState) -> Router {
     .route("/api/get_read_feeds", get(get_read_feeds))
     .route("/api/get_star_feeds", get(get_star_feeds))
     .route("/api/get_audio_feeds", get(get_audio_feeds))
+    // note
+    .route("/api/new_note", post(new_note))
+    .route("/api/get_note/:id", get(get_note))
+    .route("/api/get_notes", get(get_notes))
+    .route("/api/get_folder_notes/:folder", get(get_notes_by_folder))
+    .route("/api/move_note/:id/:folder", get(move_note))
+    .route("/api/del_note/:id", get(del_note))
     .with_state(ctx.clone());
 
   let router_ssr = Router::new()

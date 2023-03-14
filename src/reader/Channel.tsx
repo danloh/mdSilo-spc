@@ -1,11 +1,9 @@
 import { memo, useEffect, useState } from "react";
 import { Flex, Text, Spinner, Tooltip, Box, HStack } from "@chakra-ui/react";
 import { TbRefresh } from "react-icons/tb";
-import { fmtDatetime, isUrl } from '../utils';
+import { fmtDatetime } from '../utils';
 import { ArticleType, ChannelType } from "./types";
 import * as dataAgent from '../dataAgent';
-// import { useStore } from "../lib/store";
-// import { articleToPod } from "./ArticleView";
 
 type Props = {
   channel: ChannelType | null;
@@ -97,15 +95,11 @@ type ItemProps = {
 const ArticleItem = memo(function ArticleItm(props: ItemProps) {
   const { article, onArticleSelect, highlight } = props;
   const [readStatus, setReadStatus] = useState(false);
-  // const setCurrentPod = useStore(state => state.setCurrentPod);
 
   const handleClick = async () => {
     if (onArticleSelect) {
       await onArticleSelect(article);
       setReadStatus(true);
-      // if (isUrl(article.audio_url.trim())) {
-      //   setCurrentPod(articleToPod(article))
-      // }
     }
   };
 

@@ -10,19 +10,12 @@ import {
   Input,
   InputGroup,
   InputRightElement,
-  Select,
   Stack,
   Switch,
   Text,
   useToast,
 } from "@chakra-ui/react";
-import {
-  VscChevronRight,
-  VscFolderOpened,
-  VscGist,
-  VscMenu,
-  VscSave,
-} from "react-icons/vsc";
+import { VscMarkdown, VscMenu, VscSave } from "react-icons/vsc";
 import useStorage from "use-local-storage-state";
 import { useDebounce } from "use-debounce";
 import Editor from "@monaco-editor/react";
@@ -265,10 +258,7 @@ export default function App() {
             px={3.5}
             flexShrink={0}
           >
-            <Icon as={VscFolderOpened} fontSize="md" color="blue.500" />
-            <Text>documents</Text>
-            <Icon as={VscChevronRight} fontSize="md" />
-            <Icon as={VscGist} fontSize="md" color="purple.500" />
+            <Icon as={VscMarkdown} fontSize="md" color="purple.500" />
             <Text>{id}</Text>
           </HStack>
             <Box flex={1} minH={0} h="100%" >
