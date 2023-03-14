@@ -1,9 +1,11 @@
 import { memo, useEffect, useState } from "react";
 import { Flex, Text, Spinner, Tooltip, Box, HStack } from "@chakra-ui/react";
-import { IconRefresh } from "@tabler/icons-react";
-import { fmtDatetime } from '../utils';
+import { TbRefresh } from "react-icons/tb";
+import { fmtDatetime, isUrl } from '../utils';
 import { ArticleType, ChannelType } from "./types";
 import * as dataAgent from '../dataAgent';
+// import { useStore } from "../lib/store";
+// import { articleToPod } from "./ArticleView";
 
 type Props = {
   channel: ChannelType | null;
@@ -18,7 +20,7 @@ type Props = {
 
 export function Channel(props: Props) {
   const { 
-    channel, starChannel, articles, handleRefresh, updateAllReadStatus, onClickArticle, loading, syncing 
+    channel, starChannel, articles, handleRefresh, onClickArticle, loading, syncing 
   } = props;
 
   if (loading) {
@@ -30,11 +32,13 @@ export function Channel(props: Props) {
   return (
     <Flex direction="column" p={2} className="items-between justify-center">
       <HStack p={2} className="bg-slate-500 rounded">
-        <Text as="b" fontSize="xl">{channel?.title || (starChannel ? 'Starred' : '')}</Text>
+        <Text as="b" fontSize="xl">
+          {channel?.title || (starChannel ? 'Starred' : 'Playlist')}
+        </Text>
         {(channel) && (
           <Tooltip label="Refresh Channel" placement="bottom">
             <button className="" onClick={handleRefresh}>
-              <IconRefresh size={18} className="m-1 dark:text-white" />
+              <TbRefresh size={18} className="m-1 dark:text-white" />
             </button>
           </Tooltip>
         )}
@@ -93,11 +97,15 @@ type ItemProps = {
 const ArticleItem = memo(function ArticleItm(props: ItemProps) {
   const { article, onArticleSelect, highlight } = props;
   const [readStatus, setReadStatus] = useState(false);
+  // const setCurrentPod = useStore(state => state.setCurrentPod);
 
   const handleClick = async () => {
     if (onArticleSelect) {
       await onArticleSelect(article);
       setReadStatus(true);
+      // if (isUrl(article.audio_url.trim())) {
+      //   setCurrentPod(articleToPod(article))
+      // }
     }
   };
 

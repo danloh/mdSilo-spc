@@ -7,7 +7,8 @@ use crate::{
     feed::{
       fetch_feed, add_channel, get_sub_channels, get_feeds, 
       get_feeds_by_channel, star_feed, unstar_feed, read_feed, 
-      get_read_feeds, get_star_feeds, check_star, check_read
+      get_read_feeds, get_star_feeds, check_star, check_read, 
+      get_audio_feeds
     }
   },
   ssr::{
@@ -87,6 +88,7 @@ pub async fn router(ctx: AppState) -> Router {
     .route("/api/read_feed", get(read_feed))
     .route("/api/get_read_feeds", get(get_read_feeds))
     .route("/api/get_star_feeds", get(get_star_feeds))
+    .route("/api/get_audio_feeds", get(get_audio_feeds))
     .with_state(ctx.clone());
 
   let router_ssr = Router::new()

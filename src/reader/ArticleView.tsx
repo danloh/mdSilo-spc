@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Box, Button, Heading, HStack, Text } from "@chakra-ui/react";
-import { IconHeadphones, IconLink, IconStar } from "@tabler/icons-react";
+import { TbHeadphones, TbLink, TbStar } from "react-icons/tb";
 import { useStore } from "../lib/store";
 import { fmtDatetime } from "../utils";
-import { ArticleType } from "./types";
+import { ArticleType, PodType } from "./types";
 import * as dataAgent from '../dataAgent';
 
 type ViewProps = {
@@ -54,25 +54,24 @@ export function ArticleView(props: ViewProps) {
             rel="noreferrer"
             href={feed_url}
           >
-            <IconLink size={20} />
+            <TbLink size={20} />
           </a>
           <Button 
             size="xs" 
+            title={`${isStar ? 'Starred' : 'Star'}`}
             onClick={async () => {
               await starArticle(article.feed_url, Math.abs(Number(isStar) - 1));
               setIsStar(!isStar);
             }}
           >
-            <IconStar size={20} color={`${isStar ? 'red' : 'green'}`} />
+            <TbStar size={20} color={`${isStar ? 'red' : 'green'}`} />
           </Button>
           {article.audio_url.trim() && (
             <Button 
               size="xs" 
-              onClick={() => setCurrentPod(
-                {title, url: article.audio_url, published: new Date(article.published!), article_url: article.feed_url, channel_link: article.channel_link}
-              )}
+              onClick={() => setCurrentPod(articleToPod(article))}
             >
-              <IconHeadphones size={20} color="purple" />
+              <TbHeadphones size={20} color="purple" />
             </Button>
           )}
         </HStack>
@@ -80,11 +79,20 @@ export function ArticleView(props: ViewProps) {
       <Box p={2}>
         <div
           className="content"
-          color=""
           // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={{__html: pageContent}}
         />
       </Box>
     </Box>
   );
+}
+
+export function articleToPod (article: ArticleType): PodType {
+  return {
+    title: article.title, 
+    url: article.audio_url, 
+    published: new Date(article.published! * 1000), 
+    article_url: article.feed_url, 
+    channel_link: article.channel_link,
+  };
 }

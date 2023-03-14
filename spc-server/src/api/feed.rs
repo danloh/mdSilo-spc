@@ -160,6 +160,25 @@ pub async fn get_feeds_by_channel(
   return Ok(Json(res))
 }
 
+/// Handler for the GET `/api/get_audio_feeds` endpoint.
+#[debug_handler]
+pub async fn get_audio_feeds(
+  State(ctx): State<Ctx>,
+  check: ClaimCan<BASIC_PERMIT>,
+) -> Result<impl IntoResponse, StatusCode> {
+  if !check.can() {
+    return Err(StatusCode::UNAUTHORIZED);
+  }
+
+  let claim = check.claim;
+  let uname = claim.unwrap_or_default().uname;
+  let res = Subscription::get_audio_feeds(&ctx, &uname)
+    .await
+    .map_err(|_e| StatusCode::BAD_REQUEST)?;
+
+  return Ok(Json(res))
+}
+
 /// Handler for the GET `/api/get_star_feeds` endpoint.
 #[debug_handler]
 pub async fn get_star_feeds(

@@ -16,14 +16,7 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import {
-  VscChevronRight,
-  VscFolderOpened,
-  VscGist,
-  VscMenu,
-  VscRepoPull,
-  VscSave,
-} from "react-icons/vsc";
+import { VscGist, VscMenu, VscRepoPull, VscSave } from "react-icons/vsc";
 import useStorage from "use-local-storage-state";
 import { useDebounce } from "use-debounce";
 import { editor } from "monaco-editor/esm/vs/editor/editor.api";
@@ -342,9 +335,6 @@ export default function App() {
             px={3.5}
             flexShrink={0}
           >
-            <Icon as={VscFolderOpened} fontSize="md" color="blue.500" />
-            <Text>documents</Text>
-            <Icon as={VscChevronRight} fontSize="md" />
             <Icon as={VscGist} fontSize="md" color="purple.500" />
             <Text>{id}</Text>
           </HStack>

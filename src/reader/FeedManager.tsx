@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
-import { Box, Button, Flex, HStack, Input, Radio, RadioGroup, Stack, Text, Tooltip } from "@chakra-ui/react";
-import { IconHeadphones, IconPlus, IconRss, IconTrash } from "@tabler/icons-react";
+import { 
+  Box, Button, Flex, HStack, Input, Radio, RadioGroup, Stack, Text, Tooltip 
+} from "@chakra-ui/react";
+import { TbHeadphones, TbPlus, TbRss, TbTrash } from "react-icons/tb";
 import { ChannelType } from "./types";
 import * as dataAgent from "../dataAgent";
 
@@ -120,7 +122,7 @@ export function FeedManager(props: Props) {
             className="px-2 py-1 text-sm text-black rounded bg-primary-200 hover:bg-primary-100"
             onClick={() => setShowAdd(!showAdd)}
           >
-            <IconPlus size={15} className="" />
+            <TbPlus size={15} className="" />
           </button>
         </Tooltip>
         <Box ml={4} className="">
@@ -147,13 +149,13 @@ export function FeedManager(props: Props) {
           return (
             <HStack key={idx} m={1}>
               {channel.ty === 'podcast' 
-                ? <IconHeadphones size={12}  color="purple" /> 
-                : <IconRss size={12} color="orange" />
+                ? <TbHeadphones size={12}  color="purple" /> 
+                : <TbRss size={12} color="orange" />
               }
               <Text className="text-sm dark:text-white">{channel.title}</Text>
               <Text className="text-sm dark:text-white">{channel.link}</Text>
               <button onClick={async () => await handleDelete(channel)}>
-                <IconTrash size={18} className="m-1 dark:text-white" />
+                <TbTrash size={18} className="m-1 dark:text-white" />
               </button>
             </HStack>
           )

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Box, Flex, HStack, Spinner, Stack, Image, Text, Tooltip } from "@chakra-ui/react";
-import { IconHeadphones, IconRefresh, IconRss, IconSettings, IconStar } from "@tabler/icons-react";
+import { TbHeadphones, TbPlaylist, TbRefresh, TbRss, TbSettings, TbStar } from "react-icons/tb";
 import { getFavicon } from "../utils";
 import { ChannelType } from "./types";
 
@@ -12,10 +12,14 @@ type Props = {
   doneNum: number;
   onClickFeed: (link: string) => Promise<void>;
   onClickStar: () => Promise<void>;
+  onClickAudio: () => Promise<void>;
 };
 
 export function ChannelList(props: Props) {
-  const { channelList, refreshList, onShowManager, onClickFeed, onClickStar, refreshing, doneNum } = props;
+  const { 
+    channelList, refreshList, onShowManager, onClickFeed, 
+    onClickStar, onClickAudio, refreshing, doneNum 
+  } = props;
 
   const [highlighted, setHighlighted] = useState<ChannelType>();
   
@@ -38,12 +42,12 @@ export function ChannelList(props: Props) {
               }}
             >
               <Tooltip label={channel.link} placement="top">
-                <HStack className="flex flex-row items-center justify-start mr-1">
+                <HStack mr={1}>
                   <Image src={ico} boxSize={4} mx={1} alt=">" />
                   <Text className="text-sm text-black dark:text-white">{title}</Text>
                   {ty === 'podcast' 
-                    ? <IconHeadphones size={12} color="purple" />
-                    : <IconRss size={12} color="orange" /> 
+                    ? <TbHeadphones size={12} color="purple" />
+                    : <TbRss size={12} color="orange" /> 
                   }
                 </HStack>
               </Tooltip>
@@ -58,16 +62,16 @@ export function ChannelList(props: Props) {
   };
 
   return (
-    <Flex direction="column" className="flex flex-col">
+    <Flex direction="column">
       <HStack spacing={2}>
         <Tooltip label="Refresh All" placement="bottom">
-          <button className="cursor-pointer" onClick={refreshList}>
-            <IconRefresh size={24} className="m-1 dark:text-white" />
+          <button onClick={refreshList}>
+            <TbRefresh size={24} className="m-1 dark:text-white" />
           </button>
         </Tooltip>
         <Tooltip label="Manage Channel" placement="bottom">
           <button className="cursor-pointer" onClick={onShowManager}>
-            <IconSettings size={24} className="m-1 dark:text-white" />
+            <TbSettings size={24} className="m-1 dark:text-white" />
           </button>
         </Tooltip>
         {refreshing && (
@@ -78,13 +82,13 @@ export function ChannelList(props: Props) {
         )}
       </HStack>
       <Stack p={1} mt={2} className="p-1">
-        <HStack 
-          direction="row"
-          cursor="pointer"
-          onClick={onClickStar}
-        >
-          <IconStar size={18} className="m-1 fill-yellow-500 text-yellow-500" />
+        <HStack direction="row" cursor="pointer" onClick={onClickStar}>
+          <TbStar size={18} color="red" fill="red" />
           <Text className="m-1 dark:text-white">Starred</Text>
+        </HStack>
+        <HStack direction="row" cursor="pointer" onClick={onClickAudio}>
+          <TbPlaylist size={18} color="purple" fill="purple" />
+          <Text className="m-1 dark:text-white">Playlist</Text>
         </HStack>
         {renderFeedList()}
       </Stack>

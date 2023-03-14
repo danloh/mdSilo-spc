@@ -41,6 +41,11 @@ export const getArticleList = async (url: string) : Promise<ArticleType[]> => {
   return await resp.json();
 }
 
+export const getAudioArticles = async () : Promise<ArticleType[]> => {
+  let resp = await fetch(`/api/get_audio_feeds`);
+  return await resp.json();
+}
+
 export const getStarArticles = async () : Promise<ArticleType[]> => {
   let resp = await fetch(`/api/get_star_feeds`);
   return await resp.json();

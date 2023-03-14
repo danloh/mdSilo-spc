@@ -78,14 +78,25 @@ export default function Feed() {
     setLoading(false);
   };
 
-  const onClickStar = async () => {
+  const onBeforeClick = () => {
     setLoading(true);
     setCurrentChannel(null);
     setCurrentArticles(null);
-    setStarChannel(true);
     setShowManager(false);
+  };
+
+  const onClickStar = async () => {
+    onBeforeClick();
+    setStarChannel(true);
     const starArticles = await dataAgent.getStarArticles();
     setCurrentArticles(starArticles);
+    setLoading(false);
+  };
+
+  const onClickAudio = async () => {
+    onBeforeClick();
+    const audioArticles = await dataAgent.getAudioArticles();
+    setCurrentArticles(audioArticles);
     setLoading(false);
   };
 
@@ -136,11 +147,6 @@ export default function Feed() {
     await dataAgent.updateArticleStarStatus(url, status);
   };
 
-  const [hideCol, setHideCol] = useState(false);
-  const hideChannelCol = () => {
-    setHideCol(!hideCol);
-  };
-
   return (
     <ErrorBoundary>
       <Flex direction="row" h="100vh" overflow="auto" m={2}>
@@ -153,6 +159,7 @@ export default function Feed() {
               onShowManager={onShowManager} 
               onClickFeed={onClickFeed}
               onClickStar={onClickStar} 
+              onClickAudio={onClickAudio}
               refreshing={refreshing}
               doneNum={doneNum}
             />

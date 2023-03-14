@@ -372,6 +372,27 @@ impl Subscription {
     Ok(subs)
   }
 
+  pub async fn get_audio_feeds(
+    ctx: &AppState,
+    uname: &str,
+  ) -> Result<Vec<Feed>, AppError> {
+    let audiolist: Vec<Feed> = sqlx::query_as(
+      r#"
+      SELECT * FROM feeds 
+      WHERE audio_url != '' AND feed_url IN (
+        SELECT feed_url FROM subscriptions  
+        WHERE uname = $1 
+      );
+      "#,
+    )
+    .bind(uname)
+    .fetch_all(&ctx.pool)
+    .await
+    .unwrap_or_default();
+
+    Ok(audiolist)
+  }
+
   pub async fn new(
     ctx: &AppState,
     uname: &str,
