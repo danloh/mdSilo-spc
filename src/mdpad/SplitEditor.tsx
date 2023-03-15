@@ -95,7 +95,7 @@ export function MdEditor(props: EditorProps) {
           />
         </Box>
         <Box overflow="auto">
-          <Preview text={mdString} darkMode={darkMode} />
+          <Preview key={mdString.length} text={mdString} darkMode={darkMode} />
         </Box>
       </Split>
     </Box>

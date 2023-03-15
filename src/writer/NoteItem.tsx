@@ -31,6 +31,7 @@ type Props = {
   onMoveNote: (id: string, folder: string) => void;
   onDelNote: (id: string) => void;
   darkMode: boolean;
+  isActive: boolean;
 };
 
 export default function NoteItem({
@@ -40,13 +41,15 @@ export default function NoteItem({
   onMoveNote,
   onDelNote,
   darkMode,
+  isActive,
 }: Props) {
   return (
     <HStack 
       justifyContent="space-between" m={1} px={2}  
       _hover={{bgColor: darkMode ? "#464647" : "gray.200"}}
+      bgColor={isActive ? (darkMode ? "#464647" : "gray.300") : ""}
     >
-      <HStack p={1} rounded="md" cursor="pointer">
+      <HStack rounded="md" cursor="pointer">
         <Icon as={VscMarkdown} size={8} />
         <Text fontWeight="medium" onClick={() => onOpenNote(note.id)}>
           {note.title}

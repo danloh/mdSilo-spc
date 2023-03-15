@@ -16,6 +16,7 @@ pub struct NewNote {
   id: String,
   title: String,
   content: String,
+  folder: Option<String>,
 }
 
 /// Handler for the POST `/api/new_note` endpoint.
@@ -31,9 +32,9 @@ pub async fn new_note(
 
   let claim = check.claim;
   let uname = claim.unwrap_or_default().uname;
-
+  let folder = &payload.folder.unwrap_or(String::from("silo"));
   let new_note = Note::new(
-    &ctx, &uname, &payload.id, &payload.title, &payload.content
+    &ctx, &uname, &payload.id, &payload.title, &payload.content, folder
   )
   .await
   .map_err(|_e| StatusCode::BAD_REQUEST)?;

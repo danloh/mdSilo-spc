@@ -56,15 +56,16 @@ impl Note {
     id: &str,
     title: &str, 
     content: &str,
+    folder: &str,
   ) -> Result<Note, AppError> {
     let now = Utc::now().timestamp();
     // insert
     let new_note: Note = sqlx::query_as(
       r#"
       INSERT OR IGNORE INTO notes 
-      (id, title, uname, content, created_at, updated_at)
+      (id, title, uname, content, folder, created_at, updated_at)
       VALUES
-      ($1, $2, $3, $4, $5, $6)
+      ($1, $2, $3, $4, $5, $6, $7)
       RETURNING *;
       "#,
     )
@@ -72,6 +73,7 @@ impl Note {
     .bind(title)
     .bind(&uname)
     .bind(content)
+    .bind(folder)
     .bind(&now)
     .bind(&now)
     .fetch_one(&ctx.pool)
@@ -213,6 +215,11 @@ pub struct NoteRes {
   pub updated_at: i64,
 }
 
+#[derive(FromRow, Serialize, Debug, Default)]
+pub struct FolderRes {
+  pub folder: String,
+}
+
 impl QueryNotes {
   pub async fn get(self, ctx: &AppState) -> Result<(Vec<NoteRes>, i64), AppError> {
     let note_list: Vec<NoteRes> = match self {
@@ -251,23 +258,23 @@ impl QueryNotes {
   }
 
   pub async fn get_folders(ctx: &AppState, uname: &str) -> Result<Vec<String>, AppError> {
-    let note_list: Vec<NoteRes> = sqlx::query_as(
+    let folder_list: Vec<FolderRes> = sqlx::query_as(
       r#"
       SELECT folder FROM notes 
       WHERE uname = $1 
-      ORDER BY updated_at DESC; 
+      GROUP BY folder; 
       "#,
     )
     .bind(&uname)
     .fetch_all(&ctx.pool)
     .await
     .unwrap_or_default();
-  
-    let folder_list: Vec<String> = note_list
+
+    let folders: Vec<String> = folder_list
       .into_iter()
       .map(|n| n.folder)
       .collect();
 
-    Ok(folder_list)
+    Ok(folders)
   }
 }

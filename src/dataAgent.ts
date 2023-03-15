@@ -116,9 +116,9 @@ export const updateAllReadStatus = async (
 // ==========================================
 
 export const newNote = async (
-  id: string, title: string, content: string
+  id: string, title: string, content: string, folder: string
 ): Promise<NoteType> => {
-  return await postReq(`/api/new_note`, {id, title, content});
+  return await postReq(`/api/new_note`, {id, title, content, folder});
 }
 
 export const renameNote = async (

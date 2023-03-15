@@ -26,6 +26,7 @@ import NewNote from "./NewNote";
 import * as dataAgent from '../dataAgent';
 import { NoteType, SimpleNote } from "./types";
 import NoteItem from "./NoteItem";
+import Preview from "../mdpad/components/Preview";
 
 function getWsUri(id: string) {
   return (
@@ -42,7 +43,6 @@ export default function App() {
     "connected" | "disconnected" | "desynchronized"
   >("disconnected");
   const [editor, setEditor] = useState<editor.IStandaloneCodeEditor>();
-  const [darkMode, setDarkMode] = useStorage("darkMode", () => false);
   const pad = useRef<Pad>();
 
   const [folderList, setFolderList] = useState<string[]>(['silo']);
@@ -103,22 +103,47 @@ export default function App() {
     setHideSide(!hideSide);
   }
 
+  const [darkMode, setDarkMode] = useStorage("darkMode", () => false);
   function handleDarkMode() {
     setDarkMode(!darkMode);
   }
 
+  const [readMode, setReadMode] = useState(true);
+  function handleReadMode() {
+    setReadMode(!readMode);
+  }
+
   async function newNote(title: string) {
     const id = `note_${genHash()}`;
-    const note = await dataAgent.newNote(id, title, '');
-    getNotesByFolder(currentFolder);
+    const note = await dataAgent.newNote(id, title, '', currentFolder);
+    // getNotesByFolder(currentFolder);
     setCurrentNote(note);
     setText(note.content);
+    // insert locally
+    const notes = [...noteList];
+    notes.unshift(note as SimpleNote);
+    setNoteList(notes);
   }
 
   async function openNote(id: string) {
     const note = await dataAgent.getNote(id);
     setCurrentNote(note);
-    setText(note.content || '');
+    const content = note.content || '';
+    setText(content);
+    if (editor?.getModel()) {
+      const model = editor.getModel()!;
+      model.pushEditOperations(
+        editor.getSelections(),
+        [
+          {
+            range: model.getFullModelRange(),
+            text: content,
+          },
+        ],
+        () => null
+      );
+      editor.setPosition({ column: 0, lineNumber: 0 });
+    }
   }
 
   async function renameNote(id: string, title: string) {
@@ -141,7 +166,11 @@ export default function App() {
     const idx = notes.findIndex(n => n.id === id);
     notes.splice(idx, 1);
     setNoteList(notes);
-    getFolders();
+    // getFolders(); 
+    // insert locally
+    const folders = [...folderList];
+    folders.unshift(folder);
+    setFolderList(folders);
   }
 
   async function delNote(id: string) {
@@ -154,7 +183,7 @@ export default function App() {
   }
 
   const [text, setText] = useState(defaultMD);
-  const [mdString] = useDebounce(text, 100, { maxWait: 1000 });
+  const mdString = text;
 
   return (
     <Flex
@@ -187,7 +216,7 @@ export default function App() {
           fontSize="sm"
           px={2}
         >
-          Writing 
+          {currentNote?.title || 'Taking Note'} 
         </Box>
         <ConnectionStatus darkMode={darkMode} connection={connection} />
       </Flex>
@@ -211,6 +240,10 @@ export default function App() {
           <Flex justifyContent="space-between" mt={4} mb={1.5} w="full">
             <Heading size="sm">Dark Mode</Heading>
             <Switch isChecked={darkMode} onChange={handleDarkMode} />
+          </Flex>
+          <Flex justifyContent="space-between" mt={4} mb={1.5} w="full">
+            <Heading size="sm">Read Mode</Heading>
+            <Switch isChecked={readMode} onChange={handleReadMode} />
           </Flex>
           <NewNote onNewNote={newNote} darkMode={darkMode} />
           <Select
@@ -237,6 +270,7 @@ export default function App() {
                 onMoveNote={moveNote}
                 onDelNote={delNote}
                 darkMode={darkMode} 
+                isActive={note.id === currentNote?.id}
               />
             ))}
           </Stack>
@@ -254,13 +288,23 @@ export default function App() {
             <Icon as={VscMarkdown} fontSize="md" color="purple.500" />
             <Text>{currentNote?.title || ''}</Text>
           </HStack>
-          <MdEditor 
-            language={language}
-            mdString={mdString}
-            darkMode={darkMode}
-            setText={setText}
-            setEditor={setEditor}
-          />
+          {readMode ? (
+            <Box flex={1} minH={0} h="100%" key={currentNote?.id || 'blank'}>
+              <Heading size="xl" m={2}>{currentNote?.title || ''}</Heading>
+              <Box overflow="auto">
+                <Preview text={mdString} darkMode={darkMode} />
+              </Box>
+            </Box>
+          ) : (
+            <MdEditor 
+              key={currentNote?.id || 'blank'}
+              language={language}
+              mdString={mdString}
+              darkMode={darkMode}
+              setText={setText}
+              setEditor={setEditor}
+            />
+          )}
         </Flex>
       </Flex>
       <Footer />
