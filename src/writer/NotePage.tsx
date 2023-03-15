@@ -7,9 +7,6 @@ import {
   Heading,
   HStack,
   Icon,
-  Input,
-  InputGroup,
-  InputRightElement,
   Stack,
   Switch,
   Text,
@@ -19,13 +16,15 @@ import { VscMarkdown, VscMenu, VscSave } from "react-icons/vsc";
 import useStorage from "use-local-storage-state";
 import { useDebounce } from "use-debounce";
 import { editor } from "monaco-editor/esm/vs/editor/editor.api";
-import names from "./lib/bands.json";
-import Pad, { UserInfo } from "./lib/mdpad";
-import useHash from "../useHash";
-import ConnectionStatus from "./components/ConnectionStatus";
-import Footer from "./components/Footer";
-import User from "./components/User";
-import { MdEditor } from "./SplitEditor";
+import Pad from "../mdpad/lib/mdpad";
+import { genHash } from "../useHash";
+import ConnectionStatus from "../mdpad/components/ConnectionStatus";
+import Footer from "../mdpad/components/Footer";
+import { MdEditor } from "../mdpad/SplitEditor";
+import NewNote from "./NewNote";
+import * as dataAgent from '../dataAgent';
+import { NoteType, SimpleNote } from "./types";
+import NoteItem from "./NoteItem";
 
 function getWsUri(id: string) {
   return (
@@ -36,7 +35,7 @@ function getWsUri(id: string) {
 }
 
 function generateName() {
-  return names[Math.floor(Math.random() * names.length)];
+  return '';
 }
 
 function generateHue() {
@@ -49,21 +48,30 @@ export default function App() {
   const [connection, setConnection] = useState<
     "connected" | "disconnected" | "desynchronized"
   >("disconnected");
-  const [users, setUsers] = useState<Record<number, UserInfo>>({});
-  const [name, setName] = useStorage("name", generateName);
-  const [hue, setHue] = useStorage("hue", generateHue);
+  const name = generateName();
+  const hue = generateHue();
   const [editor, setEditor] = useState<editor.IStandaloneCodeEditor>();
   const [darkMode, setDarkMode] = useStorage("darkMode", () => false);
   const pad = useRef<Pad>();
-  const id = useHash();
+  const [noteList, setNoteList] = useState<SimpleNote[]>([]);
+  const [currentNote, setCurrentNote] = useState<NoteType | null>(null);
+
+  const getNotesByFolder = (folder: string) => {
+   dataAgent.getNotesByFolder(folder).then((notes) => {
+      setNoteList(notes);
+    })
+  };
+
+  useEffect(() => { getNotesByFolder('silo'); }, []);
 
   useEffect(() => {
+    if (!currentNote?.id) return;
     if (editor?.getModel()) {
       const model = editor.getModel()!;
       model.setValue("");
       model.setEOL(0); // LF
       pad.current = new Pad({
-        uri: getWsUri(id),
+        uri: getWsUri(currentNote?.id),
         editor,
         onConnected: () => setConnection("connected"),
         onDisconnected: () => setConnection("disconnected"),
@@ -76,15 +84,13 @@ export default function App() {
             duration: null,
           });
         },
-        
-        onChangeUsers: setUsers,
       });
       return () => {
         pad.current?.dispose();
         pad.current = undefined;
       };
     }
-  }, [id, editor, toast, setUsers]);
+  }, [currentNote?.id, editor, toast]);
 
   useEffect(() => {
     if (connection === "connected") {
@@ -92,16 +98,6 @@ export default function App() {
     }
   }, [connection, name, hue]);
 
-  async function handleCopy() {
-    await navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}#${id}`);
-    toast({
-      title: "Copied!",
-      description: "Link copied to clipboard",
-      status: "success",
-      duration: 2000,
-      isClosable: true,
-    });
-  }
 
   const [hideSide, setHideSide] = useState(false);
   function handleHideSide() {
@@ -112,8 +108,33 @@ export default function App() {
     setDarkMode(!darkMode);
   }
 
+  async function newNote(title: string) {
+    const id = `note_${genHash()}`;
+    const note = await dataAgent.newNote(id, title, '');
+    setCurrentNote(note);
+    setText(note.content);
+  }
+
+  async function openNote(id: string) {
+    const note = await dataAgent.getNote(id);
+    setCurrentNote(note);
+    setText(note.content);
+  }
+
+  async function renameNote(id: string, title: string) {
+    console.log("rename: ", id, title)
+  }
+
+  async function moveNote(id: string, folder: string) {
+    console.log("move: ", id, folder)
+  }
+
+  async function delNote(id: string) {
+    console.log("del: ", id)
+  }
+
   async function handleSave() {
-    const resp = await fetch(`${window.location.origin}/api/savetoarticle/${id}`);
+    const resp = await fetch(`${window.location.origin}/api/savetoarticle/${''}`);
     if (resp.ok) {
       toast({
         title: "Saved!",
@@ -133,7 +154,7 @@ export default function App() {
     }
   }
 
-  const [text, setText] = useState("");
+  const [text, setText] = useState(defaultMD);
   const [mdString] = useDebounce(text, 100, { maxWait: 1000 });
 
   return (
@@ -193,6 +214,7 @@ export default function App() {
             <Heading size="sm">Dark Mode</Heading>
             <Switch isChecked={darkMode} onChange={handleDarkMode} />
           </Flex>
+          <NewNote onNewNote={newNote} darkMode={darkMode} />
           <Button
             size="sm"
             colorScheme={darkMode ? "whiteAlpha" : "blackAlpha"}
@@ -206,43 +228,17 @@ export default function App() {
           >
             Commit the Change
           </Button>
-          <Heading mt={4} mb={1.5} size="sm">
-            Share Link
-          </Heading>
-          <InputGroup size="sm">
-            <Input
-              readOnly
-              pr="3.5rem"
-              variant="outline"
-              bgColor={darkMode ? "#3c3c3c" : "white"}
-              borderColor={darkMode ? "#3c3c3c" : "white"}
-              value={`${window.location.origin}${window.location.pathname}#${id}`}
-            />
-            <InputRightElement width="3.5rem">
-              <Button
-                h="1.4rem"
-                size="xs"
-                onClick={handleCopy}
-                _hover={{ bg: darkMode ? "#575759" : "gray.200" }}
-                bgColor={darkMode ? "#575759" : "gray.200"}
-              >
-                Copy
-              </Button>
-            </InputRightElement>
-          </InputGroup>
-          <Heading mt={4} mb={1.5} size="sm">
-            Active Users
-          </Heading>
           <Stack spacing={0} mb={1.5} fontSize="sm">
-            <User
-              info={{ name, hue }}
-              isMe
-              onChangeName={(name) => name.length > 0 && setName(name)}
-              onChangeColor={() => setHue(generateHue())}
-              darkMode={darkMode}
-            />
-            {Object.entries(users).map(([id, info]) => (
-              <User key={id} info={info} darkMode={darkMode} />
+            {noteList.map((note) => (
+              <NoteItem 
+                key={note.id} 
+                note={note} 
+                onOpenNote={openNote}
+                onRename={renameNote}
+                onMoveNote={moveNote}
+                onDelNote={delNote}
+                darkMode={darkMode} 
+              />
             ))}
           </Stack>
         </Container>) : null}
@@ -257,7 +253,7 @@ export default function App() {
             flexShrink={0}
           >
             <Icon as={VscMarkdown} fontSize="md" color="purple.500" />
-            <Text>{id}</Text>
+            <Text>{currentNote?.title || ''}</Text>
           </HStack>
           <MdEditor 
             language={language}
@@ -272,3 +268,5 @@ export default function App() {
     </Flex>
   );
 }
+
+const defaultMD: string = "Welcome";

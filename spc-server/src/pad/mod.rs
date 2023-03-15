@@ -111,7 +111,7 @@ pub async fn ws_server(config: WsConfig) -> Router {
   router_ws
 }
 
-/// Handler for the `/api/socket/{id}` endpoint.
+/// Handler for the `/api/socket/:id` endpoint.
 async fn socket_handler(
   State(state): State<ServerState>,
   Path(id): Path<String>,
@@ -140,7 +140,7 @@ async fn socket_handler(
   Ok(ws.on_upgrade(|socket| async move { pad.on_connection(socket).await }))
 }
 
-/// Handler for the `/api/text/{id}` endpoint.
+/// Handler for the `/api/text/:id` endpoint.
 async fn text_handler(
   State(state): State<ServerState>,
   Path(id): Path<String>,
@@ -175,7 +175,7 @@ async fn stats_handler(
   }))
 }
 
-/// Handler for the `/api/savetoarticle/{id}` endpoint.
+/// Handler for the `/api/savetoarticle/:id` endpoint.
 async fn save_handler(
   State(state): State<ServerState>,
   Path(id): Path<String>,

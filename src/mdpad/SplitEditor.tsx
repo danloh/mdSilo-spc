@@ -70,3 +70,34 @@ export default function SplitEditor(props: EditorProps) {
     </> 
   );
 }
+
+export function MdEditor(props: EditorProps) {
+  const {language, mdString, darkMode, setText, setEditor} = props;
+
+  return (
+    <Box flex={1} minH={0} h="100%" >
+      <Split className="split" minSize={50}>
+        <Box>
+          <Editor
+            theme={darkMode ? "vs-dark" : "vs"}
+            language={language}
+            options={{
+              automaticLayout: true,
+              fontSize: 14,
+              wordWrap: "on",
+            }}
+            onMount={(editor) => setEditor(editor)}
+            onChange={(text) => {
+              if (text !== undefined) {
+                setText(text);
+              }
+            }}
+          />
+        </Box>
+        <Box overflow="auto">
+          <Preview text={mdString} darkMode={darkMode} />
+        </Box>
+      </Split>
+    </Box>
+  );
+}

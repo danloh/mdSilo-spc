@@ -1,8 +1,6 @@
 import {
   Button,
   ButtonGroup,
-  HStack,
-  Icon,
   Input,
   Popover,
   PopoverArrow,
@@ -12,33 +10,24 @@ import {
   PopoverFooter,
   PopoverHeader,
   PopoverTrigger,
-  Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useRef } from "react";
-import { FaPalette } from "react-icons/fa";
-import { VscAccount } from "react-icons/vsc";
-import { UserInfo } from "../lib/mdpad";
+import { useRef, useState } from "react";
 
-type UserProps = {
-  info: UserInfo;
-  isMe?: boolean;
-  onChangeName?: (name: string) => unknown;
-  onChangeColor?: () => unknown;
+type Props = {
+  onNewNote: (title: string) => void;
   darkMode: boolean;
 };
 
-export default function User({
-  info,
-  isMe = false,
-  onChangeName,
-  onChangeColor,
-  darkMode,
-}: UserProps) {
+export default function NewNote({onNewNote, darkMode}: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [title, setTitle] = useState('');
+  function handleNewNote() {
+    onNewNote(title);
+    onClose();
+  }
 
-  const nameColor = `hsl(${info.hue}, 90%, ${darkMode ? "70%" : "25%"})`;
   return (
     <Popover
       placement="right"
@@ -47,21 +36,7 @@ export default function User({
       initialFocusRef={inputRef}
     >
       <PopoverTrigger>
-        <HStack
-          p={2}
-          rounded="md"
-          _hover={{
-            bgColor: darkMode ? "#464647" : "gray.200",
-            cursor: "pointer",
-          }}
-          onClick={() => isMe && onOpen()}
-        >
-          <Icon as={VscAccount} />
-          <Text fontWeight="medium" color={nameColor}>
-            {info.name}
-          </Text>
-          {isMe && <Text>(me)</Text>}
-        </HStack>
+        <Button onClick={onOpen}>New Note</Button>
       </PopoverTrigger>
       <PopoverContent
         bgColor={darkMode ? "#333333" : "white"}
@@ -71,7 +46,7 @@ export default function User({
           fontWeight="semibold"
           borderColor={darkMode ? "#464647" : "gray.200"}
         >
-          Update Info
+          New Note
         </PopoverHeader>
         <PopoverArrow bgColor={darkMode ? "#333333" : "white"} />
         <PopoverCloseButton />
@@ -79,19 +54,10 @@ export default function User({
           <Input
             ref={inputRef}
             mb={2}
-            value={info.name}
+            value={title}
             maxLength={25}
-            onChange={(event) => onChangeName?.(event.target.value)}
+            onChange={(event) => setTitle(event.target.value)}
           />
-          <Button
-            size="sm"
-            w="100%"
-            leftIcon={<FaPalette />}
-            colorScheme={darkMode ? "whiteAlpha" : "gray"}
-            onClick={onChangeColor}
-          >
-            Change Color
-          </Button>
         </PopoverBody>
         <PopoverFooter
           display="flex"
@@ -99,7 +65,7 @@ export default function User({
           borderColor={darkMode ? "#464647" : "gray.200"}
         >
           <ButtonGroup size="sm">
-            <Button colorScheme="blue" onClick={onClose}>
+            <Button colorScheme="blue" onClick={handleNewNote}>
               Done
             </Button>
           </ButtonGroup>

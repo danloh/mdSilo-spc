@@ -8,7 +8,7 @@ use crate::{error::AppError, AppState};
 
 #[derive(FromRow, Serialize, Debug, Default)]
 pub struct Note {
-  pub id: u32,
+  pub id: String,
   pub uname: String,
   pub title: String,
   pub content: String,
@@ -18,7 +18,7 @@ pub struct Note {
 }
 
 impl Note {
-  pub async fn get(ctx: &AppState, uname: &str, id: u32) -> Result<Note, AppError> {
+  pub async fn get(ctx: &AppState, uname: &str, id: &str) -> Result<Note, AppError> {
     let note: Note = sqlx::query_as(
       r#"
       SELECT * FROM notes WHERE id = $1 AND uname = $2;
@@ -32,18 +32,18 @@ impl Note {
     Ok(note)
   }
 
-  // pub async fn get_by_id_or_title(
+  // pub async fn get_note_by_title(
   //   ctx: &AppState,
-  //   name: &str,
+  //   uname: &str,
+  //   title: &str,
   // ) -> Result<Note, AppError> {
-  //   let id: u32 = name.parse().unwrap_or(0);
   //   let note: Note = sqlx::query_as(
   //     r#"
-  //     SELECT * FROM notes WHERE id = $1 OR title = $2;
+  //     SELECT * FROM notes WHERE uname = $1 AND title = $2;
   //     "#,
   //   )
-  //   .bind(id)
-  //   .bind(name)
+  //   .bind(uname)
+  //   .bind(title)
   //   .fetch_one(&ctx.pool)
   //   .await?;
 
@@ -53,64 +53,51 @@ impl Note {
   pub async fn new(
     ctx: &AppState, 
     uname: &str, 
-    id: u32,
+    id: &str,
     title: &str, 
     content: &str,
   ) -> Result<Note, AppError> {
     let now = Utc::now().timestamp();
     // insert
-    let new_note: Note = if id == 0 {
-      sqlx::query_as(
-        r#"
-        INSERT OR IGNORE INTO notes 
-        (title, uname, content, created_at, updated_at)
-        VALUES
-        ($1, $2, $3, $4, $5)
-        RETURNING *;
-        "#,
-      )
-      .bind(title)
-      .bind(&uname)
-      .bind(content)
-      .bind(&now)
-      .bind(&now)
-      .fetch_one(&ctx.pool)
-      .await?
-    } else {
-      sqlx::query_as(
-        r#"
-        UPDATE notes 
-        SET title = $1, content = $2, updated_at = $3
-        WHERE id = $4
-        RETURNING *;
-        "#,
-      )
-      .bind(title)
-      .bind(content)
-      .bind(&now)
-      .bind(&id)
-      .fetch_one(&ctx.pool)
-      .await?
-    };
+    let new_note: Note = sqlx::query_as(
+      r#"
+      INSERT OR IGNORE INTO notes 
+      (id, title, uname, content, created_at, updated_at)
+      VALUES
+      ($1, $2, $3, $4, $5, $6)
+      RETURNING *;
+      "#,
+    )
+    .bind(id)
+    .bind(title)
+    .bind(&uname)
+    .bind(content)
+    .bind(&now)
+    .bind(&now)
+    .fetch_one(&ctx.pool)
+    .await?;
 
     Ok(new_note)
   }
 
-  pub async fn move_folder(
+  pub async fn rename(
     ctx: &AppState, 
-    uname: &str,
-    id: u32, 
-    folder: &str,
+    uname: &str, 
+    id: &str,
+    title: &str, 
   ) -> Result<Note, AppError> {
+    let now = Utc::now().timestamp();
+    // insert
     let new_note: Note = sqlx::query_as(
         r#"
         UPDATE notes 
-        SET folder = $1 
-        WHERE id = $2 AND uname = $3 
+        SET title = $1, updated_at = $2
+        WHERE id = $3 AND uname = $4
         RETURNING *;
         "#,
       )
-      .bind(folder)
+      .bind(title)
+      .bind(&now)
       .bind(&id)
       .bind(uname)
       .fetch_one(&ctx.pool)
@@ -119,7 +106,56 @@ impl Note {
     Ok(new_note)
   }
 
-  pub async fn del(ctx: &AppState, uname: &str, id: u32) -> Result<Note, AppError> {
+  pub async fn update(
+    ctx: &AppState, 
+    uname: &str, 
+    id: &str,
+    content: &str, 
+  ) -> Result<Note, AppError> {
+    let now = Utc::now().timestamp();
+    // insert
+    let new_note: Note = sqlx::query_as(
+        r#"
+        UPDATE notes 
+        SET content = $1, updated_at = $2
+        WHERE id = $3 AND uname = $4
+        RETURNING *;
+        "#,
+      )
+      .bind(content)
+      .bind(&now)
+      .bind(&id)
+      .bind(uname)
+      .fetch_one(&ctx.pool)
+      .await?;
+
+    Ok(new_note)
+  }
+
+  pub async fn move_folder(
+    ctx: &AppState, 
+    uname: &str,
+    id: &str, 
+    folder: &str,
+  ) -> Result<Note, AppError> {
+    let new_note: Note = sqlx::query_as(
+      r#"
+      UPDATE notes 
+      SET folder = $1 
+      WHERE id = $2 AND uname = $3 
+      RETURNING *;
+      "#,
+    )
+    .bind(folder)
+    .bind(&id)
+    .bind(uname)
+    .fetch_one(&ctx.pool)
+    .await?;
+
+    Ok(new_note)
+  }
+
+  pub async fn del(ctx: &AppState, uname: &str, id: &str) -> Result<Note, AppError> {
     let note: Note = sqlx::query_as(
       r#"
       DELETE FROM notes WHERE id = $1 AND uname = $2 RETURNING *;
@@ -143,7 +179,7 @@ pub enum QueryNotes {
 
 #[derive(FromRow, Serialize, Debug, Default)]
 pub struct NoteRes {
-  pub id: u32,
+  pub id: String,
   pub uname: String,
   pub title: String,
   pub folder: String,
@@ -159,7 +195,7 @@ impl QueryNotes {
           r#"
           SELECT * FROM notes 
           WHERE uname = $1 
-          ORDER BY id DESC; 
+          ORDER BY updated_at DESC; 
           "#,
         )
         .bind(&uname)
@@ -172,7 +208,7 @@ impl QueryNotes {
           r#"
           SELECT * FROM notes 
           WHERE uname = $1 AND folder = $2 
-          ORDER BY id DESC; 
+          ORDER BY updated_at DESC; 
           "#,
         )
         .bind(&uname)

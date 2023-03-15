@@ -13,7 +13,7 @@ use crate::{
 
 #[derive(Deserialize)]
 pub struct NewNote {
-  id: u32,
+  id: String,
   title: String,
   content: String,
 }
@@ -33,7 +33,7 @@ pub async fn new_note(
   let uname = claim.unwrap_or_default().uname;
 
   let new_note = Note::new(
-    &ctx, &uname, payload.id, &payload.title, &payload.content
+    &ctx, &uname, &payload.id, &payload.title, &payload.content
   )
   .await
   .map_err(|_e| StatusCode::BAD_REQUEST)?;
@@ -45,7 +45,7 @@ pub async fn new_note(
 #[debug_handler]
 pub async fn move_note(
   State(ctx): State<Ctx>,
-  Path((id, folder)): Path<(u32, String)>,
+  Path((id, folder)): Path<(String, String)>,
   check: ClaimCan<BASIC_PERMIT>,
 ) -> Result<impl IntoResponse, StatusCode> {
   if !check.can() {
@@ -56,7 +56,53 @@ pub async fn move_note(
   let uname = claim.unwrap_or_default().uname;
 
   let new_note = Note::move_folder(
-    &ctx, &uname, id, &folder
+    &ctx, &uname, &id, &folder
+  )
+  .await
+  .map_err(|_e| StatusCode::BAD_REQUEST)?;
+  
+  return Ok(Json(new_note))
+}
+
+/// Handler for the GET `/api/update_note` endpoint.
+#[debug_handler]
+pub async fn update_note(
+  State(ctx): State<Ctx>,
+  check: ClaimCan<BASIC_PERMIT>,
+  Json(payload): Json<NewNote>,
+) -> Result<impl IntoResponse, StatusCode> {
+  if !check.can() {
+    return Err(StatusCode::UNAUTHORIZED);
+  }
+
+  let claim = check.claim;
+  let uname = claim.unwrap_or_default().uname;
+
+  let new_note = Note::update(
+    &ctx, &uname, &payload.id, &payload.content
+  )
+  .await
+  .map_err(|_e| StatusCode::BAD_REQUEST)?;
+  
+  return Ok(Json(new_note))
+}
+
+/// Handler for the GET `/api/update_note` endpoint.
+#[debug_handler]
+pub async fn rename_note(
+  State(ctx): State<Ctx>,
+  check: ClaimCan<BASIC_PERMIT>,
+  Json(payload): Json<NewNote>,
+) -> Result<impl IntoResponse, StatusCode> {
+  if !check.can() {
+    return Err(StatusCode::UNAUTHORIZED);
+  }
+
+  let claim = check.claim;
+  let uname = claim.unwrap_or_default().uname;
+
+  let new_note = Note::rename(
+    &ctx, &uname, &payload.id, &payload.title
   )
   .await
   .map_err(|_e| StatusCode::BAD_REQUEST)?;
@@ -68,7 +114,7 @@ pub async fn move_note(
 #[debug_handler]
 pub async fn del_note(
   State(ctx): State<Ctx>,
-  Path(id): Path<u32>,
+  Path(id): Path<String>,
   check: ClaimCan<BASIC_PERMIT>,
 ) -> Result<impl IntoResponse, StatusCode> {
   if !check.can() {
@@ -79,7 +125,7 @@ pub async fn del_note(
   let uname = claim.unwrap_or_default().uname;
 
   let note = Note::del(
-    &ctx, &uname, id
+    &ctx, &uname, &id
   )
   .await
   .map_err(|_e| StatusCode::BAD_REQUEST)?;
@@ -91,7 +137,7 @@ pub async fn del_note(
 #[debug_handler]
 pub async fn get_note(
   State(ctx): State<Ctx>,
-  Path(id): Path<u32>,
+  Path(id): Path<String>,
   check: ClaimCan<BASIC_PERMIT>,
 ) -> Result<impl IntoResponse, StatusCode> {
   if !check.can() {
@@ -102,7 +148,7 @@ pub async fn get_note(
   let uname = claim.unwrap_or_default().uname;
 
   let note = Note::get(
-    &ctx, &uname, id
+    &ctx, &uname, &id
   )
   .await
   .map_err(|_e| StatusCode::BAD_REQUEST)?;

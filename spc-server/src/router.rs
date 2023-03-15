@@ -10,7 +10,10 @@ use crate::{
       get_read_feeds, get_star_feeds, check_star, check_read, 
       get_audio_feeds
     },
-    note::{new_note, get_note, get_notes, get_notes_by_folder, move_note, del_note}
+    note::{
+      new_note, get_note, get_notes, get_notes_by_folder, 
+      move_note, del_note, update_note, rename_note
+    }
   },
   ssr::{
     admin::{mod_user, save_site_config, site_config_view, user_list_page},
@@ -93,6 +96,8 @@ pub async fn router(ctx: AppState) -> Router {
     .route("/api/get_audio_feeds", get(get_audio_feeds))
     // note
     .route("/api/new_note", post(new_note))
+    .route("/api/update_note", post(update_note))
+    .route("/api/rename_note", post(rename_note))
     .route("/api/get_note/:id", get(get_note))
     .route("/api/get_notes", get(get_notes))
     .route("/api/get_folder_notes/:folder", get(get_notes_by_folder))

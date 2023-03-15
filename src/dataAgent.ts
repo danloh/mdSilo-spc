@@ -1,4 +1,5 @@
 import { ChannelType, ArticleType } from "./reader/types";
+import { NoteType, SimpleNote } from "./writer/types";
 
 export const postReq = async (url: string, data: any): Promise<any> => {
   let options = {
@@ -9,6 +10,10 @@ export const postReq = async (url: string, data: any): Promise<any> => {
   let resp = await fetch(url, options);
   return await resp.json();
 }
+
+// ==========================================
+// ==================== feed reader =========
+// ==========================================
 
 type FeedResult = {
   channel: ChannelType;
@@ -103,4 +108,25 @@ export const updateAllReadStatus = async (
   readStatus: number,
 ): Promise<number> => {
   return 0 // await invoke('update_all_read_status', { feedLink, readStatus })
+}
+
+
+// ==========================================
+// ==================== note ================
+// ==========================================
+
+export const newNote = async (
+  id: string, title: string, content: string
+): Promise<NoteType> => {
+  return await postReq(`/api/new_note`, {id, title, content});
+}
+
+export const getNote = async (id: string): Promise<NoteType> => {
+  let resp = await fetch(`/api/get_note/${id}`);
+  return await resp.json();
+}
+
+export const getNotesByFolder = async (folder: string): Promise<SimpleNote[]> => {
+  let resp = await fetch(`/api/get_folder_notes/${folder}`);
+  return await resp.json();
 }
