@@ -261,7 +261,8 @@ export default function App() {
             </Select>
           </HStack>
           <Button
-            size="sm"
+            size="sm" 
+            w="full"
             colorScheme={darkMode ? "whiteAlpha" : "blackAlpha"}
             borderColor={darkMode ? "green.400" : "green.600"}
             color={darkMode ? "green.400" : "green.600"}
@@ -314,6 +315,7 @@ export default function App() {
           </Stack>
           <Button
             size="sm"
+            w="full"
             colorScheme={darkMode ? "whiteAlpha" : "blackAlpha"}
             borderColor={darkMode ? "purple.400" : "purple.600"}
             color={darkMode ? "purple.400" : "purple.600"}

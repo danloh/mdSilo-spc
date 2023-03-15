@@ -7,6 +7,7 @@ import {
   Heading,
   HStack,
   Icon,
+  Select,
   Stack,
   Switch,
   Text,
@@ -34,35 +35,40 @@ function getWsUri(id: string) {
   );
 }
 
-function generateName() {
-  return '';
-}
-
-function generateHue() {
-  return Math.floor(Math.random() * 360);
-}
-
 export default function App() {
   const toast = useToast();
   const language = "markdown";
   const [connection, setConnection] = useState<
     "connected" | "disconnected" | "desynchronized"
   >("disconnected");
-  const name = generateName();
-  const hue = generateHue();
   const [editor, setEditor] = useState<editor.IStandaloneCodeEditor>();
   const [darkMode, setDarkMode] = useStorage("darkMode", () => false);
   const pad = useRef<Pad>();
+
+  const [folderList, setFolderList] = useState<string[]>(['silo']);
+  const [currentFolder, setCurrentFolder] = useState<string>('silo');
   const [noteList, setNoteList] = useState<SimpleNote[]>([]);
   const [currentNote, setCurrentNote] = useState<NoteType | null>(null);
 
   const getNotesByFolder = (folder: string) => {
    dataAgent.getNotesByFolder(folder).then((notes) => {
-      setNoteList(notes);
+      setNoteList(notes[0]);
+      setCurrentFolder(folder);
     })
   };
 
-  useEffect(() => { getNotesByFolder('silo'); }, []);
+  const getFolders = () => {
+    dataAgent.getFolders().then((folders) => {
+       setFolderList(folders);
+     })
+   };
+
+  useEffect(() => { 
+    getNotesByFolder('silo'); 
+    getFolders();
+  }, []); 
+
+  console.log("note list: ", noteList);
 
   useEffect(() => {
     if (!currentNote?.id) return;
@@ -92,13 +98,6 @@ export default function App() {
     }
   }, [currentNote?.id, editor, toast]);
 
-  useEffect(() => {
-    if (connection === "connected") {
-      pad.current?.setInfo({ name, hue });
-    }
-  }, [connection, name, hue]);
-
-
   const [hideSide, setHideSide] = useState(false);
   function handleHideSide() {
     setHideSide(!hideSide);
@@ -111,6 +110,7 @@ export default function App() {
   async function newNote(title: string) {
     const id = `note_${genHash()}`;
     const note = await dataAgent.newNote(id, title, '');
+    getNotesByFolder(currentFolder);
     setCurrentNote(note);
     setText(note.content);
   }
@@ -118,40 +118,39 @@ export default function App() {
   async function openNote(id: string) {
     const note = await dataAgent.getNote(id);
     setCurrentNote(note);
-    setText(note.content);
+    setText(note.content || '');
   }
 
   async function renameNote(id: string, title: string) {
-    console.log("rename: ", id, title)
+    console.log("rename: ", id, title);
+    const res = await dataAgent.renameNote(id, title);
+    const notes = [...noteList];
+    for (let note of notes) {
+      if (note.id === res.id) {
+        note.title = res.title;
+        break;
+      }
+    }
+    setNoteList(notes);
   }
 
   async function moveNote(id: string, folder: string) {
     console.log("move: ", id, folder)
+    await dataAgent.moveNote(id, folder);
+    const notes = [...noteList];
+    const idx = notes.findIndex(n => n.id === id);
+    notes.splice(idx, 1);
+    setNoteList(notes);
+    getFolders();
   }
 
   async function delNote(id: string) {
-    console.log("del: ", id)
-  }
-
-  async function handleSave() {
-    const resp = await fetch(`${window.location.origin}/api/savetoarticle/${''}`);
-    if (resp.ok) {
-      toast({
-        title: "Saved!",
-        description: "Commit the change to article",
-        status: "success",
-        duration: 2000,
-        isClosable: true,
-      });
-    } else {
-      toast({
-        title: "Failed to save!",
-        description: "Something wrong happened",
-        status: "error",
-        duration: 1000,
-        isClosable: true,
-      });
-    }
+    console.log("del: ", id);
+    await dataAgent.delNote(id);
+    const notes = [...noteList];
+    const idx = notes.findIndex(n => n.id === id);
+    notes.splice(idx, 1);
+    setNoteList(notes);
   }
 
   const [text, setText] = useState(defaultMD);
@@ -188,7 +187,7 @@ export default function App() {
           fontSize="sm"
           px={2}
         >
-          A Drop-in Collaborative Text Editor
+          Writing 
         </Box>
         <ConnectionStatus darkMode={darkMode} connection={connection} />
       </Flex>
@@ -209,26 +208,26 @@ export default function App() {
           lineHeight={1.4}
           py={4}
         >
-          <ConnectionStatus darkMode={darkMode} connection={connection} />
           <Flex justifyContent="space-between" mt={4} mb={1.5} w="full">
             <Heading size="sm">Dark Mode</Heading>
             <Switch isChecked={darkMode} onChange={handleDarkMode} />
           </Flex>
           <NewNote onNewNote={newNote} darkMode={darkMode} />
-          <Button
+          <Select
             size="sm"
-            colorScheme={darkMode ? "whiteAlpha" : "blackAlpha"}
-            borderColor={darkMode ? "green.400" : "green.600"}
-            color={darkMode ? "green.400" : "green.600"}
-            variant="outline"
-            leftIcon={<VscSave />}
-            mt={4}
-            mb={1}
-            onClick={handleSave}
+            mt={2}
+            bgColor={darkMode ? "#3c3c3c" : "white"}
+            borderColor={darkMode ? "#3c3c3c" : "white"}
+            value={currentFolder}
+            onChange={(event) => getNotesByFolder(event.target.value)}
           >
-            Commit the Change
-          </Button>
-          <Stack spacing={0} mb={1.5} fontSize="sm">
+            {folderList.map((folder) => (
+              <option key={folder} value={folder} style={{ color: "black" }}>
+                Folder: {folder}
+              </option>
+            ))}
+          </Select>
+          <Stack justifyItems="start" spacing={0} mb={1.5} fontSize="sm">
             {noteList.map((note) => (
               <NoteItem 
                 key={note.id} 

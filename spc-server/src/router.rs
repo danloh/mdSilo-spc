@@ -11,7 +11,7 @@ use crate::{
       get_audio_feeds
     },
     note::{
-      new_note, get_note, get_notes, get_notes_by_folder, 
+      new_note, get_note, get_notes, get_notes_by_folder, get_folders,
       move_note, del_note, update_note, rename_note
     }
   },
@@ -101,6 +101,7 @@ pub async fn router(ctx: AppState) -> Router {
     .route("/api/get_note/:id", get(get_note))
     .route("/api/get_notes", get(get_notes))
     .route("/api/get_folder_notes/:folder", get(get_notes_by_folder))
+    .route("/api/get_folders/:folder", get(get_folders))
     .route("/api/move_note/:id/:folder", get(move_note))
     .route("/api/del_note/:id", get(del_note))
     .with_state(ctx.clone());

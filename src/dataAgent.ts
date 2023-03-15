@@ -121,12 +121,37 @@ export const newNote = async (
   return await postReq(`/api/new_note`, {id, title, content});
 }
 
+export const renameNote = async (
+  id: string, title: string
+): Promise<NoteType> => {
+  return await postReq(`/api/rename_note`, {id, title, content: ''});
+}
+
+export const moveNote = async (
+  id: string, folder: string
+): Promise<NoteType> => {
+  let resp = await fetch(`/api/move_note/${id}/${folder}`);
+  return await resp.json();
+}
+
+export const delNote = async (id: string): Promise<NoteType> => {
+  let resp = await fetch(`/api/del_note/${id}`);
+  return await resp.json();
+}
+
 export const getNote = async (id: string): Promise<NoteType> => {
   let resp = await fetch(`/api/get_note/${id}`);
   return await resp.json();
 }
 
-export const getNotesByFolder = async (folder: string): Promise<SimpleNote[]> => {
+export const getNotesByFolder = async (
+  folder: string
+): Promise<[SimpleNote[], number]> => {
   let resp = await fetch(`/api/get_folder_notes/${folder}`);
+  return await resp.json();
+}
+
+export const getFolders = async (): Promise<string[]> => {
+  let resp = await fetch(`/api/get_folders`);
   return await resp.json();
 }

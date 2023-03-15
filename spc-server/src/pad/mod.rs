@@ -26,7 +26,8 @@ use document::PersistedDocument as StoreDoc;
 use mdpad::Pad;
 
 use crate::db::article::Article;
-use crate::db::user::{CREATE_PERMIT, ClaimCan};
+use crate::db::note::Note;
+use crate::db::user::{ClaimCan, CREATE_PERMIT, BASIC_PERMIT};
 
 pub mod document;
 pub mod mdpad;
@@ -116,6 +117,7 @@ async fn socket_handler(
   State(state): State<ServerState>,
   Path(id): Path<String>,
   ws: WebSocketUpgrade,
+  check: ClaimCan<BASIC_PERMIT>,
 ) -> Result<impl IntoResponse, StatusCode> {
   use dashmap::mapref::entry::Entry;
 
@@ -128,7 +130,14 @@ async fn socket_handler(
         .map(Pad::from)
         .unwrap_or_default()
       );
-      tokio::spawn(persister(id, Arc::clone(&pad), pool.clone()));
+
+      if id.starts_with("note_") {
+        let claim = check.claim.unwrap_or_default();
+        let uname = claim.clone().uname;
+        tokio::spawn(persister(id, uname, Arc::clone(&pad), pool.clone()));
+      } else {
+        tokio::spawn(persister(id, String::new(), Arc::clone(&pad), pool.clone()));
+      }
       
       e.insert(Document::new(pad))
     }
@@ -216,7 +225,7 @@ const PERSIST_INTERVAL: Duration = Duration::from_secs(3);
 const PERSIST_INTERVAL_JITTER: Duration = Duration::from_secs(1);
 
 /// Persists changed documents after a fixed time interval.
-async fn persister(id: String, pad: Arc<Pad>, db: SqlitePool) {
+async fn persister(id: String, uname: String, pad: Arc<Pad>, db: SqlitePool) {
   let mut last_revision = 0;
   while !pad.killed() {
     let interval = PERSIST_INTERVAL
@@ -225,10 +234,18 @@ async fn persister(id: String, pad: Arc<Pad>, db: SqlitePool) {
     let revision = pad.revision();
     if revision > last_revision {
       info!("persisting revision {} for id = {}", revision, id);
-      if let Err(e) = StoreDoc::store(&db, &id, &pad.snapshot()).await {
-        error!("when persisting document {}: {}", id, e);
+      if id.starts_with("note_") {
+        if let Err(e) = Note::store(&db, &uname, &id, &pad.snapshot().text).await {
+          error!("when persisting document {}: {}", id, e);
+        } else {
+          last_revision = revision;
+        }
       } else {
-        last_revision = revision;
+        if let Err(e) = StoreDoc::store(&db, &id, &pad.snapshot()).await {
+          error!("when persisting document {}: {}", id, e);
+        } else {
+          last_revision = revision;
+        }
       }
     }
   }

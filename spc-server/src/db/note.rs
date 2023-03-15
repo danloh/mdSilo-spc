@@ -1,7 +1,7 @@
 //! models for note
 
 use chrono::Utc;
-use sqlx::FromRow;
+use sqlx::{FromRow, SqlitePool};
 use serde::Serialize;
 
 use crate::{error::AppError, AppState};
@@ -132,6 +132,32 @@ impl Note {
     Ok(new_note)
   }
 
+  pub async fn store(
+    pool: &SqlitePool, 
+    uname: &str, 
+    id: &str,
+    content: &str, 
+  ) -> Result<Note, AppError> {
+    let now = Utc::now().timestamp();
+    // insert
+    let new_note: Note = sqlx::query_as(
+        r#"
+        UPDATE notes 
+        SET content = $1, updated_at = $2
+        WHERE id = $3 AND uname = $4
+        RETURNING *;
+        "#,
+      )
+      .bind(content)
+      .bind(&now)
+      .bind(&id)
+      .bind(uname)
+      .fetch_one(pool)
+      .await?;
+
+    Ok(new_note)
+  }
+
   pub async fn move_folder(
     ctx: &AppState, 
     uname: &str,
@@ -222,5 +248,26 @@ impl QueryNotes {
     let note_count = note_list.len() as i64;
 
     Ok((note_list, note_count))
+  }
+
+  pub async fn get_folders(ctx: &AppState, uname: &str) -> Result<Vec<String>, AppError> {
+    let note_list: Vec<NoteRes> = sqlx::query_as(
+      r#"
+      SELECT folder FROM notes 
+      WHERE uname = $1 
+      ORDER BY updated_at DESC; 
+      "#,
+    )
+    .bind(&uname)
+    .fetch_all(&ctx.pool)
+    .await
+    .unwrap_or_default();
+  
+    let folder_list: Vec<String> = note_list
+      .into_iter()
+      .map(|n| n.folder)
+      .collect();
+
+    Ok(folder_list)
   }
 }

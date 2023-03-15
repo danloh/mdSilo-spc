@@ -195,6 +195,7 @@ export default function App() {
           </Flex>
           <Button
             size="sm"
+            w="full"
             colorScheme={darkMode ? "whiteAlpha" : "blackAlpha"}
             borderColor={darkMode ? "green.400" : "green.600"}
             color={darkMode ? "green.400" : "green.600"}

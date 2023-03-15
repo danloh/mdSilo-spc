@@ -13,6 +13,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { useRef, useState } from "react";
+import { VscNewFile } from "react-icons/vsc";
 
 type Props = {
   onNewNote: (title: string) => void;
@@ -36,7 +37,19 @@ export default function NewNote({onNewNote, darkMode}: Props) {
       initialFocusRef={inputRef}
     >
       <PopoverTrigger>
-        <Button onClick={onOpen}>New Note</Button>
+        <Button
+          size="sm"
+          w="full"
+          colorScheme={darkMode ? "whiteAlpha" : "blackAlpha"}
+          borderColor={darkMode ? "purple.400" : "purple.600"}
+          color={darkMode ? "purple.400" : "purple.600"}
+          variant="outline"
+          leftIcon={<VscNewFile />}
+          my={2}
+          onClick={onOpen}
+        >
+          Create New Note
+        </Button>
       </PopoverTrigger>
       <PopoverContent
         bgColor={darkMode ? "#333333" : "white"}
@@ -46,7 +59,7 @@ export default function NewNote({onNewNote, darkMode}: Props) {
           fontWeight="semibold"
           borderColor={darkMode ? "#464647" : "gray.200"}
         >
-          New Note
+          Create New Note
         </PopoverHeader>
         <PopoverArrow bgColor={darkMode ? "#333333" : "white"} />
         <PopoverCloseButton />
@@ -54,7 +67,8 @@ export default function NewNote({onNewNote, darkMode}: Props) {
           <Input
             ref={inputRef}
             mb={2}
-            value={title}
+            value={title} 
+            placeholder="Title"
             maxLength={25}
             onChange={(event) => setTitle(event.target.value)}
           />
@@ -66,7 +80,7 @@ export default function NewNote({onNewNote, darkMode}: Props) {
         >
           <ButtonGroup size="sm">
             <Button colorScheme="blue" onClick={handleNewNote}>
-              Done
+              Create
             </Button>
           </ButtonGroup>
         </PopoverFooter>

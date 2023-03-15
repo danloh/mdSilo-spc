@@ -87,7 +87,7 @@ pub async fn update_note(
   return Ok(Json(new_note))
 }
 
-/// Handler for the GET `/api/update_note` endpoint.
+/// Handler for the GET `/api/rename_note` endpoint.
 #[debug_handler]
 pub async fn rename_note(
   State(ctx): State<Ctx>,
@@ -195,4 +195,24 @@ pub async fn get_notes_by_folder(
   .map_err(|_e| StatusCode::BAD_REQUEST)?;
   
   return Ok(Json(notes))
+}
+
+/// Handler for the GET `/api/get_folders` endpoint.
+#[debug_handler]
+pub async fn get_folders(
+  State(ctx): State<Ctx>,
+  check: ClaimCan<BASIC_PERMIT>,
+) -> Result<impl IntoResponse, StatusCode> {
+  if !check.can() {
+    return Err(StatusCode::UNAUTHORIZED);
+  }
+
+  let claim = check.claim;
+  let uname = claim.unwrap_or_default().uname;
+
+  let folders = QueryNotes::get_folders(&ctx, &uname)
+  .await
+  .map_err(|_e| StatusCode::BAD_REQUEST)?;
+  
+  return Ok(Json(folders))
 }
