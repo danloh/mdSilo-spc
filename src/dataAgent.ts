@@ -127,6 +127,12 @@ export const renameNote = async (
   return await postReq(`/api/rename_note`, {id, title, content: ''});
 }
 
+export const updateNote = async (
+  id: string, content: string
+): Promise<NoteType> => {
+  return await postReq(`/api/update_note`, {id, title: '', content});
+}
+
 export const moveNote = async (
   id: string, folder: string
 ): Promise<NoteType> => {

@@ -43,7 +43,7 @@ function generateHue() {
   return Math.floor(Math.random() * 360);
 }
 
-export default function App() {
+export default function EditorPage() {
   const toast = useToast();
   const language = "markdown";
   const [connection, setConnection] = useState<

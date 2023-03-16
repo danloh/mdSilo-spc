@@ -47,7 +47,7 @@ function generateHue() {
   return Math.floor(Math.random() * 360);
 }
 
-export default function App() {
+export default function PadPage() {
   const toast = useToast();
   const [language, setLanguage] = useState("markdown");
   const [connection, setConnection] = useState<

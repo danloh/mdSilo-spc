@@ -12,6 +12,7 @@ use parking_lot::{RwLock, RwLockUpgradableReadGuard};
 use serde::{Deserialize, Serialize};
 use tokio::sync::{broadcast, Notify};
 
+use crate::db::note::Note;
 use super::document::PersistedDocument;
 use super::ot::transform_index;
 
@@ -121,6 +122,25 @@ impl From<PersistedDocument> for Pad {
       let mut state = pad.state.write();
       state.text = document.text;
       state.language = document.language;
+      state.operations.push(UserOperation {
+        id: u64::MAX,
+        operation,
+      })
+    }
+    pad
+  }
+}
+
+impl From<Note> for Pad {
+  fn from(note: Note) -> Self {
+    let mut operation = OperationSeq::default();
+    operation.insert(&note.content);
+
+    let pad = Self::default();
+    {
+      let mut state = pad.state.write();
+      state.text = note.content;
+      state.language = Some(String::from("markdown"));
       state.operations.push(UserOperation {
         id: u64::MAX,
         operation,

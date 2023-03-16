@@ -1,50 +1,22 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  Box,
-  Button,
-  Container,
-  Flex,
-  Heading,
-  HStack,
-  Icon,
-  Select,
-  Stack,
-  Switch,
-  Text,
-  useToast,
+  Box, Text, Container, Flex, Heading, Select, Stack, Switch, useToast, Button,
 } from "@chakra-ui/react";
-import { VscMarkdown, VscMenu, VscSave } from "react-icons/vsc";
+import { VscEdit, VscMenu } from "react-icons/vsc";
 import useStorage from "use-local-storage-state";
-import { useDebounce } from "use-debounce";
-import { editor } from "monaco-editor/esm/vs/editor/editor.api";
-import Pad from "../mdpad/lib/mdpad";
 import { genHash } from "../useHash";
-import ConnectionStatus from "../mdpad/components/ConnectionStatus";
 import Footer from "../mdpad/components/Footer";
-import { MdEditor } from "../mdpad/SplitEditor";
 import NewNote from "./NewNote";
 import * as dataAgent from '../dataAgent';
 import { NoteType, SimpleNote } from "./types";
 import NoteItem from "./NoteItem";
 import Preview from "../mdpad/components/Preview";
+import { useNavigate } from "react-router-dom";
 
-function getWsUri(id: string) {
-  return (
-    (window.location.origin.startsWith("https") ? "wss://" : "ws://") +
-    window.location.host +
-    `/api/socket/${id}`
-  );
-}
-
-export default function App() {
+export default function NotePage() {
+  const navigate = useNavigate();
   const toast = useToast();
-  const language = "markdown";
-  const [connection, setConnection] = useState<
-    "connected" | "disconnected" | "desynchronized"
-  >("disconnected");
-  const [editor, setEditor] = useState<editor.IStandaloneCodeEditor>();
-  const pad = useRef<Pad>();
-
+  
   const [folderList, setFolderList] = useState<string[]>(['silo']);
   const [currentFolder, setCurrentFolder] = useState<string>('silo');
   const [noteList, setNoteList] = useState<SimpleNote[]>([]);
@@ -70,59 +42,15 @@ export default function App() {
 
   console.log("note list: ", noteList);
 
-  useEffect(() => {
-    if (!currentNote?.id) return;
-    if (editor?.getModel()) {
-      const model = editor.getModel()!;
-      model.setValue("");
-      model.setEOL(0); // LF
-      pad.current = new Pad({
-        uri: getWsUri(currentNote?.id),
-        editor,
-        onConnected: () => setConnection("connected"),
-        onDisconnected: () => setConnection("disconnected"),
-        onDesynchronized: () => {
-          setConnection("desynchronized");
-          toast({
-            title: "Desynchronized with server",
-            description: "Please save your work and refresh the page.",
-            status: "error",
-            duration: null,
-          });
-        },
-      });
-      return () => {
-        pad.current?.dispose();
-        pad.current = undefined;
-      };
-    }
-  }, [currentNote?.id, editor, toast]);
-
-  const [hideSide, setHideSide] = useState(false);
-  function handleHideSide() {
-    setHideSide(!hideSide);
-  }
-
   const [darkMode, setDarkMode] = useStorage("darkMode", () => false);
   function handleDarkMode() {
     setDarkMode(!darkMode);
   }
 
-  const [readMode, setReadMode] = useState(true);
-  function handleReadMode() {
-    setReadMode(!readMode);
-  }
-
   async function newNote(title: string) {
     const id = `note_${genHash()}`;
-    const note = await dataAgent.newNote(id, title, '', currentFolder);
-    // getNotesByFolder(currentFolder);
-    setCurrentNote(note);
-    setText(note.content);
-    // insert locally
-    const notes = [...noteList];
-    notes.unshift(note as SimpleNote);
-    setNoteList(notes);
+    await dataAgent.newNote(id, title, '', currentFolder);
+    navigate(`/app/write/${id}`);
   }
 
   async function openNote(id: string) {
@@ -130,20 +58,10 @@ export default function App() {
     setCurrentNote(note);
     const content = note.content || '';
     setText(content);
-    if (editor?.getModel()) {
-      const model = editor.getModel()!;
-      model.pushEditOperations(
-        editor.getSelections(),
-        [
-          {
-            range: model.getFullModelRange(),
-            text: content,
-          },
-        ],
-        () => null
-      );
-      editor.setPosition({ column: 0, lineNumber: 0 });
-    }
+  }
+
+  function toEditNote() {
+    if (currentNote?.id) navigate(`/app/write/${currentNote?.id}`);
   }
 
   async function renameNote(id: string, title: string) {
@@ -183,7 +101,6 @@ export default function App() {
   }
 
   const [text, setText] = useState(defaultMD);
-  const mdString = text;
 
   return (
     <Flex
@@ -197,28 +114,18 @@ export default function App() {
         direction="row"
         w="100%"
         overflow="hidden"
-        placeContent="center space-between"
+        placeContent="center center"
         bgColor={darkMode ? "#575759" : "gray.200"}
       >
+        <Text m={1}>{currentNote?.title || 'Taking Note'}</Text>
         <Button
           size="xs"
           mx={1}
           bgColor={darkMode ? "#575759" : "gray.200"}
-          _hover={{ bg: darkMode ? "#575759" : "gray.200" }}
-          onClick={handleHideSide}
+          onClick={toEditNote}
         >
-          <VscMenu />
+          <VscEdit />
         </Button>
-        <Box
-          flexShrink={0}
-          color={darkMode ? "#cccccc" : "#383838"}
-          textAlign="center"
-          fontSize="sm"
-          px={2}
-        >
-          {currentNote?.title || 'Taking Note'} 
-        </Box>
-        <ConnectionStatus darkMode={darkMode} connection={connection} />
       </Flex>
       <Flex 
         flex="1 0" 
@@ -228,7 +135,6 @@ export default function App() {
         wrap="wrap-reverse" 
         overflow="auto"
       >
-        {!hideSide ? (
         <Container
           w="xs"
           h="100%"
@@ -240,10 +146,6 @@ export default function App() {
           <Flex justifyContent="space-between" mt={4} mb={1.5} w="full">
             <Heading size="sm">Dark Mode</Heading>
             <Switch isChecked={darkMode} onChange={handleDarkMode} />
-          </Flex>
-          <Flex justifyContent="space-between" mt={4} mb={1.5} w="full">
-            <Heading size="sm">Read Mode</Heading>
-            <Switch isChecked={readMode} onChange={handleReadMode} />
           </Flex>
           <NewNote onNewNote={newNote} darkMode={darkMode} />
           <Select
@@ -274,38 +176,13 @@ export default function App() {
               />
             ))}
           </Stack>
-        </Container>) : null}
-        <Flex flex={1} h="100%" minH="100%" direction="column" overflow="auto">
-          <HStack
-            h={6}
-            spacing={1}
-            color="#888888"
-            fontWeight="medium"
-            fontSize="13px"
-            px={3.5}
-            flexShrink={0}
-          >
-            <Icon as={VscMarkdown} fontSize="md" color="purple.500" />
-            <Text>{currentNote?.title || ''}</Text>
-          </HStack>
-          {readMode ? (
-            <Box flex={1} minH={0} h="100%" key={currentNote?.id || 'blank'}>
-              <Heading size="xl" m={2}>{currentNote?.title || ''}</Heading>
-              <Box overflow="auto">
-                <Preview text={mdString} darkMode={darkMode} />
-              </Box>
-            </Box>
-          ) : (
-            <MdEditor 
-              key={currentNote?.id || 'blank'}
-              language={language}
-              mdString={mdString}
-              darkMode={darkMode}
-              setText={setText}
-              setEditor={setEditor}
-            />
-          )}
-        </Flex>
+        </Container>
+        <Box flex={1} minH="100%" h="100%" overflow="auto" key={currentNote?.id || 'blank'}>
+          <Heading size="xl" m={2}>{currentNote?.title || ''}</Heading>
+          <Box overflow="auto">
+            <Preview text={text} darkMode={darkMode} />
+          </Box>
+        </Box>
       </Flex>
       <Footer />
     </Flex>

@@ -18,37 +18,31 @@ pub struct Note {
 }
 
 impl Note {
-  pub async fn get(ctx: &AppState, uname: &str, id: &str) -> Result<Note, AppError> {
+  pub async fn get(
+    ctx: &AppState, 
+    uname: &str, 
+    id: &str
+  ) -> Result<Note, AppError> {
+    Note::load(&ctx.pool, uname, id).await
+  }
+
+  pub async fn load(
+    pool: &SqlitePool, 
+    uname: &str, 
+    id: &str
+  ) -> Result<Note, AppError> {
     let note: Note = sqlx::query_as(
       r#"
-      SELECT * FROM notes WHERE id = $1 AND uname = $2;
+      SELECT * FROM notes WHERE uname = $1 AND id = $2;
       "#,
     )
-    .bind(id)
     .bind(uname)
-    .fetch_one(&ctx.pool)
+    .bind(id)
+    .fetch_one(pool)
     .await?;
 
     Ok(note)
   }
-
-  // pub async fn get_note_by_title(
-  //   ctx: &AppState,
-  //   uname: &str,
-  //   title: &str,
-  // ) -> Result<Note, AppError> {
-  //   let note: Note = sqlx::query_as(
-  //     r#"
-  //     SELECT * FROM notes WHERE uname = $1 AND title = $2;
-  //     "#,
-  //   )
-  //   .bind(uname)
-  //   .bind(title)
-  //   .fetch_one(&ctx.pool)
-  //   .await?;
-
-  //   Ok(note)
-  // }
 
   pub async fn new(
     ctx: &AppState, 

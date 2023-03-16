@@ -119,27 +119,36 @@ async fn socket_handler(
   ws: WebSocketUpgrade,
   check: ClaimCan<BASIC_PERMIT>,
 ) -> Result<impl IntoResponse, StatusCode> {
+  if id.starts_with("note_") && !check.can() {
+    return Err(StatusCode::UNAUTHORIZED);
+  }
+  
   use dashmap::mapref::entry::Entry;
 
   let mut entry = match state.documents.entry(id.clone()) {
     Entry::Occupied(e) => e.into_ref(),
     Entry::Vacant(e) => {
       let pool = state.pool;
-      let pad = Arc::new(StoreDoc::load(&pool, &id)
-        .await
-        .map(Pad::from)
-        .unwrap_or_default()
-      );
 
       if id.starts_with("note_") {
         let claim = check.claim.unwrap_or_default();
         let uname = claim.clone().uname;
+        let pad = Arc::new(Note::load(&pool, &uname, &id)
+          .await
+          .map(Pad::from)
+          .unwrap_or_default()
+        );
         tokio::spawn(persister(id, uname, Arc::clone(&pad), pool.clone()));
+        e.insert(Document::new(pad))
       } else {
+        let pad = Arc::new(StoreDoc::load(&pool, &id)
+          .await
+          .map(Pad::from)
+          .unwrap_or_default()
+        );
         tokio::spawn(persister(id, String::new(), Arc::clone(&pad), pool.clone()));
+        e.insert(Document::new(pad))
       }
-      
-      e.insert(Document::new(pad))
     }
   };
 
