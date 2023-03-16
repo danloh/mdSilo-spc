@@ -37,8 +37,9 @@ export const getChannels = async (): Promise<ChannelType[]> => {
   return await resp.json();
 }
 
-export const deleteChannel = async (link: string) => {
-  return //await invoke('delete_channel', { link })
+export const deleteSubscription = async (link: string) => {
+  let resp = await fetch(`/api/del_subscription?url=${link}`);
+  return await resp.json();
 };
 
 export const getArticleList = async (url: string) : Promise<ArticleType[]> => {

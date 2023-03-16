@@ -121,13 +121,13 @@ impl Channel {
     Ok(new_channel)
   }
 
-  pub async fn del(ctx: &AppState, link: &str) -> Result<Channel, AppError> {
+  pub async fn del(ctx: &AppState, id: u32) -> Result<Channel, AppError> {
     let channel: Channel = sqlx::query_as(
       r#"
-      DELETE FROM channels WHERE link = $1 RETURNING *;
+      DELETE FROM channels WHERE id = $1 RETURNING *;
       "#,
     )
-    .bind(link)
+    .bind(id)
     .fetch_one(&ctx.pool)
     .await?;
 
@@ -137,7 +137,7 @@ impl Channel {
       DELETE FROM feeds WHERE channel_link =  $1;
       "#,
     )
-    .bind(link)
+    .bind(&channel.link)
     .execute(&ctx.pool)
     .await?;
 
@@ -441,12 +441,35 @@ impl Subscription {
     Ok(new_sub)
   }
 
-  pub async fn del(ctx: &AppState, id: u32) -> Result<Subscription, AppError> {
+  pub async fn del(
+    ctx: &AppState, 
+    uname: &str, 
+    channel_link: &str,
+  ) -> Result<Subscription, AppError> {
     let sub: Subscription = sqlx::query_as(
       r#"
-      DELETE FROM subscriptions WHERE id = $1 RETURNING *;
+      DELETE FROM subscriptions WHERE uname = $1 AND channel_link = $2 RETURNING *;
       "#,
     )
+    .bind(uname)
+    .bind(channel_link)
+    .fetch_one(&ctx.pool)
+    .await?;
+
+    Ok(sub)
+  }
+
+  pub async fn del_by_id(
+    ctx: &AppState, 
+    uname: &str, 
+    id: u32,
+  ) -> Result<Subscription, AppError> {
+    let sub: Subscription = sqlx::query_as(
+      r#"
+      DELETE FROM subscriptions WHERE uname = $1 AND id = $2 RETURNING *;
+      "#,
+    )
+    .bind(uname)
     .bind(id)
     .fetch_one(&ctx.pool)
     .await?;

@@ -8,7 +8,7 @@ use crate::{
       fetch_feed, add_channel, get_sub_channels, get_feeds, 
       get_feeds_by_channel, star_feed, unstar_feed, read_feed, 
       get_read_feeds, get_star_feeds, check_star, check_read, 
-      get_audio_feeds
+      get_audio_feeds, del_subscription
     },
     note::{
       new_note, get_note, get_notes, get_notes_by_folder, get_folders,
@@ -84,6 +84,7 @@ pub async fn router(ctx: AppState) -> Router {
     .route("/api/fetch_feed", get(fetch_feed))
     .route("/api/add_channel", post(add_channel))
     .route("/api/get_channels", get(get_sub_channels))
+    .route("/api/del_subscription", get(del_subscription))
     .route("/api/get_feeds", get(get_feeds))
     .route("/api/get_channel_feeds", get(get_feeds_by_channel))
     .route("/api/check_star", get(check_star))
@@ -151,7 +152,7 @@ pub async fn router(ctx: AppState) -> Router {
       get(channel_preload_page).post(channel_preload_form),
     )
     .route("/channel_add", get(channel_add_page).post(channel_add_form))
-    .route("/channel_del/:link", get(del_channel))
+    .route("/channel_del/:id", get(del_channel))
     .route("/unsubscribe/:id", get(unsubscribe))
     .route("/mod_subscription/:id", get(mod_subscription))
     .route("/feed_reader", get(feed_reader_page))

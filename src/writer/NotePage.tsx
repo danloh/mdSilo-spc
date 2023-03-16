@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import {
-  Box, Text, Container, Flex, Heading, Select, Stack, Switch, useToast, Button,
+  Box, Text, Container, Flex, Heading, Select, Stack, Switch, useToast, Link,
 } from "@chakra-ui/react";
 import { VscEdit, VscMenu } from "react-icons/vsc";
 import useStorage from "use-local-storage-state";
@@ -118,14 +118,9 @@ export default function NotePage() {
         bgColor={darkMode ? "#575759" : "gray.200"}
       >
         <Text m={1}>{currentNote?.title || 'Taking Note'}</Text>
-        <Button
-          size="xs"
-          mx={1}
-          bgColor={darkMode ? "#575759" : "gray.200"}
-          onClick={toEditNote}
-        >
+        <Link m={1} href={currentNote?.id ? `/app/write/${currentNote?.id}` : '#'}>
           <VscEdit />
-        </Button>
+        </Link>
       </Flex>
       <Flex 
         flex="1 0" 
@@ -189,4 +184,16 @@ export default function NotePage() {
   );
 }
 
-const defaultMD: string = "Welcome";
+const defaultMD: string = `
+Welcome to mdsilo.  
+
+A self-hosted online writing platform which comes as a single executable with [feed subscription](/app/reader), [publishing writing](/app/editor) and [live collaboration](/app/pad) and many other features. 
+
+Focus on the Markdown content, be it a blog, a knowledge base, a forum or a combination of them. 
+
+## Features  
+  - ➰ I/O: Feed reader & Podcast client and Personal Wiki; 
+  - 🔀 Powerful Editor: Markdown, Mind Map...  
+  - 📝 Markdown and extensions: Math Equation, Diagram, Hashtag... 
+  - ✨ Collaborative writing, support Markdown, mermaid, music notation, mindmap and more.
+`;

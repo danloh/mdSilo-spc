@@ -166,17 +166,17 @@ pub(crate) async fn channel_add_form(
   Ok(Redirect::to("/feed_reader"))
 }
 
-/// `GET /channel_del/:link` delete subscription
+/// `GET /channel_del/:id` delete channel
 pub(crate) async fn del_channel(
   State(ctx): State<Ctx>,
-  Path(link): Path<String>,
+  Path(id): Path<u32>,
   check: ClaimCan<MOD_PERMIT>,
 ) -> Result<impl IntoResponse, SsrError> {
   if !check.can() {
     return Err(AppError::NoPermission.into());
   }
 
-  Channel::del(&ctx, &link).await?;
+  Channel::del(&ctx, id).await?;
 
   Ok(Redirect::to("/feed_reader"))
 }
@@ -196,7 +196,7 @@ pub(crate) async fn unsubscribe(
   // check uid matched
   let sub = Subscription::get(&ctx, id).await?;
   if sub.uname == uname {
-    Subscription::del(&ctx, id).await?;
+    Subscription::del_by_id(&ctx, &uname, id).await?;
   } else {
     return Err(AppError::NoPermission.into());
   }

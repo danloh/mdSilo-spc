@@ -119,6 +119,31 @@ pub async fn get_sub_channels(
   return Ok(Json(res))
 }
 
+/// Handler for the GET `/api/del_subscription?url=` endpoint.
+#[debug_handler]
+pub async fn del_subscription(
+  State(ctx): State<Ctx>,
+  Query(param): Query<ApiQuery>,
+  check: ClaimCan<BASIC_PERMIT>,
+) -> Result<impl IntoResponse, StatusCode> {
+  if !check.can() {
+    return Err(StatusCode::UNAUTHORIZED);
+  }
+  let url = param.url.unwrap_or_default();
+  if url.trim().len() == 0 {
+    return Err(StatusCode::BAD_REQUEST);
+  }
+
+  let claim = check.claim;
+  let uname = claim.unwrap_or_default().uname;
+
+  let res = Subscription::del(&ctx, &uname, &url)
+    .await
+    .map_err(|_e| StatusCode::BAD_REQUEST)?;
+
+  return Ok(Json(res))
+}
+
 /// Handler for the GET `/api/get_feeds` endpoint.
 #[debug_handler]
 pub async fn get_feeds(

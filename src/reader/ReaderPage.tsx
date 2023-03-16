@@ -35,9 +35,7 @@ export default function Feed() {
     })
   };
 
-  useEffect(() => {
-    getList();
-  }, []);
+  useEffect(() => { getList(); }, []);
 
   const [refreshing, setRefreshing] = useState(false);
   const [doneNum, setDoneNum] = useState(0);
@@ -109,7 +107,7 @@ export default function Feed() {
 
   const handleDeleteFeed = async (channel: ChannelType) => {
     if (channel && channel.link) {
-      await dataAgent.deleteChannel(channel.link);
+      await dataAgent.deleteSubscription(channel.link);
       getList();
     }
   };
