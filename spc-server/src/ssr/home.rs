@@ -38,7 +38,7 @@ pub(crate) async fn home_page(
 ) -> Result<impl IntoResponse, SsrError> {
   let cfg = get_site_config(&ctx.sled).unwrap_or_default();
   let page_data = PageData::new("Home", &cfg, check.claim, false);
-  let landing_page = md2html(&cfg.landing_page);
+  let landing_page = md2html(&cfg.landing_page, "articlepage", "tag");
   let home_page = HomeTmpl {
     page_data,
     page_content: landing_page,
@@ -54,7 +54,7 @@ pub(crate) async fn about_page(
 ) -> Result<impl IntoResponse, SsrError> {
   let cfg = get_site_config(&ctx.sled).unwrap_or_default();
   let page_data = PageData::new("About", &cfg, check.claim, false);
-  let about = md2html(&cfg.about_page);
+  let about = md2html(&cfg.about_page, "articlepage", "tag");
   let about_page = HomeTmpl {
     page_data,
     page_content: about,

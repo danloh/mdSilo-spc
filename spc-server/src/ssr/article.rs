@@ -101,7 +101,7 @@ pub(crate) async fn edit_article_form(
   let site_config = get_site_config(&ctx.sled).unwrap_or_default();
   // check input length
   let title = form.title;
-  let content = form.content;
+  let mut content = form.content;
   if content.len() > site_config.article_max_length
     || title.len() > site_config.title_max_length
   {
@@ -128,8 +128,23 @@ pub(crate) async fn edit_article_form(
     (now, now)
   };
 
-  // Process tags
+  // process wikilink, work with db to get article id and change the link
+  let wikilinks = capture_element(&content, "");
+  for link in &wikilinks {
+    let title = link.replace("[", "").replace("]", "");
+    if title.trim().is_empty() {
+      continue;
+    }
+    // get article
+    if let Ok(link_article) = Article::get_by_id_or_title(&ctx, &title).await {
+      let wiki_link = format!("[{link}](/article/{}/view)", link_article.id);
+      content = content.replace(link, &wiki_link);
+    }
+  }
+
+  // Process tags: extact and save 
   let hashtags = extract_element(&content, "", "#");
+  // save article to db
   let article = Article {
     id: articleid,
     uname: uname.clone(),
@@ -141,7 +156,6 @@ pub(crate) async fn edit_article_form(
     is_locked: false,
     is_hidden: false,
   };
-
   let new_article = article.new(&ctx).await?;
 
   // record action: post new article
@@ -179,30 +193,16 @@ pub(crate) async fn article_view(
   // let user: User = User::get(&ctx, &article.uname).await?;
   // let author = article.uname.clone();
   let is_author = uname == article.uname;
-  // process tags, need to work with db to get tags
-  let tags: Vec<Tag> = TagEntry::get_tags(&ctx, "article", articleid).await?;
-  let hashtags: Vec<String> = tags.into_iter().map(|t| t.tname).collect();
-  let mut content = article.content;
-  for tag in &hashtags {
-    let tag_link = format!("[#{tag}](/tag/{tag})");
-    content = content.replace(&format!("#{tag}"), &tag_link);
-  }
+  let content = article.content;
+  // // process tags, need to work with db to get tags
+  // let tags: Vec<Tag> = TagEntry::get_tags(&ctx, "article", articleid).await?;
+  // let hashtags: Vec<String> = tags.into_iter().map(|t| t.tname).collect();
+  // for tag in &hashtags {
+  //   let tag_link = format!("[#{tag}](/tag/{tag})");
+  //   content = content.replace(&format!("#{tag}"), &tag_link);
+  // }
 
-  // process wikilink, need to work with db to get article id
-  let wikilinks = capture_element(&content, "");
-  for link in &wikilinks {
-    let title = link.replace("[", "").replace("]", "");
-    if title.trim().is_empty() {
-      continue;
-    }
-    // get article
-    if let Ok(link_article) = Article::get_by_id_or_title(&ctx, &title).await {
-      let wiki_link = format!("[{link}](/article/{}/view)", link_article.id);
-      content = content.replace(link, &wiki_link);
-    }
-  }
-
-  let content = md2html(&content);
+  let content = md2html(&content, "articlepage", "tag");
   let page_title = format!("{}", article.title);
 
   let article_view = Article { content, ..article };
@@ -225,6 +225,65 @@ pub(crate) async fn article_view(
   };
 
   Ok(into_response(&article_page, "html"))
+}
+
+/// Page data: `article_not_found.html`
+#[derive(Template)]
+#[template(path = "article_not_found.html")]
+struct ArticleNotFoundTmpl<'a> {
+  page_data: PageData<'a>,
+  title: &'a str,
+}
+
+/// `GET /article/:encoded_title` Article page
+pub(crate) async fn view_article_by_title(
+  State(ctx): State<Ctx>,
+  Path(title): Path<String>,
+  check: ClaimCan<READ_PERMIT>,
+) -> Result<impl IntoResponse, SsrError> {
+  let claim = check.claim;
+  let site_config = get_site_config(&ctx.sled).unwrap_or_default();
+  let uname = claim.clone().unwrap_or_default().uname;
+  let decoded_title = urlencoding::decode(&title).unwrap_or_default();
+  let page_data = PageData::new(decoded_title.as_ref(), &site_config, claim, false);
+
+  if let Ok(article) = 
+    Article::get_by_id_or_title(&ctx, decoded_title.as_ref()).await 
+  {
+    // let user: User = User::get(&ctx, &article.uname).await?;
+    // let author = article.uname.clone();
+    let is_author = uname == article.uname;
+    let content = article.content;
+    
+    let content = md2html(&content, "articlepage", "tag");
+
+    let article_view = Article { content, ..article };
+
+    let pageview: u32 = increase_id(
+      &ctx
+        .sled
+        .open_tree("article_pageviews")
+        .map_err(|_| SsrError::from(AppError::SledError))?,
+      u32_to_ivec(article.id),
+    )
+    .unwrap_or(1);
+
+    let article_page = ArticleViewTmpl {
+      page_data,
+      article: article_view,
+      pageview,
+      is_author,
+    };
+
+    Ok(into_response(&article_page, "html"))
+  } else {
+    let not_found_page = ArticleNotFoundTmpl {
+      page_data,
+      title: decoded_title.as_ref(),
+    };
+
+    Ok(into_response(&not_found_page, "html"))
+  }
 }
 
 /// Generate collaboration on when click only. 

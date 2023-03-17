@@ -190,8 +190,8 @@ const OPTIONS: Options = Options::all();
 //
 // You should have received a copy of the GNU General Public License
 // along with cmark-syntax. If not, see <http://www.gnu.org/licenses/>
-pub fn md2html(md: &str) -> String {
-  let md = pre_process_md(md);
+pub fn md2html(md: &str, wikilink_base: &str, tag_base: &str) -> String {
+  let md = pre_process_md(md, wikilink_base, tag_base);
   let parser = pulldown_cmark::Parser::new_ext(&md, OPTIONS);
   let processed = SyntaxPreprocessor::new(parser);
   let mut html_output = String::with_capacity(md.len() * 2);
@@ -201,7 +201,7 @@ pub fn md2html(md: &str) -> String {
 
 /// unify the block format for math
 /// maybe do more pre-process in the future 
-fn pre_process_md(md: &str) -> String {
+fn pre_process_md(md: &str, wikilink_base: &str, tag_base: &str) -> String {
   let mut content = md.to_string();
   // process inline math code $math$
   let inline_maths = capture_element(&content, r"[\s]+\$[^$]+\$[\s]+");
@@ -216,6 +216,25 @@ fn pre_process_md(md: &str) -> String {
     let math_code = math.replace("$$", "");
     let math_block = format!("\n```math\n{math_code}\n```\n");
     content = content.replace(math, &math_block);
+  }
+
+  // Process tags
+  let hashtags = extract_element(&content, "", "#");
+  for tag in &hashtags {
+    let tag_link = format!("[#{tag}](/{tag_base}/{tag})");
+    content = content.replace(&format!("#{tag}"), &tag_link);
+  }
+
+  let wikilinks = capture_element(&content, "");
+  for link in &wikilinks {
+    let title = link.replace("[", "").replace("]", "");
+    if title.trim().is_empty() {
+      continue;
+    }
+    
+    let encoded_title = urlencoding::encode(title.trim());
+    let wiki_link = format!("[{link}](/{wikilink_base}/{})", encoded_title);
+    content = content.replace(link, &wiki_link);
   }
 
   return content;

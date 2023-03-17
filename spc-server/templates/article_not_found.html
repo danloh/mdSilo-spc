@@ -1,0 +1,14 @@
+{% extends "_base.html" %} 
+
+{% block mainview %}
+<div class="main-page">
+  <div class="main-box content-view">
+    <h1 class="title">{{title}}</h1>
+    <div class="content-box">
+      The article "{{title}}" does not exist.
+      Do you want to <a href="/new">create it</a> now?
+    </div>
+  </div>
+  <div class="aside-box" id="view-side"></div>
+</div>
+{% endblock mainview %}

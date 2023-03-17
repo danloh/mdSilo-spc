@@ -20,7 +20,7 @@ use crate::{
     article::{
       article_delete, article_view, gen_collaboration_link, 
       edit_article_form, edit_article_page, explore_page, 
-      new_piece_form, piece_delete, tag_delete, tag_page, 
+      new_piece_form, piece_delete, tag_delete, tag_page, view_article_by_title, 
     },
     auth::{
       change_psw_form, change_psw_page, sign_out, signin_form, signin_page,
@@ -125,6 +125,7 @@ pub async fn router(ctx: AppState) -> Router {
       get(user_setting_view).post(user_setting_form),
     )
     // content
+    .route("/articlepage/:title", get(view_article_by_title))
     .route("/article/:id/view", get(article_view))
     .route("/article/:id/collaboration", get(gen_collaboration_link))
     .route(

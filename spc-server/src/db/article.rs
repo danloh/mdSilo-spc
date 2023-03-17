@@ -336,7 +336,7 @@ impl From<Piece> for Entry {
       id: p.id,
       title: p.content.clone(),
       cover: String::from(""),
-      content: md2html(&p.content),
+      content: md2html(&p.content, "articlepage", "tag"),
       uname: p.uname,
       created_at: p.created_at,
       link: format!("/piece/{}", p.id),

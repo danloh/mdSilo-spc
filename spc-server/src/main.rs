@@ -78,9 +78,9 @@ async fn main() -> Result<(), AppError> {
       if let Err(e) = clear_invalid_job(&ctx1.sled, "sessions").await {
         error!(%e);
       }
-      if let Err(e) = refresh_feeds_job(&ctx1).await {
-        error!(%e);
-      }
+      // if let Err(e) = refresh_feeds_job(&ctx1).await {
+      //   error!(%e);
+      // }
       sleep_seconds(3600 * 8).await;
     }
   });

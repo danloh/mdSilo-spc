@@ -89,7 +89,8 @@ impl Tag {
       .bind(tname)
       .bind(content)
       .fetch_one(&ctx.pool)
-      .await?
+      .await
+      .unwrap_or_default()
     } else {
       sqlx::query_as(
         r#"
@@ -103,7 +104,8 @@ impl Tag {
       .bind(content)
       .bind(id)
       .fetch_one(&ctx.pool)
-      .await?
+      .await
+      .unwrap_or_default()
     };
 
     let tag: Tag = sqlx::query_as(
