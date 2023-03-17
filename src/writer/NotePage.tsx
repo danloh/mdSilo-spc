@@ -126,8 +126,8 @@ export default function NotePage() {
         flex="1 0" 
         h="100%"
         w="100%"
-        direction={{ base: 'column-reverse', md: 'row' }}
-        wrap="wrap-reverse" 
+        direction={{ base: 'column', md: 'row' }}
+        wrap="wrap" 
         overflow="auto"
       >
         <Container

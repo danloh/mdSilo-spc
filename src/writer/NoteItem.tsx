@@ -1,27 +1,10 @@
 import {
-  Button,
-  ButtonGroup,
-  Flex,
-  HStack,
-  Icon,
-  Input,
-  Menu,
-  MenuButton,
-  MenuList,
-  Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverCloseButton,
-  PopoverContent,
-  PopoverFooter,
-  PopoverHeader,
-  PopoverTrigger,
-  Text,
-  useDisclosure,
-  IconButton,
+  Button, ButtonGroup, HStack, Icon, Input, Menu, MenuButton, MenuList, 
+  Popover, PopoverArrow, PopoverBody, PopoverCloseButton, PopoverContent, 
+  PopoverFooter, PopoverHeader, PopoverTrigger, Text, useDisclosure,
 } from "@chakra-ui/react";
 import { useRef, useState } from "react";
-import { VscMarkdown, VscMenu } from "react-icons/vsc";
+import { VscEllipsis, VscMarkdown } from "react-icons/vsc";
 import { SimpleNote } from "./types";
 
 type Props = {
@@ -45,7 +28,7 @@ export default function NoteItem({
 }: Props) {
   return (
     <HStack 
-      justifyContent="space-between" m={1} px={2}  
+      justifyContent="space-between" my={1} px={2}  
       _hover={{bgColor: darkMode ? "#464647" : "gray.200"}}
       bgColor={isActive ? (darkMode ? "#464647" : "gray.300") : ""}
     >
@@ -56,7 +39,7 @@ export default function NoteItem({
         </Text>
       </HStack>
       <Menu isLazy>
-        <MenuButton><VscMenu size={8} /></MenuButton>
+        <MenuButton><VscEllipsis size={10} /></MenuButton>
         <MenuList display='flex' flexDirection="column">
           <MoveNote note={note} onMove={onMoveNote} darkMode={darkMode} />
           <Rename note={note} onRename={onRename} darkMode={darkMode} />

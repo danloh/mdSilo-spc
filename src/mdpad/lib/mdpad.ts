@@ -1,8 +1,6 @@
 import { OpSeq } from "spc-wasm";
 import type {
-  editor,
-  IDisposable,
-  IPosition,
+  editor, IDisposable, IPosition,
 } from "monaco-editor/esm/vs/editor/editor.api";
 import debounce from "lodash.debounce";
 

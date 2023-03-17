@@ -1,19 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import {
-  Box,
-  Button,
-  Container,
-  Flex,
-  Heading,
-  HStack,
-  Icon,
-  Input,
-  InputGroup,
-  InputRightElement,
-  Stack,
-  Switch,
-  Text,
-  useToast,
+  Box, Button, Container, Flex, Heading, HStack, Icon, Input,
+  InputGroup, InputRightElement, Stack, Switch, Text, useToast,
 } from "@chakra-ui/react";
 import { VscMarkdown, VscMenu, VscSave } from "react-icons/vsc";
 import useStorage from "use-local-storage-state";

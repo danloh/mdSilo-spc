@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { Box, Stack } from "@chakra-ui/react";
 import * as echarts from "echarts";
 

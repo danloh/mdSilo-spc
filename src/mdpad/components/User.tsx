@@ -1,19 +1,7 @@
 import {
-  Button,
-  ButtonGroup,
-  HStack,
-  Icon,
-  Input,
-  Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverCloseButton,
-  PopoverContent,
-  PopoverFooter,
-  PopoverHeader,
-  PopoverTrigger,
-  Text,
-  useDisclosure,
+  Button, ButtonGroup, HStack, Icon, Input, Popover, PopoverArrow,
+  PopoverBody, PopoverCloseButton, PopoverContent, PopoverFooter,
+  PopoverHeader, PopoverTrigger, Text, useDisclosure,
 } from "@chakra-ui/react";
 import { useRef } from "react";
 import { FaPalette } from "react-icons/fa";

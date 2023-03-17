@@ -69,7 +69,7 @@ export default function NoteEditor() {
   }
 
   const [text, setText] = useState(defaultMD);
-  const [mdString] = useDebounce(text, 100, { maxWait: 1000 });
+  const [mdString] = useDebounce(text, 10, { maxWait: 100 });
 
   return (
     <Flex
