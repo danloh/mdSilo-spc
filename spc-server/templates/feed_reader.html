@@ -3,13 +3,29 @@
 {% block mainview %}
 <div class="main-page">
   <div class="main-box" id="feed-reader-main">
-    <p>{{ current_channel|host }}</p>
+    {% match current_channel %}
+      {% when Some with (val) %}
+      <div class="meta-bar">
+        <span class="title">{{ val.channel_title }}</span>  
+        <a class="hidden-btn" href="/unsubscribe/{{val.id}}">X</a>  
+        <a class="meta-tag" href="/feed_reader">All</a> 
+        <a class="toolbtn meta-tag" href="/refresh_scribled_feeds">Refresh Feed</a>
+        <a class="toolbtn" href="/channel_preload">Add Feed</a>
+      </div>
+      {% when None %}
+      <div class="meta-bar">
+        <a class="toolbtn meta-tag" href="/refresh_scribled_feeds">Refresh Feed</a>
+        <a class="toolbtn" href="/channel_preload">Add Feed</a>
+      </div>
+    {% endmatch %}
     {%- for f in feeds -%}
     <section class="item-card">
       <div class="item-sum">
         <div class="meta-bar">
           <span class="meta-tag">
-            {{ f.channel_link|host }} · {{ f.published|ts_date("") }}
+            <a class="link-title" href="/feed_reader?tab={{f.channel_link}}">
+              {{ f.channel_link|host }}
+            </a> · {{ f.published|ts_date("") }}
           </span>
         </div>
         <div class="item-info">
@@ -20,14 +36,6 @@
     </section>
     {%- endfor -%}
   </div>
-  <div class="aside-box" id="feed-reader-aside">
-    <a class="toolbtn" href="/channel_preload">Add Feed</a><br>
-    {%- for c in channels -%}
-    <a class="link-title" href="/feed_reader?tab={{c.channel_link}}">
-      {{ c.channel_title }}
-    </a>&nbsp;&nbsp;
-    <a class="meta-tag" href="/unsubscribe/{{c.id}}">X</a>
-    {%- endfor -%}
-  </div>
+  <div class="aside-box" id="feed-reader-aside"></div>
 </div>
 {% endblock mainview %}

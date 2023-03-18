@@ -321,6 +321,13 @@ table th {
   display: flex;
   justify-content: space-between;
 }
+.hidden-btn {
+  color: transparent;
+  padding: 1px 5px;
+}
+.hidden-btn:hover {
+  color: red;
+}
 
 /* === list view ====*/
 /* item card */

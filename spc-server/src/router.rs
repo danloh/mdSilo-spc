@@ -29,7 +29,7 @@ use crate::{
     feed::{
       channel_add_form, channel_add_page, channel_preload_form,
       channel_preload_page, del_channel, feed_reader_page, mod_subscription,
-      unsubscribe,
+      unsubscribe, refresh_scribled_feeds,
     },
     handler_404,
     home::{
@@ -157,6 +157,7 @@ pub async fn router(ctx: AppState) -> Router {
     .route("/unsubscribe/:id", get(unsubscribe))
     .route("/mod_subscription/:id", get(mod_subscription))
     .route("/feed_reader", get(feed_reader_page))
+    .route("/refresh_scribled_feeds", get(refresh_scribled_feeds))
     .with_state(ctx);
 
   let mut router_static = Router::new()

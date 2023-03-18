@@ -232,12 +232,11 @@ pub(crate) async fn mod_subscription(
 #[template(path = "feed_reader.html")]
 struct FeedReaderTmpl<'a> {
   page_data: PageData<'a>,
-  channels: Vec<Subscription>,
   feeds: Vec<Feed>,
-  current_channel: &'a str, // channel link or all
+  current_channel: Option<Subscription>,
 }
 
-/// `GET /feed_reader?channel=`
+/// `GET /feed_reader?tab=`
 pub(crate) async fn feed_reader_page(
   State(ctx): State<Ctx>,
   Query(params): Query<QueryParams>,
@@ -249,29 +248,52 @@ pub(crate) async fn feed_reader_page(
   // let ord = params.ord.unwrap_or(String::from("desc"));
   let page = params.page.unwrap_or(1);
   let perpage = params.perpage.unwrap_or(42);
-  let channel = params.tab.unwrap_or(String::from("All"));
-
-  let channels = Subscription::get_list(&ctx, &uname, perpage, page).await?;
-
-  let ch_links: Vec<String> =
-    channels.iter().map(|ch| ch.channel_link.clone()).collect();
-  refresh_feeds(&ctx, ch_links).await.unwrap_or(());
-
-  let feeds = if channel == "All" {
-    Feed::get_list_by_user(&ctx, &uname, false, perpage, page).await?
+  let channel_link = params.tab.unwrap_or(String::from("All"));
+  let current_channel = if channel_link != "All" {
+    Subscription::get_by_link(&ctx, &channel_link, &uname).await.ok()
   } else {
-    Feed::get_list_by_channel(&ctx, &channel, perpage, page).await?
+    None
+  };
+
+  let feeds = if channel_link == "All" {
+    Feed::get_list_by_user(&ctx, &uname, false, perpage, page)
+      .await
+      .unwrap_or(Vec::new())
+  } else {
+    Feed::get_list_by_channel(&ctx, &channel_link, perpage, page)
+      .await
+      .unwrap_or(Vec::new())
   };
 
   let page_data = PageData::new("Feed Reader", &site_config, claim, false);
   let reader_page = FeedReaderTmpl {
     page_data,
-    channels,
     feeds,
-    current_channel: &channel,
+    current_channel,
   };
 
   Ok(into_response(&reader_page, "html"))
+}
+
+/// `GET /refresh_scribled_feeds`
+pub(crate) async fn refresh_scribled_feeds(
+  State(ctx): State<Ctx>,
+  Query(params): Query<QueryParams>,
+  check: ClaimCan<READ_PERMIT>,
+) -> Result<impl IntoResponse, SsrError> {
+  let claim = check.claim;
+  let uname = claim.clone().unwrap_or_default().uname;
+  // let ord = params.ord.unwrap_or(String::from("desc"));
+  let page = params.page.unwrap_or(1);
+  let perpage = params.perpage.unwrap_or(42);
+
+  // refresh subscribled feeds
+  let channels = Subscription::get_list(&ctx, &uname, perpage, page).await?;
+  let ch_links: Vec<String> =
+    channels.iter().map(|ch| ch.channel_link.clone()).collect();
+  refresh_feeds(&ctx, ch_links).await.unwrap_or(());
+
+  Ok(Redirect::to("/feed_reader"))
 }
 
 /// refresh_feeds

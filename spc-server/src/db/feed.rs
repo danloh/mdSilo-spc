@@ -325,6 +325,24 @@ impl Subscription {
     Ok(sub)
   }
 
+  pub async fn get_by_link(
+    ctx: &AppState, 
+    link: &str, 
+    uname: &str
+  ) -> Result<Subscription, AppError> {
+    let sub: Subscription = sqlx::query_as(
+      r#"
+      SELECT * FROM subscriptions WHERE channel_link = $1 AND uname = $2;
+      "#,
+    )
+    .bind(link)
+    .bind(uname)
+    .fetch_one(&ctx.pool)
+    .await?;
+
+    Ok(sub)
+  }
+
   pub async fn get_list(
     ctx: &AppState,
     uname: &str,
