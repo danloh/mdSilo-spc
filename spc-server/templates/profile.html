@@ -11,8 +11,8 @@
       {%- endif -%}
     </h1>
     <p class="content-sum">
-      {{ user.nickname }}&nbsp;({{ post_count|pluralize("Posts", "Post") }} | &nbsp;
-      {{ upload_count|pluralize("Uploads", "Upload") }}) | &nbsp; 
+      {{ user.nickname }}&nbsp;({{ post_count|pluralize("Posts", "Post") }} &nbsp; 
+      {{ upload_count|pluralize("Uploads", "Upload") }} &nbsp; 
       {{ feed_count|pluralize("Subscriptions", "Subscription") }})
       <br/>
       {{ user.about }}

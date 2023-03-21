@@ -24,4 +24,4 @@ admin_name = 'goodman'
 # if process images on uploading
 if_compress_img = true 
 # set the inactivive interval to clean up on collaborative writing
-expiry_hours = 12 
+expiry_hours = 1 

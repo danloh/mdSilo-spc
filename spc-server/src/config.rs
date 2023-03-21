@@ -66,7 +66,7 @@ impl Default for Config {
       cert: "".into(),
       key: "".into(),
       admin_name: "".into(),
-      expiry_hours: 12,
+      expiry_hours: 1,
     }
   }
 }

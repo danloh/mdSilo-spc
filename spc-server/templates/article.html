@@ -10,8 +10,7 @@
       <span class="meta-tag">{{article.created_at|ts_date("")}}</span> &nbsp;·&nbsp; 
       <span class="meta-tag">{{pageview|num_unit}} 👁️</span> &nbsp;&nbsp;
       {%- if is_author -%}
-      <a href="/article/{{article.id}}/edit" class="meta-link">Edit</a>&nbsp;&nbsp;
-      <a href="/article/{{article.id}}/collaboration" class="meta-link">Collaboration</a>&nbsp;&nbsp;
+      <a href="/article/{{article.id}}/collaboration" class="meta-link">Edit</a>&nbsp;&nbsp;
       {#<a href="/article/{{article.id}}/delete" class="meta-link">Delete</a>#}
       {%- endif -%}
     </div>
