@@ -234,9 +234,10 @@ struct FeedReaderTmpl<'a> {
   page_data: PageData<'a>,
   feeds: Vec<Feed>,
   current_channel: Option<Subscription>,
+  page: i64,
 }
 
-/// `GET /feed_reader?tab=`
+/// `GET /feed_reader?tab=&page=`
 pub(crate) async fn feed_reader_page(
   State(ctx): State<Ctx>,
   Query(params): Query<QueryParams>,
@@ -270,6 +271,7 @@ pub(crate) async fn feed_reader_page(
     page_data,
     feeds,
     current_channel,
+    page,
   };
 
   Ok(into_response(&reader_page, "html"))

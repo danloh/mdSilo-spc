@@ -6,7 +6,7 @@
     <h1 class="title">#{{ tag.tname }}</h1>
     {%- include "entry_list.html" -%}
     {% if entries.len() >= 42 %}
-    <a class="toolbtn" href="/tag/{{ tag.tname }}?pape={{page+1}}">Try More</a>
+    <a class="toolbtn" href="/tag/{{ tag.tname }}?page={{page+1}}">Try More</a>
     {% endif %}
   </div>
 </div>

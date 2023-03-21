@@ -22,7 +22,7 @@
     {%- endif -%}
     {%- include "entry_list.html" -%}
     {% if entries.len() >= 42 %}
-    <a class="toolbtn" href="/user/{{user.username}}?pape={{page+1}}">More</a>
+    <a class="toolbtn" href="/user/{{user.username}}?page={{page+1}}">More</a>
     {% endif %}
   </div>
 </div>
