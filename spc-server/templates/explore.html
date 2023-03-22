@@ -20,7 +20,9 @@
     </div>
     {%- include "entry_list.html" -%}
     {% if entries.len() >= 42 %}
-    <a class="toolbtn" href="/explore?tab={{tab}}&page={{page+1}}">Try More</a>
+    <div class="center-block">
+      <a class="toolbtn" href="/explore?tab={{tab}}&page={{page+1}}">More</a>
+    </div>
     {% endif %}
   </div>
   <div class="aside-box" id="explore-side"></div>

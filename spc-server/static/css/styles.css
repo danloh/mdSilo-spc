@@ -476,6 +476,11 @@ table th {
   background-color: #2980b9;
   color: white;
 }
+.center-block {
+  text-align: center;
+  padding: 2px;
+  margin: 1px;
+}
 
 #new-piece-box {
   background-color: var(--form-bg-color);

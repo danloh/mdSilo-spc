@@ -7,16 +7,16 @@
     {% match current_channel %}
       {% when Some with (val) %}
       {% let current_tab = val.channel_link.clone() %}
-      <div class="meta-bar">
-        <span class="title">{{ val.channel_title }}</span>  
-        <a class="hidden-btn" href="/unsubscribe/{{val.id}}">X</a>  
+      <div class="meta-bar center-block">
+        <span class="title">{{ val.channel_title }}</span> 
+        <a class="hidden-btn" href="/unsubscribe/{{val.id}}">X</a><br/>   
         <a class="meta-tag" href="/feed_reader">All</a> 
         <a class="toolbtn meta-tag" href="/refresh_scribled_feeds">Refresh Feed</a>
         <a class="toolbtn" href="/channel_preload">Add Feed</a>
       </div>
       {% when None %}
       {% let current_tab = String::from("All") %}
-      <div class="meta-bar">
+      <div class="meta-bar center-block">
         <a class="toolbtn meta-tag" href="/refresh_scribled_feeds">Refresh Feed</a>
         <a class="toolbtn" href="/channel_preload">Add Feed</a>
       </div>
@@ -39,7 +39,9 @@
     </section>
     {%- endfor -%}
     {% if feeds.len() >= 42 %}
-    <a class="toolbtn" href="/feed_reader?tab={{current_tab}}&page={{page+1}}">Try More</a>
+    <div class="center-block">
+      <a class="toolbtn" href="/feed_reader?tab={{current_tab}}&page={{page+1}}">More</a>
+    </div>
     {% endif %}
   </div>
   <div class="aside-box" id="feed-reader-aside"></div>
