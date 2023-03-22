@@ -194,13 +194,6 @@ pub(crate) async fn article_view(
   // let author = article.uname.clone();
   let is_author = uname == article.uname;
   let content = article.content;
-  // // process tags, need to work with db to get tags
-  // let tags: Vec<Tag> = TagEntry::get_tags(&ctx, "article", articleid).await?;
-  // let hashtags: Vec<String> = tags.into_iter().map(|t| t.tname).collect();
-  // for tag in &hashtags {
-  //   let tag_link = format!("[#{tag}](/tag/{tag})");
-  //   content = content.replace(&format!("#{tag}"), &tag_link);
-  // }
 
   let content = md2html(&content, "articlepage", "tag");
   let page_title = format!("{}", article.title);
@@ -345,7 +338,7 @@ pub(crate) async fn new_piece_form(
 
   let site_config = get_site_config(&ctx.sled).unwrap_or_default();
   // check content length
-  let mut content = input.content;
+  let content = input.content;
   if content.len() > site_config.piece_max_length {
     return Err(AppError::InvalidInput.into());
   }
@@ -362,10 +355,6 @@ pub(crate) async fn new_piece_form(
 
   // Process tags
   let hashtags = extract_element(&content, "", "#");
-  for tag in &hashtags {
-    let tag_link = format!("[#{tag}](/tag/{tag})");
-    content = content.replace(&format!("#{tag}"), &tag_link);
-  }
 
   let piece = Piece {
     id: 0,

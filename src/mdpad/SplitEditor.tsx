@@ -12,11 +12,13 @@ type EditorProps = {
   mdString: string;
   darkMode: boolean;
   setText: (text: string) => void;
-  setEditor: (editor: editor.IStandaloneCodeEditor) => void
+  setEditor: (editor: editor.IStandaloneCodeEditor) => void;
+  wikiBase: string;
+  tagBase: string;
 };
 
 export default function SplitEditor(props: EditorProps) {
-  const {language, mdString, darkMode, setText, setEditor} = props;
+  const {language, mdString, darkMode, setText, setEditor, wikiBase, tagBase} = props;
 
   return (
     <>
@@ -42,7 +44,12 @@ export default function SplitEditor(props: EditorProps) {
             </Box>
             <Box overflow="auto">
               {language === "markdown" ? (
-                <Preview text={mdString} darkMode={darkMode} />
+                <Preview 
+                  text={mdString} 
+                  darkMode={darkMode} 
+                  wikiBase={wikiBase} 
+                  tagBase={tagBase} 
+                />
               ) : language === "abcjs" ? (
                 <Score notes={mdString} darkMode={darkMode} />
               ) : language === "echarts" ? (
@@ -72,7 +79,7 @@ export default function SplitEditor(props: EditorProps) {
 }
 
 export function MdEditor(props: EditorProps) {
-  const {language, mdString, darkMode, setText, setEditor} = props;
+  const {language, mdString, darkMode, setText, setEditor, wikiBase, tagBase} = props;
 
   return (
     <Box flex={1} minH={0} h="100%" >
@@ -95,7 +102,13 @@ export function MdEditor(props: EditorProps) {
           />
         </Box>
         <Box overflow="auto">
-          <Preview key={mdString.length} text={mdString} darkMode={darkMode} />
+          <Preview 
+            key={mdString.length} 
+            text={mdString} 
+            darkMode={darkMode} 
+            wikiBase={wikiBase} 
+            tagBase={tagBase}
+          />
         </Box>
       </Split>
     </Box>

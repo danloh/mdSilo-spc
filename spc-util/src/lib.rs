@@ -232,8 +232,22 @@ fn pre_process_md(md: &str, wikilink_base: &str, tag_base: &str) -> String {
       continue;
     }
     
-    let encoded_title = urlencoding::encode(title.trim());
-    let wiki_link = format!("[{link}](/{wikilink_base}/{})", encoded_title);
+    // custom wikilink title:  src_title and target_title
+    let parts = title.split_once("|");
+    let src_title = parts.and_then(|s| {
+      let src = s.0.trim();
+      if src.len() > 0 { Some(src) } else { None }
+    })
+    .unwrap_or(title.trim());
+
+    let tar_title = parts.and_then(|s| {
+      let tar = s.1.trim();
+      if tar.len() > 0 { Some(tar) } else { None }
+    })
+    .unwrap_or(title.trim());
+    
+    let encoded_title = urlencoding::encode(tar_title);
+    let wiki_link = format!("[{src_title}](/{wikilink_base}/{})", encoded_title);
     content = content.replace(link, &wiki_link);
   }
 

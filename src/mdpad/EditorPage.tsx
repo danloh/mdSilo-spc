@@ -254,6 +254,8 @@ export default function EditorPage() {
             darkMode={darkMode}
             setText={setText}
             setEditor={setEditor}
+            wikiBase={"articlepage"}
+            tagBase={"tag"}
           />
         </Flex>
       </Flex>

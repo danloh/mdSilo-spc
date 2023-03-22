@@ -175,7 +175,12 @@ export default function NotePage() {
         <Box flex={1} minH="100%" h="100%" overflow="auto" key={currentNote?.id || 'blank'}>
           <Heading size="xl" m={2}>{currentNote?.title || ''}</Heading>
           <Box overflow="auto">
-            <Preview text={text} darkMode={darkMode} />
+            <Preview 
+              text={text} 
+              darkMode={darkMode} 
+              wikiBase={"app/notes"} 
+              tagBase={"app/tag"} 
+            />
           </Box>
         </Box>
       </Flex>

@@ -9,9 +9,11 @@ import * as markdown from "../../../spc-server/static/css/styles.css";
 type PreviewProps = {
   text: string;
   darkMode: boolean;
+  wikiBase: string;
+  tagBase: string;
 };
 
-export default function Preview({ text, darkMode }: PreviewProps) {
+export default function Preview({ text, darkMode, wikiBase, tagBase }: PreviewProps) {
   const [preMode, setPreMode] = useState(true); // true: preview, false: mindmap 
   function handleMode() {
     setPreMode(!preMode);
@@ -20,7 +22,7 @@ export default function Preview({ text, darkMode }: PreviewProps) {
   useEffect(() => {
     if (!preMode) return;
     try {
-      let result = preview_md(text);
+      let result = preview_md(text, wikiBase, tagBase);
       document.getElementById("preview")!.innerHTML = result;
     } catch (error) {
       console.warn("Error on preview markdown", error);

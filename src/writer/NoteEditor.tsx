@@ -113,6 +113,8 @@ export default function NoteEditor() {
           darkMode={darkMode}
           setText={setText}
           setEditor={setEditor}
+          wikiBase={"app/notes"}
+          tagBase={"app/tag"}
         />
       </Flex>
       <Footer />

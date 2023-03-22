@@ -333,6 +333,8 @@ export default function PadPage() {
             darkMode={darkMode}
             setText={setText}
             setEditor={setEditor}
+            wikiBase={"articlepage"}
+            tagBase={"tag"}
           />
         </Flex>
       </Flex>
