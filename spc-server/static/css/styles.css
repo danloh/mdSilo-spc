@@ -331,6 +331,9 @@ table th {
 }
 
 /* === list view ====*/
+.entry-list {
+  padding: auto;
+}
 .item-box {
   padding: auto;
 }

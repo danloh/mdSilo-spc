@@ -38,7 +38,7 @@
     </div>
     {%- if entry.cover.trim().len() > 0 -%}
     <div class="item-thumbnail">
-      <a class="img-link" href="/{{entry.link}}/view">
+      <a class="img-link" href="{{entry.link}}">
         <img 
           class="cover-thumbnail" 
           src="{{entry.cover|must_https}}" 
