@@ -277,7 +277,7 @@ impl Feed {
       let res = sqlx::query(
         r#"
         INSERT OR IGNORE INTO feeds 
-        (title, channel_link, feed_url, audio_url, intro, published, content, author, img)
+        (title, channel_link, feed_url, audio_url, published, intro, content, author, img)
         VALUES
         ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         RETURNING *;
@@ -287,9 +287,9 @@ impl Feed {
       .bind(&feed.channel_link)
       .bind(&feed.feed_url)
       .bind(&feed.audio_url)
-      .bind(&feed.intro)
       .bind(&feed.published)
-      .bind(&feed.content)
+      .bind("") // &feed.intro
+      .bind("") // &feed.content // extract on client side, not save 
       .bind(&feed.author)
       .bind(&feed.img)
       .execute(&ctx.pool)

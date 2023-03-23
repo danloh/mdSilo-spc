@@ -68,7 +68,6 @@ pub async fn add_channel(
     return Err(StatusCode::UNAUTHORIZED);
   }
 
-  // TODO: move process feed to wasm
   match process_feed(&payload.url, payload.ty, Some(payload.title)).await {
     Some(res) => {
       let channel = res.0;
@@ -365,4 +364,38 @@ pub async fn read_feed(
     .unwrap_or_default();
 
   return Ok(Json(res))
+}
+
+/// Handler for the GET `/proxy/gethtml?url=` endpoint. 
+/// as proxy to extract article on client side
+#[debug_handler]
+pub async fn get_html_proxy(
+  Query(param): Query<ApiQuery>,
+) -> Result<impl IntoResponse, StatusCode> {
+  let url = param.url.unwrap_or_default();
+  if url.trim().len() == 0 {
+    return Err(StatusCode::BAD_REQUEST);
+  }
+  // println!("via proxy: {}", url);
+  let client = reqwest::Client::builder().build();
+  let response = match client {
+    Ok(cl) => cl.get(url).send().await,
+    Err(_e) => return Err(StatusCode::BAD_REQUEST),
+  };
+
+  let resp = match response {
+    Ok(response) => match response.status() {
+      reqwest::StatusCode::OK => {
+        let content = match response.text().await {
+          Ok(ctn) => ctn,
+          Err(_e) => return Err(StatusCode::BAD_REQUEST),
+        };
+        content
+      }
+      status => return Err(status),
+    },
+    Err(_e) => return Err(StatusCode::BAD_REQUEST),
+  };
+
+  return Ok(resp)
 }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Box, Button, Heading, HStack, Text } from "@chakra-ui/react";
 import { TbHeadphones, TbLink, TbStar } from "react-icons/tb";
+import { extract } from '@extractus/article-extractor';
 import { useStore } from "../lib/store";
 import { fmtDatetime } from "../utils";
 import { ArticleType, PodType } from "./types";
@@ -20,16 +21,23 @@ export function ArticleView(props: ViewProps) {
 
   useEffect(() => {
     if (article) {
-      const content = (article.content || article.intro || "").replace(
-        /<a[^>]+>/gi,
-        (a: string) => {
-          return (!/\starget\s*=/gi.test(a)) ? a.replace(/^<a\s/, '<a target="_blank"') : a;
-        }
-      );
-      setPageContent(content);
-      dataAgent.checkArticleStarStatus(article.feed_url).then(res => {
-        setIsStar(res);
-      })
+      try {
+        extract(article.feed_url, undefined, {proxy: {target: '/proxy/gethtml?url='}})
+        .then(articleData => {
+          const content = (articleData?.content || article.intro || "").replace(
+            /<a[^>]+>/gi,
+            (a: string) => {
+              return (!/\starget\s*=/gi.test(a)) ? a.replace(/^<a\s/, '<a target="_blank"') : a;
+            }
+          );
+          setPageContent(content);
+          dataAgent.checkArticleStarStatus(article.feed_url).then(res => {
+            setIsStar(res);
+          })
+        })
+      } catch (err) {
+        console.error(err);
+      }
     }
   }, [article]);
 

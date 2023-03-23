@@ -13,6 +13,7 @@
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@monaco-editor/react": "^4.4.6",
+    "@extractus/article-extractor": "7.2.11",
     "abcjs": "^6.1.9",
     "d3": "^7.8.2",
     "echarts": "5.4.1",

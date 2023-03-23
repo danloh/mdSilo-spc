@@ -8,7 +8,7 @@ use crate::{
       fetch_feed, add_channel, get_sub_channels, get_feeds, 
       get_feeds_by_channel, star_feed, unstar_feed, read_feed, 
       get_read_feeds, get_star_feeds, check_star, check_read, 
-      get_audio_feeds, del_subscription
+      get_audio_feeds, del_subscription, get_html_proxy
     },
     note::{
       new_note, get_note, get_notes, get_notes_by_folder, get_folders,
@@ -105,6 +105,7 @@ pub async fn router(ctx: AppState) -> Router {
     .route("/api/get_folders", get(get_folders))
     .route("/api/move_note/:id/:folder", get(move_note))
     .route("/api/del_note/:id", get(del_note))
+    .route("/proxy/gethtml", get(get_html_proxy))
     .with_state(ctx.clone());
 
   let router_ssr = Router::new()
