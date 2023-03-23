@@ -275,6 +275,7 @@ table th {
 }
 .tab-tag {
   padding: auto;
+  font-weight: 800;
 }
 
 /* ===== content view ==== */
@@ -330,24 +331,27 @@ table th {
 }
 
 /* === list view ====*/
+.item-box {
+  padding: auto;
+}
 /* item card */
 .item-card {
-  /* background-color: var(--ctn-bg-color); */
   padding: 5px;
   border-bottom: 2px solid var(--border-color);
   margin-bottom: 2px;
-  display: flex;
-  flex-direction: row;
+  display: block;
 }
 .item-card:hover {
   background-color: var(--ctn-hover-color);
+}
+.item-meta {
+  padding: 1px 5px;
 }
 .item-sum { 
   flex: 1; 
   padding: 2px;
 }
 .item-thumbnail {
-  /* min-width: 120px; */
   padding: 2px;
   display: flex;
   justify-content: center;
@@ -364,13 +368,12 @@ table th {
 }
 .link-title {
   color: #326891;
-  font-size: 1.25em;
+  font-size: 1.6em;
+  line-height: 1.2em;
 }
 .cover-thumbnail {
-  border-radius: 2.5%;
-  max-width: 100px;
-  max-height: 80px;
-  margin: 5px 0 0 0px;
+  border-radius: 5px;
+  margin: 5px;
 }
 .item-block {
   border-bottom: 5px solid var(--border-color);
