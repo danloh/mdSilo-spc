@@ -46,6 +46,7 @@ async fn process_rss(
           title: title.unwrap_or(channel.title),
           intro: channel.description,
           ty: ty.unwrap_or(String::from("rss")),
+          is_hidden: false,
         };
 
         let mut feeds: Vec<Feed> = vec![];
@@ -102,6 +103,7 @@ async fn process_atom(
           title: title.unwrap_or(atom.title.to_string()),
           intro: atom.subtitle.unwrap_or_default().to_string(),
           ty: String::from("atom"),
+          is_hidden: false,
         };
 
         let mut feeds: Vec<Feed> = vec![];

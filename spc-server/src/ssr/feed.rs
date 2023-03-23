@@ -151,6 +151,7 @@ pub(crate) async fn channel_add_form(
     title: input.title,
     intro: input.intro,
     ty: input.ty,
+    is_hidden: false,
   };
 
   // upsert channel

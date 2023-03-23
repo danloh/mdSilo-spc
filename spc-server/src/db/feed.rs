@@ -13,6 +13,7 @@ pub struct Channel {
   pub intro: String,
   // pub published: i64,
   pub ty: String,
+  pub is_hidden: bool,
 }
 
 impl Channel {
@@ -38,9 +39,7 @@ impl Channel {
         .unwrap_or_default()
       }
       None => sqlx::query_as(
-        r#"
-          SELECT * FROM channels;
-          "#,
+        r#"SELECT * FROM channels;"#,
       )
       .fetch_all(&ctx.pool)
       .await
@@ -143,6 +142,27 @@ impl Channel {
 
     Ok(channel)
   }
+
+  pub async fn mod_channel(
+    ctx: &AppState,
+    link: &str,
+    is_hidden: bool,
+  ) -> Result<Channel, AppError> {
+    let channel: Channel = sqlx::query_as(
+      r#"
+      UPDATE channels 
+      SET is_hidden = $1 
+      WHERE link = $2
+      RETURNING *;
+      "#,
+    )
+    .bind(&is_hidden)
+    .bind(link)
+    .fetch_one(&ctx.pool)
+    .await?;
+
+    Ok(channel)
+  }
 }
 
 #[derive(FromRow, Debug, Default, Serialize, Deserialize)]
@@ -164,21 +184,41 @@ impl Feed {
     ctx: &AppState,
     perpage: i64,
     page: i64,
+    pub_only: bool,
   ) -> Result<Vec<Feed>, AppError> {
     let page_offset = std::cmp::max(0, page - 1);
-    let feeds: Vec<Feed> = sqlx::query_as(
-      r#"
-      SELECT * FROM feeds 
-      ORDER BY published DESC
-      LIMIT $1 
-      OFFSET $2;
-      "#,
-    )
-    .bind(perpage)
-    .bind(perpage * page_offset)
-    .fetch_all(&ctx.pool)
-    .await
-    .unwrap_or_default();
+    let feeds: Vec<Feed> = if pub_only {
+      sqlx::query_as(
+        r#"
+        SELECT * FROM feeds 
+        WHERE channel_link IN (
+          SELECT link FROM channels WHERE is_hidden = false
+        )
+        ORDER BY published DESC
+        LIMIT $1 
+        OFFSET $2;
+        "#,
+      )
+      .bind(perpage)
+      .bind(perpage * page_offset)
+      .fetch_all(&ctx.pool)
+      .await
+      .unwrap_or_default()
+    } else {
+      sqlx::query_as(
+        r#"
+        SELECT * FROM feeds 
+        ORDER BY published DESC
+        LIMIT $1 
+        OFFSET $2;
+        "#,
+      )
+      .bind(perpage)
+      .bind(perpage * page_offset)
+      .fetch_all(&ctx.pool)
+      .await
+      .unwrap_or_default()
+    };
 
     Ok(feeds)
   }

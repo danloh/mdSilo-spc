@@ -1,0 +1,27 @@
+{% extends "_base.html" %} 
+
+{% block mainview %}
+<div class="main-page">
+  <div class="main-box">
+    <h1 class="title">Mod Channels by: {{ admin.username }}({{ admin.permission }})</h1>
+    {%- for channel in channels -%}
+    <section class="item-block">
+      <div class="meta-bar">
+        <span class="meta-tag">({{ channel.title }})</span>
+        <span class="meta-tag">{{ channel.link }}</span>
+        {% if channel.is_hidden %}
+        <a class="meta-tag" href="/admin/mod_channel/1?tab={{channel.link}}">Reveal</a>
+        {% else %}
+        <a class="meta-tag" href="/admin/mod_channel/0?tab={{channel.link}}">Hide</a>
+        {% endif %}
+      </div>
+    </section>
+    {%- endfor -%}
+    {% if channels.len() >= 42 %}
+    <div class="center-block">
+      <a class="toolbtn" href="/admin/channel_list?page={{page+1}}">More</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock mainview %}

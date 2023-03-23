@@ -461,7 +461,7 @@ pub(crate) async fn explore_page(
       tag_list.into_iter().map(|t| t.into()).collect()
     }
     "feeds" => {
-      let feeds = Feed::get_list(&ctx, perpage, page).await?;
+      let feeds = Feed::get_list(&ctx, perpage, page, true).await?;
       feeds.into_iter().map(|t| t.into()).collect()
     }
     _ => vec![],

@@ -16,7 +16,10 @@ use crate::{
     }
   },
   ssr::{
-    admin::{mod_user, save_site_config, site_config_view, user_list_page},
+    admin::{
+      mod_user, save_site_config, site_config_view, user_list_page, 
+      channel_list_page, mod_channel
+    },
     article::{
       article_delete, article_view, gen_collaboration_link, 
       edit_article_form, edit_article_page, explore_page, 
@@ -142,6 +145,8 @@ pub async fn router(ctx: AppState) -> Router {
     // admin
     .route("/admin/user_list", get(user_list_page))
     .route("/admin/:uname/mod/:permission", get(mod_user))
+    .route("/admin/channel_list", get(channel_list_page))
+    .route("/admin/mod_channel/:hidden", get(mod_channel))
     .route("/siteconfig", get(site_config_view).post(save_site_config))
     // upload and media center
     .route(

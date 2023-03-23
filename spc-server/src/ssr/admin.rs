@@ -4,7 +4,7 @@
 use super::{filters, into_response, PageData, QueryParams, ValidatedForm};
 use crate::{
   config::{get_site_config, SiteConfig},
-  db::user::{ClaimCan, PubUser, User, ADMIN_PERMIT, MOD_PERMIT},
+  db::{user::{ClaimCan, PubUser, User, ADMIN_PERMIT, MOD_PERMIT}, feed::Channel},
   error::{AppError, SsrError},
   AppState as Ctx,
 };
@@ -146,4 +146,75 @@ pub(crate) async fn mod_user(
   User::mod_permission(&ctx, &uname, permission).await?;
 
   Ok(Redirect::to("/admin/user_list"))
+}
+
+
+#[derive(Template)]
+#[template(path = "channel_list.html")]
+struct ChannelListTmpl<'a> {
+  page_data: PageData<'a>,
+  channels: Vec<Channel>,
+  admin: PubUser,
+  page: i64,
+}
+
+/// `GET /admin/user_list` admin page
+pub(crate) async fn channel_list_page(
+  State(ctx): State<Ctx>,
+  Query(params): Query<QueryParams>,
+  check: ClaimCan<MOD_PERMIT>,
+) -> Result<impl IntoResponse, SsrError> {
+  if !check.can() {
+    return Err(AppError::NoPermission.into());
+  }
+  let claim = check.claim;
+  let uname = claim.clone().unwrap_or_default().uname;
+  // check the permission in server db
+  let admin = User::get(&ctx, &uname).await?;
+  if admin.permission & MOD_PERMIT != MOD_PERMIT {
+    return Err(AppError::NoPermission.into());
+  }
+
+  let page = params.page.unwrap_or(1);
+  let perpage = params.perpage.unwrap_or(42);
+
+  let site_config = get_site_config(&ctx.sled).unwrap_or_default();
+  let page_data = PageData::new("Admin: mod channels", &site_config, claim, false);
+  let channels = Channel::get_list(&ctx, perpage, Some(page)).await?;
+  let channellist_page = ChannelListTmpl {
+    page_data,
+    channels,
+    admin: admin.into(),
+    page,
+  };
+
+  Ok(into_response(&channellist_page, "html"))
+}
+
+/// MOD Channel.
+/// `GET /admin/mod_channel/:hidden?tab={}` mod feed channel
+pub(crate) async fn mod_channel(
+  State(ctx): State<Ctx>,
+  Path(hidden): Path<u8>,
+  Query(params): Query<QueryParams>,
+  check: ClaimCan<MOD_PERMIT>,
+) -> Result<impl IntoResponse, SsrError> {
+  if !check.can() {
+    return Err(AppError::NoPermission.into());
+  }
+  let claim = check.claim;
+  let admin_uname = claim.clone().unwrap_or_default().uname;
+  // check the permission in server db
+  let admin = User::get(&ctx, &admin_uname).await?;
+  let admin_permit = admin.permission;
+  if admin_permit & MOD_PERMIT != MOD_PERMIT {
+    return Err(AppError::NoPermission.into());
+  }
+
+  let link = params.tab.unwrap_or(String::from(""));
+  let is_hidden = if hidden == 0 { true } else { false };
+
+  Channel::mod_channel(&ctx, &link, is_hidden).await?;
+
+  Ok(Redirect::to("/admin/channel_list"))
 }
