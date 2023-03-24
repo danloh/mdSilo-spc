@@ -1,6 +1,7 @@
 //! models for article
 
 use chrono::Utc;
+use spc_util::capture_element;
 use sqlx::{FromRow, SqlitePool};
 use serde::Serialize;
 
@@ -265,10 +266,15 @@ impl Article {
       let articleid = wikilink.in_id;
       if let Ok(article) = Article::get(&ctx, articleid).await {
         let mut content = article.content;
-        // FIXME, cannot replace in case of [[src_title|tar_title]]
-        content = content
-          .replace(&format!("[[{old_title}]]"), &format!("[[{new_title}]]"));
-
+        // cases: [[src_title|tar_title]] or [[tar_title]]
+        let re = format!(r"\[\[[^\[\]]*{old_title}\]\]");
+        // println!("re: {}", re);
+        let old_links = capture_element(&content, &re);
+        for old_link in old_links {
+          let new_link = old_link.replace(old_title, new_title);
+          content = content.replace(&old_link, &new_link);
+        }
+        
         sqlx::query(
           r#"
           UPDATE articles 
