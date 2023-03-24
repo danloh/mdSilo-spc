@@ -242,7 +242,7 @@ table th {
   text-align: center;
 }
 .nav-menu, .main-view, .footer .bottom {
-  max-width: 750px;
+  max-width: 850px;
   /* min-width: 320px; */
 }
 
@@ -333,6 +333,7 @@ table th {
 /* === list view ====*/
 .entry-list {
   padding: auto;
+  columns: 2;
 }
 .item-box {
   padding: auto;
@@ -527,6 +528,9 @@ table th {
   .main-page {
     padding: 5px;
     flex-direction: column;
+  }
+  .entry-list {
+    columns: 1;
   }
   img {
     max-width: 100%;

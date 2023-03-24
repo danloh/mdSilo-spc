@@ -30,6 +30,7 @@ use axum::{
 // use axum_macros::debug_handler;
 use chrono::Utc;
 use serde::Deserialize;
+use spc_util::capture_element;
 use validator::Validate;
 
 /// Page data: `article_form.html`
@@ -100,7 +101,7 @@ pub(crate) async fn edit_article_form(
   }
   let site_config = get_site_config(&ctx.sled).unwrap_or_default();
   // check input length
-  let title = form.title;
+  let title = form.title.trim();
   let content = form.content;
   if content.len() > site_config.article_max_length
     || title.len() > site_config.title_max_length
@@ -118,23 +119,44 @@ pub(crate) async fn edit_article_form(
     return Err(AppError::WriteInterval.into());
   }
 
-  let (created_at, updated_at) = if articleid > 0 {
+  let (created_at, updated_at, old_title) = if articleid > 0 {
     let old_article = Article::get(&ctx, articleid).await?;
     if old_article.uname != uname && !claim.can(EIDT_PERMIT) {
       return Err(AppError::NoPermission.into());
     }
-    (old_article.created_at, now)
+
+    (old_article.created_at, now, old_article.title)
   } else {
-    (now, now)
+    (now, now, String::new())
   };
+
+  // process wikilink, work with db to get linked article id
+  let wikilinks = capture_element(&content, "");
+  let mut includes: Vec<u32> = Vec::new();
+  for link in &wikilinks {
+    let linked_title = link.replace("[", "").replace("]", "");
+    if linked_title.trim().is_empty() {
+      continue;
+    }
+    let tar_title = linked_title.split_once("|").and_then(|s| {
+      let tar = s.1.trim();
+      if tar.len() > 0 { Some(tar) } else { None }
+    })
+    .unwrap_or(linked_title.trim());
+    // get article
+    if let Ok(link_article) = Article::get_by_id_or_title(&ctx, tar_title).await {
+      includes.push(link_article.id);
+    }
+  }
 
   // extact hashtags then save 
   let hashtags = extract_element(&content, "", "#");
+
   // save article to db
   let article = Article {
     id: articleid,
     uname: uname.clone(),
-    title,
+    title: title.to_string(),
     cover: form.cover,
     content,
     created_at,
@@ -149,11 +171,28 @@ pub(crate) async fn edit_article_form(
     store_user_status(&ctx.sled, &uname, "post").unwrap_or(());
   }
 
+  // if change title, need to update the wikilinks. who link to me
+  if articleid > 0 && old_title.trim() != title {
+    tokio::spawn(
+      update_wikilinks(ctx.clone(), articleid, old_title, title.to_string())
+    );
+  }
+
   // save tags
   TagEntry::tag(&ctx, hashtags, "article", new_article.id).await?;
+  // save backlinks, link to who
+  for id in includes {
+    Article::include(&ctx, id, "article", new_article.id).await.unwrap_or(0);
+  }
 
   let target = format!("/article/{}/view", new_article.id);
   Ok(Redirect::to(&target))
+}
+
+async fn update_wikilinks(ctx: Ctx, id: u32, old_title: String, new_title: String) {
+  Article::update_wikilinks(&ctx, id, &old_title, &new_title)
+    .await
+    .unwrap_or(0);
 }
 
 /// Page data: `article.html`

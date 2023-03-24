@@ -20,6 +20,13 @@ pub struct Article {
   pub is_hidden: bool,
 }
 
+#[derive(FromRow, Serialize, Debug, Default)]
+pub struct ArticleIn {
+  pub article_id: u32,
+  pub in_ty: String,
+  pub in_id: u32,
+}
+
 impl Article {
   pub async fn get(ctx: &AppState, id: u32) -> Result<Article, AppError> {
     let article: Article = sqlx::query_as(
@@ -214,6 +221,71 @@ impl Article {
     } else {
       return Err(AppError::NotFound);
     }
+  }
+
+  pub async fn include(
+    ctx: &AppState, id: u32, in_ty: &str, in_id: u32
+  ) -> Result<u64, AppError> {
+    let res = sqlx::query(
+      r#"
+      INSERT OR IGNORE INTO article_in
+      (article_id, in_ty, in_id)
+      VALUES
+      ($1, $2, $3)
+      RETURNING *;
+      "#,
+    )
+    .bind(&id)
+    .bind(in_ty)
+    .bind(&in_id)
+    .execute(&ctx.pool)
+    .await
+    .unwrap_or_default();
+
+    Ok(res.rows_affected())
+  }
+
+  pub async fn update_wikilinks(
+    ctx: &AppState, id: u32, old_title: &str, new_title: &str
+  ) -> Result<u8, AppError> {
+    let wikilinks: Vec<ArticleIn> = sqlx::query_as(
+      r#"
+      SELECT * FROM article_in 
+      WHERE article_id = $1 AND in_ty = $2; 
+      "#,
+    )
+    .bind(id)
+    .bind("article")
+    .fetch_all(&ctx.pool)
+    .await
+    .unwrap_or_default(); 
+
+    let now = Utc::now().timestamp();
+    for wikilink in wikilinks {
+      let articleid = wikilink.in_id;
+      if let Ok(article) = Article::get(&ctx, articleid).await {
+        let mut content = article.content;
+        // FIXME, cannot replace in case of [[src_title|tar_title]]
+        content = content
+          .replace(&format!("[[{old_title}]]"), &format!("[[{new_title}]]"));
+
+        sqlx::query(
+          r#"
+          UPDATE articles 
+          SET content = $1, updated_at = $2
+          WHERE id = $3;
+          "#,
+        )
+        .bind(&content)
+        .bind(&now)
+        .bind(&article.id)
+        .execute(&ctx.pool)
+        .await
+        .unwrap_or_default();
+      }
+    }
+
+    Ok(1)
   }
 }
 

@@ -27,7 +27,7 @@
     <nav class="nav-menu" id="body-nav-menu">
       {%- block nav -%}
       <div class="site-logo">
-        <a href="/" id="logo-nav-link">{{page_data.site_name}}</a>
+        <a href="/explore" id="logo-nav-link">{{page_data.site_name}}</a>
       </div>
       {%- block navMain -%}
       <div class="main-menu" id="nav-main-menu">
@@ -41,7 +41,7 @@
         </a>
         {% else %}
         <div class="buttons">
-          <a href="/signin"><button class="button">Sign in</button></a>
+          <a href="/signin" class="auth-btn">Sign in</a>
         </div>
         {% endmatch %}
       </div>
