@@ -18,7 +18,7 @@ use crate::{
     user::{ClaimCan, CREATE_PERMIT, READ_PERMIT},
   },
   error::AppError,
-  util::helper::{capture_element, extract_element},
+  util::helper::extract_element,
   AppState as Ctx,
 };
 use askama::Template;
@@ -101,7 +101,7 @@ pub(crate) async fn edit_article_form(
   let site_config = get_site_config(&ctx.sled).unwrap_or_default();
   // check input length
   let title = form.title;
-  let mut content = form.content;
+  let content = form.content;
   if content.len() > site_config.article_max_length
     || title.len() > site_config.title_max_length
   {
@@ -128,21 +128,7 @@ pub(crate) async fn edit_article_form(
     (now, now)
   };
 
-  // process wikilink, work with db to get article id and change the link
-  let wikilinks = capture_element(&content, "");
-  for link in &wikilinks {
-    let title = link.replace("[", "").replace("]", "");
-    if title.trim().is_empty() {
-      continue;
-    }
-    // get article
-    if let Ok(link_article) = Article::get_by_id_or_title(&ctx, &title).await {
-      let wiki_link = format!("[{link}](/article/{}/view)", link_article.id);
-      content = content.replace(link, &wiki_link);
-    }
-  }
-
-  // Process tags: extact and save 
+  // extact hashtags then save 
   let hashtags = extract_element(&content, "", "#");
   // save article to db
   let article = Article {
