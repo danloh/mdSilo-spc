@@ -3,12 +3,10 @@
     {%- if entry.ty == "article" -%}
     <div class="meta-bar">
       <span class="meta-tag">{{entry.content|calc_read_min}} min read</span>&nbsp;·&nbsp;
-      <a href="/user/{{entry.uname}}" class="meta-tag">{{ entry.uname }}</a>&nbsp;·&nbsp;
       <span class="meta-tag">{{ entry.created_at|ts_date("") }}</span>  
     </div>
     {%- else if entry.ty == "piece" -%}
     <div class="meta-bar">
-      <a href="/user/{{entry.uname}}" class="meta-tag">{{ entry.uname }}</a>&nbsp;·&nbsp;
       <span class="meta-tag">{{ entry.created_at|ts_date("") }}</span>
     </div>
     {%- else if entry.ty == "feed" -%}

@@ -6,7 +6,6 @@
     <h1 class="title">{{article.title}}</h1>
     <div class="meta-bar">
       <span class="meta-tag">{{article.content|calc_read_min}} min read</span> &nbsp;·&nbsp;
-      <a href="/user/{{article.uname}}" class="meta-link">{{article.uname}}</a> &nbsp;·&nbsp;
       <span class="meta-tag">
         {{article.created_at|ts_date("")}} | {{article.updated_at|ts_date("")}}
       </span> &nbsp;·&nbsp; 

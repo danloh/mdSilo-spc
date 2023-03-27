@@ -1,5 +1,5 @@
 {
-  "name": "mdpad",
+  "name": "spc",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,16 +9,15 @@
     "format": "prettier --write ."
   },
   "dependencies": {
-    "@chakra-ui/react": "^2.5.1",
+    "@chakra-ui/react": "^2.5.3",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@monaco-editor/react": "^4.4.6",
     "@extractus/article-extractor": "7.2.11",
-    "abcjs": "^6.1.9",
-    "d3": "^7.8.2",
-    "echarts": "5.4.1",
-    "framer-motion": "^4.1.17",
-    "immer": "^9.0.19",
+    "abcjs": "^6.2.0",
+    "d3": "^7.8.3",
+    "echarts": "5.4.2",
+    "immer": "^9.0.21",
     "lodash.debounce": "^4.0.8",
     "markmap-common": "^0.14.2",
     "markmap-lib": "^0.14.4",
@@ -30,7 +29,7 @@
     "react-router-dom": "^6.9.0",
     "react-split": "^2.0.14",
     "spc-wasm": "file:./spc-wasm/pkg",
-    "use-debounce": "^7.0.1",
+    "use-debounce": "^9.0.3",
     "use-local-storage-state": "^13.0.0",
     "zustand": "^3.7.2"
   },
@@ -42,8 +41,8 @@
     "@types/react-router-dom": "^5.3.3",
     "@vitejs/plugin-react": "^3.1.0",
     "monaco-editor": "^0.36.1",
-    "prettier": "2.8.4",
+    "prettier": "2.8.7",
     "typescript": "~4.9.5",
-    "vite": "^4.1.4"
+    "vite": "^4.2.1"
   }
 }
