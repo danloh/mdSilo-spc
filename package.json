@@ -36,7 +36,7 @@
   "devDependencies": {
     "@types/echarts": "^4.9.16",
     "@types/lodash.debounce": "^4.0.7",
-    "@types/react": "^18.0.28",
+    "@types/react": "^18.0.31",
     "@types/react-dom": "^18.0.11",
     "@types/react-router-dom": "^5.3.3",
     "@vitejs/plugin-react": "^3.1.0",
