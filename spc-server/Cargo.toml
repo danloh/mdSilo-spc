@@ -28,7 +28,7 @@ bincode = "2.0.0-rc.2"
 # for feed reader
 atom_syndication = { version = "0.12.0", default-features = false }
 rss = { version = "2.0.2", default-features = false }
-reqwest = { version = "0.11.15", default-features = false, features = ["rustls-tls"] }
+reqwest = { version = "0.11.16", default-features = false, features = ["rustls-tls"] }
 # for image
 image = { version = "0.24.6", default-features = false, features = ["jpeg", "png", "gif"] }
 mozjpeg = "0.9.4"
