@@ -15,7 +15,7 @@
     "@monaco-editor/react": "^4.4.6",
     "@extractus/article-extractor": "7.2.11",
     "abcjs": "^6.2.0",
-    "d3": "^7.8.3",
+    "d3": "^7.8.4",
     "echarts": "5.4.2",
     "immer": "^9.0.21",
     "lodash.debounce": "^4.0.8",
