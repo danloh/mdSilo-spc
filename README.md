@@ -7,12 +7,12 @@ Licensed under AGPLv3.
 
 ## Features
 
-- Easy to deploy with a single executable, no database to configure;    
+- Easy to deploy with a single executable OR plus web app, no database to configure;    
 - Support Markdown and extensions: mermaid Diagram, Table, LaTex, syntax highlighting... 
 - Hashtag to organize writing;
 - WikiLink to network writing;    
 - Dark and Light theme;  
-- Minimal Feed reader, support RSS and Atom;
+- Feed reader, support RSS and Atom;
 - Efficient live collaboration;
 - Configurable: customized css/js to style or add features... 
 
@@ -31,7 +31,7 @@ Licensed under AGPLv3.
 
 ### Subscription 
   - [X] Feed aggregator, support RSS and Atom
-  - [ ] Feed reader, support RSS and Atom
+  - [X] Feed reader, support RSS and Atom
 
 ### Publishing
   - Writing with Markdown 
