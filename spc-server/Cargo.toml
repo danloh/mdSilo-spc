@@ -24,7 +24,7 @@ rand = "0.8.5"
 ring = { version = "0.16.20", default-features = false }
 # sled db
 sled = { version = "0.34.7", features = ["compression"] }
-bincode = "2.0.0-rc.2"
+bincode = "2.0.0-rc.3"
 # for feed reader
 atom_syndication = { version = "0.12.0", default-features = false }
 rss = { version = "2.0.2", default-features = false }
