@@ -9,5 +9,5 @@ syntect = { version = "5", features = ["regex-fancy", "default-syntaxes", "defau
 urlencoding = "2.1.2"
 latex2mathml = "0.2.3"
 once_cell = "1.17.1"
-regex = "1.7.3"
+regex = "1.8.1"
 chrono = "0.4.24"
