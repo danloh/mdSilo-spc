@@ -31,7 +31,7 @@
     "spc-wasm": "file:./spc-wasm/pkg",
     "use-debounce": "^9.0.4",
     "use-local-storage-state": "^13.0.0",
-    "zustand": "^3.7.2"
+    "zustand": "^4.3.7"
   },
   "devDependencies": {
     "@types/echarts": "^4.9.17",
