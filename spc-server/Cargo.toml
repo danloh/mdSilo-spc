@@ -34,7 +34,7 @@ image = { version = "0.24.6", default-features = false, features = ["jpeg", "png
 mozjpeg = "0.9.4"
 img-parts = "0.3.0"
 # for server end of collaborative editor
-anyhow = "1.0.70"
+anyhow = "1.0.71"
 bytecount = "0.6"
 dashmap = "5.4.0"
 operational-transform = { version = "0.6.1", features = ["serde"] }
