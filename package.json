@@ -30,7 +30,7 @@
     "react-split": "^2.0.14",
     "spc-wasm": "file:./spc-wasm/pkg",
     "use-debounce": "^9.0.4",
-    "use-local-storage-state": "^13.0.0",
+    "use-local-storage-state": "^18.3.2",
     "zustand": "^3.7.2"
   },
   "devDependencies": {
