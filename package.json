@@ -17,7 +17,7 @@
     "abcjs": "^6.2.2",
     "d3": "^7.8.4",
     "echarts": "5.4.2",
-    "immer": "^9.0.21",
+    "immer": "^10.0.2",
     "lodash.debounce": "^4.0.8",
     "markmap-common": "^0.14.2",
     "markmap-lib": "^0.14.4",
