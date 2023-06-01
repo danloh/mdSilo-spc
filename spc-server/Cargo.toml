@@ -42,7 +42,7 @@ parking_lot = "0.12.1"
 pretty_env_logger = "0.4.0"
 tokio-stream = "0.1.12"
 # others
-toml = "0.7.3"
+toml = "0.7.4"
 log = "0.4.17"
 chrono = { version = "0.4.24", default-features = false, features = ["clock"] }
 indexmap = "1.9.3"
