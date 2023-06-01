@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@chakra-ui/react": "^2.6.0",
-    "@emotion/react": "^11.10.8",
+    "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.10.8",
     "@monaco-editor/react": "^4.5.0",
     "@extractus/article-extractor": "7.2.14",
