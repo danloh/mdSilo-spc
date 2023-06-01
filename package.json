@@ -34,7 +34,7 @@
     "zustand": "^3.7.2"
   },
   "devDependencies": {
-    "@types/echarts": "^4.9.17",
+    "@types/echarts": "^4.9.18",
     "@types/lodash.debounce": "^4.0.7",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.1",
