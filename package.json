@@ -37,7 +37,7 @@
     "@types/echarts": "^4.9.17",
     "@types/lodash.debounce": "^4.0.7",
     "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.1",
+    "@types/react-dom": "^18.2.4",
     "@types/react-router-dom": "^5.3.3",
     "@vitejs/plugin-react": "^4.0.0",
     "monaco-editor": "^0.37.1",
